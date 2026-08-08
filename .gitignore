@@ -2,6 +2,10 @@
 .env
 .env.local
 .env.*.local
+# Exception: frontend_v2/.env holds only NEXT_PUBLIC_API_V2_URL (a public
+# backend URL, already compiled into the browser bundle) so the frontend works
+# out of the box in StackBlitz/WebContainer. Never put secrets in that file.
+!frontend_v2/.env
 
 # --- python ---
 __pycache__/
