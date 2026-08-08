@@ -72,10 +72,20 @@ LANCEDB_PATH: str = _str("LANCEDB_PATH", str(PROJECT_ROOT / "lance_store"))
 
 # --- API --------------------------------------------------------------------
 API_PORT: int = _int("API_PORT", 3001)
-CORS_ORIGINS: list[str] = [
-    "http://localhost:3000", "http://127.0.0.1:3000",
-    "http://localhost:3002", "http://127.0.0.1:3002",
-]
+# CORS_ORIGINS env var: comma-separated origins, or "*" to allow any origin
+# (needed when the frontend is opened from a dynamic host like a StackBlitz/
+# WebContainer preview URL, which can't be allowlisted in advance). Defaults
+# to the local-dev origins so nothing changes for local V1-style usage.
+_cors_env = _str("CORS_ORIGINS", "")
+if _cors_env == "*":
+    CORS_ORIGINS: list[str] = ["*"]
+elif _cors_env:
+    CORS_ORIGINS = [o.strip() for o in _cors_env.split(",") if o.strip()]
+else:
+    CORS_ORIGINS = [
+        "http://localhost:3000", "http://127.0.0.1:3000",
+        "http://localhost:3002", "http://127.0.0.1:3002",
+    ]
 
 # --- Context budget ----------------------------------------------------------
 MAX_CONTEXT_TOKENS: int = _int("MAX_CONTEXT_TOKENS", 6000)

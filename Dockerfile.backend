@@ -1,0 +1,42 @@
+# Insurance PoC V2.0 — backend_v2 image.
+#
+# Build from the PROJECT ROOT (not backend_v2/) so it can pick up database/,
+# lance_store/, graph/, and embeddings/ as build context:
+#
+#   docker build -f Dockerfile.backend -t insurance-poc-v2-backend .
+#
+# IMPORTANT: database/insurance_v2.duckdb and lance_store/ are gitignored
+# (too large / regenerable) but ARE baked into this image via local COPY, so
+# you must build this image from a machine that has already run setup_v2.bat
+# (or has a working database/insurance_v2.duckdb + populated lance_store/).
+# A git-connected "auto-build from source" host will NOT have this data —
+# see DEPLOY.md for the recommended build-locally-then-push-image workflow.
+
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# System deps some wheels (pyarrow, lancedb) may need at import time.
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libgomp1 \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY embeddings/requirements.txt ./embeddings/requirements.txt
+RUN pip install --no-cache-dir -r embeddings/requirements.txt
+
+COPY backend_v2/ ./backend_v2/
+COPY graph/ ./graph/
+COPY embeddings/ ./embeddings/
+COPY database/db_connection.py ./database/db_connection.py
+COPY database/insurance_v2.duckdb ./database/insurance_v2.duckdb
+COPY lance_store/ ./lance_store/
+
+ENV DUCKDB_PATH=/app/database/insurance_v2.duckdb
+ENV LANCEDB_PATH=/app/lance_store
+ENV PYTHONUNBUFFERED=1
+
+# Render/Railway/Fly all inject $PORT; fall back to 3001 for local `docker run`.
+ENV PORT=3001
+EXPOSE 3001
+
+CMD ["sh", "-c", "uvicorn backend_v2.api.main:app --host 0.0.0.0 --port ${PORT}"]

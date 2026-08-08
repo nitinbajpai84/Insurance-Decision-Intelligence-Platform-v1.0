@@ -1,0 +1,26 @@
+# Keep database/insurance_v2.duckdb and lance_store/ OUT of this ignore file —
+# Dockerfile.backend intentionally COPYs them in from local disk.
+
+.git/
+frontend/
+frontend_v2/
+node_modules/
+venv/
+.venv/
+database/.venv/
+__pycache__/
+.pytest_cache/
+.uv-cache/
+data/
+data_ml_test/
+data_rider_test/
+data_test/
+data_test_v2/
+docs/
+demo_artifacts/
+*.pptx
+*.png
+*.webm
+*.log
+tmp_*
+.next/

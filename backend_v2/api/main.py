@@ -72,7 +72,10 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=CORS_ORIGINS,
-    allow_credentials=True,
+    # Browsers reject Access-Control-Allow-Origin: * combined with credentials;
+    # this API is a stateless, keyless demo endpoint, so drop credentials when
+    # wildcard origins are configured.
+    allow_credentials=CORS_ORIGINS != ["*"],
     allow_methods=["GET", "POST", "OPTIONS"],
     allow_headers=["*"],
 )
