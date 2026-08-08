@@ -1,6 +1,7 @@
 /** processApi — calls to /api/v2/process/* (Prompt 19 business-process pages). */
-export const API_BASE: string =
-  (typeof process !== "undefined" && process.env.NEXT_PUBLIC_API_V2_URL) || "http://127.0.0.1:3001";
+import { API_BASE } from "./apiBase";
+
+export { API_BASE };
 
 async function getJSON<T>(path: string): Promise<T> {
   const res = await fetch(`${API_BASE}${path}`, { headers: { Accept: "application/json" } });

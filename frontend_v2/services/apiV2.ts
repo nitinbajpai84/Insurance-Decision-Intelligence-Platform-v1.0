@@ -7,9 +7,9 @@
  * ("data: {...}\n\n") manually, dispatching to typed callbacks.
  */
 
-export const API_BASE: string =
-  (typeof process !== "undefined" && process.env.NEXT_PUBLIC_API_V2_URL) ||
-  "http://127.0.0.1:3001";
+import { API_BASE } from "./apiBase";
+
+export { API_BASE };
 
 // ---------------------------------------------------------------------------
 // Event + payload types (mirror backend_v2 orchestrator / routes)
