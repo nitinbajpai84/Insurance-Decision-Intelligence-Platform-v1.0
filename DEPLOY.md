@@ -64,16 +64,41 @@ warm.
 
 ## 5. Open the frontend anywhere, pointed at the hosted backend
 
-**Via StackBlitz (no local setup needed):**
+**Via StackBlitz (no local setup needed, no config required):**
 
-1. Go to `https://stackblitz.com/github/<your-username>/<your-repo>/tree/main/frontend_v2`.
-2. Once it boots, set the env var StackBlitz uses for the dev server: create/edit
-   `frontend_v2/.env.local` in the StackBlitz editor:
-   ```
-   NEXT_PUBLIC_API_V2_URL=https://<your-service>.onrender.com
-   ```
-3. StackBlitz auto-runs `npm run dev`; open the preview and use `/ai-intelligence-v2` etc.
-   as normal.
+Just open:
+```
+https://stackblitz.com/github/nitinbajpai84/Insurance-Decision-Intelligence-Platform-v1.0/tree/main/frontend_v2
+```
+
+It works out of the box — `frontend_v2/.env` is committed and already points at the hosted
+Render backend. Wait for `npm install` + first compile (can take 1-2 min on a cold
+WebContainer boot), then open the preview and use `/ai-intelligence-v2` as normal.
+
+The repo must be **public** for StackBlitz's GitHub import to find it (a private repo
+returns "Repository not found" unless you connect a StackBlitz account with repo access).
+
+### Two things that had to be fixed for this to work (2026-07-23)
+
+1. **Next.js 15.5.x is broken in WebContainer.** Every route 500s with
+   `Invariant: Expected workUnitAsyncStorage to have a store`. This is a Next.js
+   regression, not app code — tracked in
+   [vercel/next.js#84026](https://github.com/vercel/next.js/issues/84026) and
+   [stackblitz/webcontainer-core#1978](https://github.com/stackblitz/webcontainer-core/issues/1978).
+   15.4.x is unaffected. `package.json` previously said `"next": "^15.0.0"`, which resolved
+   to the broken 15.5.19. Now pinned to exactly `15.4.1`, and **the lockfile was
+   regenerated** — StackBlitz installs from `package-lock.json`, so pinning `package.json`
+   alone would not have changed anything. If you ever bump Next again, re-test in
+   WebContainer before relying on it for a demo.
+
+2. **The API URL fell back to localhost.** `services/*.ts` default to
+   `http://127.0.0.1:3001` when `NEXT_PUBLIC_API_V2_URL` is unset, and `.env.local` is
+   gitignored — so a cloud IDE would have called the *viewer's own machine*. Fixed with a
+   committed `frontend_v2/.env` holding the public Render URL, plus a narrow
+   `!frontend_v2/.env` exception in `.gitignore`. Next.js loads `.env.local` over `.env`, so
+   **local development is unchanged** — your local `.env.local` still points at
+   `127.0.0.1:3001`. Never put secrets in `frontend_v2/.env`; `NEXT_PUBLIC_*` values are
+   compiled into the browser bundle and are public by definition.
 
 **Or deploy the frontend properly (Vercel), StackBlitz becomes optional:**
 
