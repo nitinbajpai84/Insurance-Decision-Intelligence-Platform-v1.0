@@ -1,0 +1,13 @@
+flowchart TD
+  Source["Customers, policies, payments, agents, campaigns, claims"] --> Snapshot["Monthly snapshot dates"]
+  Snapshot --> Features["Feature views using data before snapshot_date"]
+  Features --> Labels["Future labels in prediction window"]
+  Features --> Tables["Physical feature tables"]
+  Labels --> Tables
+  Tables --> Artifact["Model artifact or rule-based scorer"]
+  Artifact --> Scores["model_scores"]
+  Artifact --> Predictions["model_predictions"]
+  Scores --> Bands["LOW / MEDIUM / HIGH / VERY_HIGH"]
+  Bands --> Actions["next_best_actions"]
+  Actions --> UI["Frontend and AI Intelligence"]
+

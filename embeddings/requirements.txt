@@ -1,0 +1,10 @@
+lancedb>=0.24.0
+google-generativeai>=0.8.0
+pyarrow>=14.0.0
+pandas>=2.0.0
+duckdb>=0.9.0
+python-dotenv>=1.0.0
+fastapi>=0.110.0
+uvicorn>=0.27.0
+httpx
+tqdm

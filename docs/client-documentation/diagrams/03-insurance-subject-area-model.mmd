@@ -1,0 +1,21 @@
+erDiagram
+  PARTIES ||--o{ CUSTOMERS : has
+  PARTIES ||--o{ AGENTS : represents
+  PARTIES ||--o{ ADDRESSES : located_at
+  CUSTOMERS ||--o{ POLICIES : owns
+  AGENTS ||--o{ POLICIES : sells
+  PRODUCTS ||--o{ POLICIES : product
+  POLICIES ||--o{ POLICY_COVERAGES : contains
+  POLICIES ||--o{ PAYMENTS : billed_by
+  POLICIES ||--o{ CLAIMS : may_have
+  CAMPAIGNS ||--o{ CAMPAIGN_TARGETS : targets
+  CAMPAIGNS ||--o{ CAMPAIGN_RESPONSES : receives
+  CAMPAIGNS ||--o{ LEADS : creates
+  LEADS ||--o{ OPPORTUNITIES : converts_to
+  OPPORTUNITIES ||--o{ POLICIES : may_bind
+  AGENTS ||--o{ AGENT_MAPA_METRICS : measures
+  CUSTOMERS ||--o{ MODEL_SCORES : scored_as
+  POLICIES ||--o{ MODEL_SCORES : scored_as
+  AGENTS ||--o{ MODEL_SCORES : scored_as
+  CUSTOMERS ||--o{ NEXT_BEST_ACTIONS : recommended_for
+

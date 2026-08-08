@@ -1,0 +1,6 @@
+entity_type,entity_id,model_name,model_version,score,score_band,top_reason_1,top_reason_2,top_reason_3,recommended_action,created_at
+customer,8a9bc9b2-08c0-4db1-9aa9-4d49f7fb6bb2,propensity_to_buy,baseline_001,0.842315,VERY_HIGH,quote_requests_180d=3,digital_events_90d=18,engagement_score=86.4,Offer relevant protection or savings product,2026-05-31T10:30:00Z
+policy,ef9b1b14-6c2a-45f4-9c48-4f69ac047c62,policy_lapse,baseline_001,0.721908,HIGH,missed_payment_count_prior=2,latest_premium_change_pct=0.144,complaint_count_prior=1,Prioritize renewal follow-up,2026-05-31T10:30:01Z
+agent,41d4d936-7557-43ed-b820-a7c2f66f2acf,agent_attrition,baseline_001,0.637522,HIGH,chargebacks_prior=2,avg_target_attainment_prior=0.61,commissions_180d=4200,Manager retention intervention,2026-05-31T10:30:02Z
+lead,71605b7c-e3f4-47aa-b803-9b93c4b06259,lead_conversion,baseline_001,0.685771,HIGH,lead_score=78.5,quotes_before_snapshot=1,meetings_before_snapshot=2,Assign lead for immediate follow-up,2026-05-31T10:30:03Z
+claim,2f7fa2fd-0a2f-4bc5-ae8a-1e2f4a870d3d,fraud_detection,baseline_001,0.918244,VERY_HIGH,prior_fraud_indicators=2,prior_customer_claim_count=4,report_lag_days=37,Route claim to fraud review,2026-05-31T10:30:04Z

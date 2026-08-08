@@ -1,0 +1,23 @@
+{
+  "generated_at": "2026-06-04T01:14:22.784428+00:00",
+  "context_rows_processed": 435,
+  "embeddings_written": 435,
+  "embeddings_skipped": 0,
+  "embedding_model": "gemini-embedding-001",
+  "embedding_dimensions": 768,
+  "by_type": {
+    "table_context": 65,
+    "column_context": 195,
+    "kpi_context": 20,
+    "model_context": 12,
+    "join_path_context": 120,
+    "demo_question_context": 8,
+    "business_glossary_context": 7,
+    "role_context": 7,
+    "guardrail_context": 1
+  },
+  "by_sql_usable": {
+    "sql_usable": 363,
+    "business_only": 72
+  }
+}

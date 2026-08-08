@@ -1,0 +1,14 @@
+flowchart LR
+  User["Business user"] --> Frontend["React / Next.js frontend"]
+  Frontend --> Gateway["FastAPI API gateway"]
+  Gateway --> SQL["Text-to-SQL engine"]
+  Gateway --> Entity["Entity 360 and dashboard services"]
+  SQL --> Safety["SQL validation and row limits"]
+  Safety --> DB["Supabase Postgres"]
+  DB --> Vector["pgvector semantic context"]
+  SQL --> LLM["Gemini LLM provider"]
+  LLM --> Insight["Insight generation"]
+  Insight --> Evidence["Insight Evidence Hub"]
+  Entity --> DB
+  Evidence --> DB
+

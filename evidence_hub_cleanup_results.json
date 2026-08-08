@@ -1,0 +1,267 @@
+{
+  "generated_at_epoch": 1780361256,
+  "pass_count": 40,
+  "fail_count": 0,
+  "results": [
+    {
+      "check": "GET /health/llm",
+      "status": "PASS",
+      "detail": "active_provider=gemini",
+      "payload": {
+        "active_provider": "gemini",
+        "gemini_api_key_present": true,
+        "gemini_available": false,
+        "gemini_quota_exhausted": true,
+        "gemini_model_fast": "gemini-2.5-flash-lite",
+        "gemini_model_sql": "gemini-2.5-flash-lite",
+        "ollama_available": false,
+        "fallback_available": true,
+        "last_error_type": "LLMProviderError",
+        "last_error_message": "Gemini generation failed: ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash-lite\\nPlease retry in 17",
+        "latency_ms": 1463,
+        "models": {
+          "intent": "gemini-2.5-flash-lite",
+          "sql_generation": "gemini-2.5-flash-lite",
+          "explanation": "gemini-2.5-flash-lite",
+          "embedding": "gemini-embedding-001"
+        },
+        "timeout_seconds": 120.0,
+        "latency_test_ms": 1463
+      }
+    },
+    {
+      "check": "frontend route /ai-intelligence",
+      "status": "PASS",
+      "detail": "status=200",
+      "payload": null
+    },
+    {
+      "check": "frontend route /insight-evidence-hub",
+      "status": "PASS",
+      "detail": "status=200",
+      "payload": null
+    },
+    {
+      "check": "old duplicate state removed",
+      "status": "PASS",
+      "detail": "",
+      "payload": null
+    },
+    {
+      "check": "old Model Insights UI label removed",
+      "status": "PASS",
+      "detail": "",
+      "payload": null
+    },
+    {
+      "check": "AI question: Executive Leadership / What are the top risks to revenue this month? returns insight_id",
+      "status": "PASS",
+      "detail": "insight_id=6280a215-797f-4715-8615-66257dffc9fb",
+      "payload": null
+    },
+    {
+      "check": "AI question: Executive Leadership / What are the top risks to revenue this month? business limitations exclude technical warnings",
+      "status": "PASS",
+      "detail": "[]",
+      "payload": null
+    },
+    {
+      "check": "AI question: Executive Leadership / What are the top risks to revenue this month? related columns are structured",
+      "status": "PASS",
+      "detail": "[{\"table\": \"products\", \"column\": \"line_of_business\", \"usage\": \"selected\", \"business_description\": \"Insurance product line such as health, wealth, protection, or savings.\"}, {\"table\": \"products\", \"column\": \"line_of_business\", \"usage\": \"grouped\", \"business_description\": \"Insurance product line such as health, wealth, protection, or savings.\"}, {\"table\": \"policies\", \"column\": \"annual_premium\", \"usage\": \"aggregated\", \"business_description\": \"Annual premium amount for the policy.\"}]",
+      "payload": null
+    },
+    {
+      "check": "AI question: Executive Leadership / What are the top risks to revenue this month? models used are structured",
+      "status": "PASS",
+      "detail": "[{\"model_name\": \"policy_lapse_risk\", \"model_type\": \"binary_classification\", \"entity_type\": \"policy\", \"score_interpretation\": \"Higher score means higher probability of policy lapse.\", \"source_table\": \"model_scores\", \"used_in\": \"intent\"}, {\"model_name\": \"churn_risk\", \"model_type\": \"binary_classification\", \"entity_type\": \"customer\", \"score_interpretation\": \"Higher score means higher probability of customer churn.\", \"source_table\": \"model_scores\", \"used_in\": \"intent\"}, {\"model_name\": \"customer_lifet",
+      "payload": null
+    },
+    {
+      "check": "AI question: Executive Leadership / What are the top risks to revenue this month? model intent detection",
+      "status": "PASS",
+      "detail": "[{\"model_name\": \"policy_lapse_risk\", \"model_type\": \"binary_classification\", \"entity_type\": \"policy\", \"score_interpretation\": \"Higher score means higher probability of policy lapse.\", \"source_table\": \"model_scores\", \"used_in\": \"intent\"}, {\"model_name\": \"churn_risk\", \"model_type\": \"binary_classification\", \"entity_type\": \"customer\", \"score_interpretation\": \"Higher score means higher probability of customer churn.\", \"source_table\": \"model_scores\", \"used_in\": \"intent\"}, {\"model_name\": \"customer_lifet",
+      "payload": null
+    },
+    {
+      "check": "AI question: Executive Leadership / What are the top risks to revenue this month? Gemini/fallback warning split",
+      "status": "PASS",
+      "detail": "['Gemini quota was exhausted, so deterministic SQL and fallback insight generation were used.']",
+      "payload": null
+    },
+    {
+      "check": "AI question: Insurance Agent / Which customers are likely to lapse in the next 90 days? returns insight_id",
+      "status": "PASS",
+      "detail": "insight_id=f8c8cde8-9ad3-4b85-bce4-a452fee682bd",
+      "payload": null
+    },
+    {
+      "check": "AI question: Insurance Agent / Which customers are likely to lapse in the next 90 days? business limitations exclude technical warnings",
+      "status": "PASS",
+      "detail": "[]",
+      "payload": null
+    },
+    {
+      "check": "AI question: Insurance Agent / Which customers are likely to lapse in the next 90 days? related columns are structured",
+      "status": "PASS",
+      "detail": "[{\"table\": \"products\", \"column\": \"line_of_business\", \"usage\": \"selected\", \"business_description\": \"Insurance product line such as health, wealth, protection, or savings.\"}, {\"table\": \"products\", \"column\": \"line_of_business\", \"usage\": \"grouped\", \"business_description\": \"Insurance product line such as health, wealth, protection, or savings.\"}, {\"table\": \"policies\", \"column\": \"annual_premium\", \"usage\": \"aggregated\", \"business_description\": \"Annual premium amount for the policy.\"}]",
+      "payload": null
+    },
+    {
+      "check": "AI question: Insurance Agent / Which customers are likely to lapse in the next 90 days? models used are structured",
+      "status": "PASS",
+      "detail": "[{\"model_name\": \"policy_lapse_risk\", \"model_type\": \"binary_classification\", \"entity_type\": \"policy\", \"score_interpretation\": \"Higher score means higher probability of policy lapse.\", \"source_table\": \"model_scores\", \"used_in\": \"intent\"}]",
+      "payload": null
+    },
+    {
+      "check": "AI question: Insurance Agent / Which customers are likely to lapse in the next 90 days? model intent detection",
+      "status": "PASS",
+      "detail": "[{\"model_name\": \"policy_lapse_risk\", \"model_type\": \"binary_classification\", \"entity_type\": \"policy\", \"score_interpretation\": \"Higher score means higher probability of policy lapse.\", \"source_table\": \"model_scores\", \"used_in\": \"intent\"}]",
+      "payload": null
+    },
+    {
+      "check": "AI question: Insurance Agent / Which customers are likely to lapse in the next 90 days? Gemini/fallback warning split",
+      "status": "PASS",
+      "detail": "['Gemini quota was exhausted, so deterministic SQL and fallback insight generation were used.']",
+      "payload": null
+    },
+    {
+      "check": "AI question: Campaign Manager / Which campaign generated the highest policy conversion? returns insight_id",
+      "status": "PASS",
+      "detail": "insight_id=f3752116-6213-47ef-b08e-9a184ce6efcb",
+      "payload": null
+    },
+    {
+      "check": "AI question: Campaign Manager / Which campaign generated the highest policy conversion? business limitations exclude technical warnings",
+      "status": "PASS",
+      "detail": "[]",
+      "payload": null
+    },
+    {
+      "check": "AI question: Campaign Manager / Which campaign generated the highest policy conversion? related columns are structured",
+      "status": "PASS",
+      "detail": "[{\"table\": \"campaigns\", \"column\": \"campaign_name\", \"usage\": \"selected\", \"business_description\": \"Human-readable campaign name.\"}, {\"table\": \"campaigns\", \"column\": \"channel\", \"usage\": \"selected\", \"business_description\": \"Campaign or customer contact channel.\"}, {\"table\": \"campaigns\", \"column\": \"campaign_name\", \"usage\": \"grouped\", \"business_description\": \"Human-readable campaign name.\"}]",
+      "payload": null
+    },
+    {
+      "check": "AI question: Campaign Manager / Which campaign generated the highest policy conversion? models used are structured",
+      "status": "PASS",
+      "detail": "[{\"model_name\": \"campaign_response\", \"model_type\": \"binary_classification\", \"entity_type\": \"customer_campaign\", \"score_interpretation\": \"Higher score means higher likelihood to respond to a campaign.\", \"source_table\": \"model_scores\", \"used_in\": \"context\"}, {\"model_name\": \"propensity_to_buy\", \"model_type\": \"binary_classification\", \"entity_type\": \"customer\", \"score_interpretation\": \"Higher score means higher likelihood to buy or respond to a product offer.\", \"source_table\": \"model_scores\", \"used_i",
+      "payload": null
+    },
+    {
+      "check": "AI question: Campaign Manager / Which campaign generated the highest policy conversion? model intent detection",
+      "status": "PASS",
+      "detail": "[{\"model_name\": \"campaign_response\", \"model_type\": \"binary_classification\", \"entity_type\": \"customer_campaign\", \"score_interpretation\": \"Higher score means higher likelihood to respond to a campaign.\", \"source_table\": \"model_scores\", \"used_in\": \"context\"}, {\"model_name\": \"propensity_to_buy\", \"model_type\": \"binary_classification\", \"entity_type\": \"customer\", \"score_interpretation\": \"Higher score means higher likelihood to buy or respond to a product offer.\", \"source_table\": \"model_scores\", \"used_i",
+      "payload": null
+    },
+    {
+      "check": "AI question: Campaign Manager / Which campaign generated the highest policy conversion? Gemini/fallback warning split",
+      "status": "PASS",
+      "detail": "['Gemini quota was exhausted, so deterministic SQL and fallback insight generation were used.']",
+      "payload": null
+    },
+    {
+      "check": "AI question: Data Analyst / Show SQL for lapse risk by product. returns insight_id",
+      "status": "PASS",
+      "detail": "insight_id=2cf14bda-e570-422b-89a8-fe088a6856c2",
+      "payload": null
+    },
+    {
+      "check": "AI question: Data Analyst / Show SQL for lapse risk by product. business limitations exclude technical warnings",
+      "status": "PASS",
+      "detail": "[]",
+      "payload": null
+    },
+    {
+      "check": "AI question: Data Analyst / Show SQL for lapse risk by product. related columns are structured",
+      "status": "PASS",
+      "detail": "[{\"table\": \"products\", \"column\": \"line_of_business\", \"usage\": \"selected\", \"business_description\": \"Insurance product line such as health, wealth, protection, or savings.\"}, {\"table\": \"products\", \"column\": \"line_of_business\", \"usage\": \"grouped\", \"business_description\": \"Insurance product line such as health, wealth, protection, or savings.\"}, {\"table\": \"policies\", \"column\": \"annual_premium\", \"usage\": \"aggregated\", \"business_description\": \"Annual premium amount for the policy.\"}]",
+      "payload": null
+    },
+    {
+      "check": "AI question: Data Analyst / Show SQL for lapse risk by product. models used are structured",
+      "status": "PASS",
+      "detail": "[{\"model_name\": \"policy_lapse_risk\", \"model_type\": \"binary_classification\", \"entity_type\": \"policy\", \"score_interpretation\": \"Higher score means higher probability of policy lapse.\", \"source_table\": \"model_scores\", \"used_in\": \"intent\"}]",
+      "payload": null
+    },
+    {
+      "check": "AI question: Data Analyst / Show SQL for lapse risk by product. model intent detection",
+      "status": "PASS",
+      "detail": "[{\"model_name\": \"policy_lapse_risk\", \"model_type\": \"binary_classification\", \"entity_type\": \"policy\", \"score_interpretation\": \"Higher score means higher probability of policy lapse.\", \"source_table\": \"model_scores\", \"used_in\": \"intent\"}]",
+      "payload": null
+    },
+    {
+      "check": "AI question: Data Analyst / Show SQL for lapse risk by product. Gemini/fallback warning split",
+      "status": "PASS",
+      "detail": "['Gemini quota was exhausted, so deterministic SQL and fallback insight generation were used.']",
+      "payload": null
+    },
+    {
+      "check": "AI question: Sales Director / Which products are declining in new sales? returns insight_id",
+      "status": "PASS",
+      "detail": "insight_id=88e9fafa-fa6e-49c7-9985-bdb1e9f5b654",
+      "payload": null
+    },
+    {
+      "check": "AI question: Sales Director / Which products are declining in new sales? business limitations exclude technical warnings",
+      "status": "PASS",
+      "detail": "[]",
+      "payload": null
+    },
+    {
+      "check": "AI question: Sales Director / Which products are declining in new sales? related columns are structured",
+      "status": "PASS",
+      "detail": "[{\"table\": \"products\", \"column\": \"line_of_business\", \"usage\": \"selected\", \"business_description\": \"Insurance product line such as health, wealth, protection, or savings.\"}, {\"table\": \"products\", \"column\": \"line_of_business\", \"usage\": \"grouped\", \"business_description\": \"Insurance product line such as health, wealth, protection, or savings.\"}, {\"table\": \"policies\", \"column\": \"annual_premium\", \"usage\": \"aggregated\", \"business_description\": \"Annual premium amount for the policy.\"}]",
+      "payload": null
+    },
+    {
+      "check": "AI question: Sales Director / Which products are declining in new sales? models used are structured",
+      "status": "PASS",
+      "detail": "[{\"model_name\": \"propensity_to_buy\", \"model_type\": \"binary_classification\", \"entity_type\": \"customer\", \"score_interpretation\": \"Higher score means higher likelihood to buy or respond to a product offer.\", \"source_table\": \"model_scores\", \"used_in\": \"intent\"}, {\"model_name\": \"agent_performance\", \"model_type\": \"forecasting\", \"entity_type\": \"agent\", \"score_interpretation\": \"Higher score means stronger expected agent productivity.\", \"source_table\": \"model_scores\", \"used_in\": \"intent\"}]",
+      "payload": null
+    },
+    {
+      "check": "AI question: Sales Director / Which products are declining in new sales? model intent detection",
+      "status": "PASS",
+      "detail": "[{\"model_name\": \"propensity_to_buy\", \"model_type\": \"binary_classification\", \"entity_type\": \"customer\", \"score_interpretation\": \"Higher score means higher likelihood to buy or respond to a product offer.\", \"source_table\": \"model_scores\", \"used_in\": \"intent\"}, {\"model_name\": \"agent_performance\", \"model_type\": \"forecasting\", \"entity_type\": \"agent\", \"score_interpretation\": \"Higher score means stronger expected agent productivity.\", \"source_table\": \"model_scores\", \"used_in\": \"intent\"}]",
+      "payload": null
+    },
+    {
+      "check": "AI question: Sales Director / Which products are declining in new sales? Gemini/fallback warning split",
+      "status": "PASS",
+      "detail": "['Gemini quota was exhausted, so deterministic SQL and fallback insight generation were used.']",
+      "payload": null
+    },
+    {
+      "check": "GET /debug/latest-insight-evidence by insight_id",
+      "status": "PASS",
+      "detail": "insight_id=88e9fafa-fa6e-49c7-9985-bdb1e9f5b654",
+      "payload": null
+    },
+    {
+      "check": "Evidence Hub payload has related tables",
+      "status": "PASS",
+      "detail": "[{\"schema_name\": \"public\", \"table_name\": \"policies\", \"subject_area\": \"Policies\", \"business_description\": \"Policies source data used for the insight.\", \"why_it_was_used\": \"Referenced by generated SQL for: Which products are declining in new sales?.\", \"row_count\": null}, {\"schema_name\": \"public\", \"table_name\": \"products\", \"subject_area\": \"Products\", \"business_description\": \"Products source data used for the insight.\", \"why_it_was_used\": \"Referenced by generated SQL for: Which products are declining in new sales?.\", \"row_count\": null}]",
+      "payload": null
+    },
+    {
+      "check": "Evidence Hub payload has related columns",
+      "status": "PASS",
+      "detail": "[{\"table\": \"products\", \"usage\": \"selected\", \"column\": \"line_of_business\", \"business_description\": \"Insurance product line such as health, wealth, protection, or savings.\"}, {\"table\": \"products\", \"usage\": \"grouped\", \"column\": \"line_of_business\", \"business_description\": \"Insurance product line such as health, wealth, protection, or savings.\"}, {\"table\": \"policies\", \"usage\": \"aggregated\", \"column\": \"annual_premium\", \"business_description\": \"Annual premium amount for the policy.\"}]",
+      "payload": null
+    },
+    {
+      "check": "Evidence Hub payload has SQL evidence",
+      "status": "PASS",
+      "detail": "",
+      "payload": null
+    },
+    {
+      "check": "Evidence Hub payload has technical diagnostics",
+      "status": "PASS",
+      "detail": "{\"provider_used\": \"gemini (quota fallback)\", \"model_used\": \"gemini-2.5-flash-lite + deterministic fallback\", \"gemini_available\": false, \"gemini_quota_exhausted\": true, \"fallback_used\": true, \"latency_ms\": 22570, \"technical_warnings\": [\"Gemini quota was exhausted, so deterministic SQL and fallback insight generation were used.\"]}",
+      "payload": null
+    }
+  ]
+}

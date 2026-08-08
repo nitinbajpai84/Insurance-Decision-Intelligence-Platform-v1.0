@@ -1,0 +1,22 @@
+sequenceDiagram
+  participant U as User
+  participant FE as Frontend
+  participant API as API Gateway
+  participant IC as Intent + role layer
+  participant R as Retriever
+  participant L as Gemini SQL generator
+  participant S as SQL Safety
+  participant DB as Supabase
+  participant E as Evidence Store
+  U->>FE: Ask a business question
+  FE->>API: Question, role, row limit
+  API->>IC: Classify intent and load role context
+  IC->>R: Retrieve semantic and schema context
+  R-->>API: Context bundle
+  API->>L: Generate SQL and business narrative
+  L-->>API: Candidate SQL
+  API->>S: Validate SELECT/WITH only
+  S->>DB: Execute limited query
+  DB-->>API: Rows
+  API->>E: Save SQL, context, models, and evidence
+  API-->>FE: SQL, rows, insight, recommendations, evidence

@@ -1,0 +1,47 @@
+### Health
+GET http://127.0.0.1:8040/health
+
+### Explain and persist recommendation evidence
+POST http://127.0.0.1:8040/explain/recommendation
+Content-Type: application/json
+
+{
+  "next_best_action_id": "{{next_best_action_id}}",
+  "question": "Why should this customer be contacted?",
+  "role_code": "insurance_agent",
+  "persist": true
+}
+
+### Fetch latest persisted recommendation explainability
+GET http://127.0.0.1:8040/explain/recommendation/{{next_best_action_id}}
+
+### Create generic lineage record
+POST http://127.0.0.1:8040/lineage
+Content-Type: application/json
+
+{
+  "insight_type": "recommendation",
+  "role_code": "insurance_agent",
+  "question": "Which customers should I call this week?",
+  "recommendation": "Contact customer C123",
+  "business_reason": "High propensity and no active health policy.",
+  "confidence_score": 0.86,
+  "source_tables": ["model_scores", "policies", "campaign_responses"],
+  "source_columns": {
+    "model_scores": ["model_name", "score_value", "score_band"],
+    "policies": ["policy_status", "product_id"],
+    "campaign_responses": ["response_type", "response_ts"]
+  },
+  "metrics_used": ["propensity_to_buy", "campaign_click_count"],
+  "business_rules_used": ["health_cross_sell"],
+  "ml_models_used": ["propensity_to_buy_v1"],
+  "context_document_ids": [],
+  "explanation_payload": {
+    "supporting_facts": [
+      "Propensity score 0.91",
+      "Health campaign clicked 3 times",
+      "No active health policy"
+    ]
+  }
+}
+

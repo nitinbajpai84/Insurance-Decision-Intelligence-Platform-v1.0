@@ -1,0 +1,49 @@
+# --- secrets ---
+.env
+.env.local
+.env.*.local
+
+# --- python ---
+__pycache__/
+.pytest_cache/
+.venv/
+venv/
+.uv-cache/
+*.pyc
+
+# --- node / next.js ---
+node_modules/
+.next/
+*.tsbuildinfo
+npm-debug.log*
+
+# --- V2 data plane (large / regenerable — see database/README.md and V2_README.md) ---
+database/insurance_v2.duckdb
+database/insurance_v2.duckdb.wal
+lance_store/
+
+# --- V1 legacy synthetic data (not used by V2's own seed pipeline) ---
+data/
+data_ml_test/
+data_rider_test/
+data_test/
+
+# --- logs / scratch / smoke-test artifacts ---
+tmp_*.log
+tmp_*.err.log
+tmp_*.stdout.log
+tmp_*.stderr.log
+*.log
+benchmark_results.json
+benchmark_results.csv
+*_smoke_results.json
+*_smoke_results.csv
+*_smoke_report.md
+COPY_MANIFEST.md
+
+# --- demo screenshots (bulky, not essential to the repo) ---
+frontend_*.png
+
+# --- editors / OS ---
+.DS_Store
+Thumbs.db

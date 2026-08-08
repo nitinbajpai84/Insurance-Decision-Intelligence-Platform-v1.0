@@ -1,0 +1,56 @@
+### Health
+GET http://127.0.0.1:8030/health
+
+### List intent definitions
+GET http://127.0.0.1:8030/intents
+
+### Classify analytics/campaign question
+POST http://127.0.0.1:8030/classify-intent
+Content-Type: application/json
+
+{
+  "question": "Which campaigns performed best?"
+}
+
+### Classify recommendation question
+POST http://127.0.0.1:8030/classify-intent
+Content-Type: application/json
+
+{
+  "question": "Which customers should I call this week?"
+}
+
+### Orchestrate recommendation without DB context
+POST http://127.0.0.1:8030/orchestrate
+Content-Type: application/json
+
+{
+  "question": "Which customers should I call this week?",
+  "role_code": "insurance_agent",
+  "include_context": false,
+  "execute": false
+}
+
+### Orchestrate KPI lookup with pgvector context
+POST http://127.0.0.1:8030/orchestrate
+Content-Type: application/json
+
+{
+  "question": "What is our current lapse rate?",
+  "role_code": "executive_leadership",
+  "include_context": true,
+  "execute": false
+}
+
+### Orchestrate explanation with pgvector context
+POST http://127.0.0.1:8030/orchestrate
+Content-Type: application/json
+
+{
+  "question": "Why is this customer at high lapse risk?",
+  "role_code": "insurance_agent",
+  "entity_type": "customer",
+  "include_context": true,
+  "execute": false
+}
+

@@ -1,0 +1,7 @@
+{
+  "file": "semantic_layer\\semantic_documents.csv",
+  "records": 60,
+  "purpose": "Semantic retrieval corpus for insurance analytics text-to-SQL.",
+  "embedding_note": "embedding is blank; populate with your embedding model after load.",
+  "load_after": "Apply 002_semantic_layer_enrichment.sql and 004_product_riders_and_nbp_views.sql first."
+}

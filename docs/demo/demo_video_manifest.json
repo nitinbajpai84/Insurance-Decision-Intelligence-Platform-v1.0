@@ -1,0 +1,29 @@
+{
+  "created_at": "2026-06-03T07:46:04.025Z",
+  "frontend_url": "http://127.0.0.1:3000",
+  "duration_target_seconds": 180,
+  "video_path": "C:\\Users\\Nitin\\Documents\\Codex\\2026-05-29\\act-as-an-enterprise-insurance-data\\docs\\demo\\videos\\insurance-intelligence-3-minute-demo-2026-06-03T07-46-04-013Z.webm",
+  "screenshots": [
+    "C:\\Users\\Nitin\\Documents\\Codex\\2026-05-29\\act-as-an-enterprise-insurance-data\\docs\\demo\\screenshots\\01-home-executive-command-center.png",
+    "C:\\Users\\Nitin\\Documents\\Codex\\2026-05-29\\act-as-an-enterprise-insurance-data\\docs\\demo\\screenshots\\02-campaign-effectiveness.png",
+    "C:\\Users\\Nitin\\Documents\\Codex\\2026-05-29\\act-as-an-enterprise-insurance-data\\docs\\demo\\screenshots\\03-agent-performance-tracking.png",
+    "C:\\Users\\Nitin\\Documents\\Codex\\2026-05-29\\act-as-an-enterprise-insurance-data\\docs\\demo\\screenshots\\04-policy-lapse-risk.png",
+    "C:\\Users\\Nitin\\Documents\\Codex\\2026-05-29\\act-as-an-enterprise-insurance-data\\docs\\demo\\screenshots\\05-know-your-customer.png",
+    "C:\\Users\\Nitin\\Documents\\Codex\\2026-05-29\\act-as-an-enterprise-insurance-data\\docs\\demo\\screenshots\\06-know-your-agent.png",
+    "C:\\Users\\Nitin\\Documents\\Codex\\2026-05-29\\act-as-an-enterprise-insurance-data\\docs\\demo\\screenshots\\07-ai-intelligence-validated-answer.png",
+    "C:\\Users\\Nitin\\Documents\\Codex\\2026-05-29\\act-as-an-enterprise-insurance-data\\docs\\demo\\screenshots\\08-insight-evidence-hub-top.png",
+    "C:\\Users\\Nitin\\Documents\\Codex\\2026-05-29\\act-as-an-enterprise-insurance-data\\docs\\demo\\screenshots\\09-insight-evidence-hub-architecture.png",
+    "C:\\Users\\Nitin\\Documents\\Codex\\2026-05-29\\act-as-an-enterprise-insurance-data\\docs\\demo\\screenshots\\10-closing-home.png"
+  ],
+  "storyline": [
+    "Home",
+    "Campaign Effectiveness",
+    "Agent Performance Tracking",
+    "Policy Lapse Risk",
+    "Know Your Customer",
+    "Know Your Agent",
+    "AI Intelligence",
+    "Insight Evidence Hub",
+    "Closing Home"
+  ]
+}

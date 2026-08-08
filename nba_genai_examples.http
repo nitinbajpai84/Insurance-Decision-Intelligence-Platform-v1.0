@@ -1,0 +1,43 @@
+### Health
+GET http://127.0.0.1:8010/health
+
+### Decide from payload, no database context retrieval
+POST http://127.0.0.1:8010/decide?retrieve_context=false&use_llm=false
+Content-Type: application/json
+
+{
+  "customer_id": "11111111-1111-1111-1111-111111111111",
+  "agent_id": "22222222-2222-2222-2222-222222222222",
+  "propensity_to_buy_score": 0.82,
+  "lapse_risk_score": 0.12,
+  "churn_risk_score": 0.18,
+  "next_best_product_score": 0.76,
+  "lead_conversion_score": 0.22,
+  "customer_lifetime_value": 15000,
+  "campaign_response_score": 0.35,
+  "agent_performance_score": 0.72,
+  "customer_contact_preference": "agent",
+  "marketing_opt_out": false,
+  "active_policy_count": 2,
+  "has_health_policy": false,
+  "open_opportunity_count": 0,
+  "unresolved_complaint_count": 0,
+  "recent_service_issue_count": 0,
+  "payment_delay_count": 0,
+  "agent_capacity_status": "AVAILABLE",
+  "recommended_product_id": "33333333-3333-3333-3333-333333333333",
+  "model_scores_used": [
+    {
+      "model_name": "propensity_to_buy",
+      "score": 0.82,
+      "score_band": "HIGH"
+    }
+  ]
+}
+
+### Customer-level NBA from Supabase with pgvector context and audit
+GET http://127.0.0.1:8010/customers/{{customer_id}}/next-best-action?persist=false&retrieve_context=true&use_llm=false&audit=true
+
+### Batch NBA, persist results, no per-row pgvector context for speed
+POST http://127.0.0.1:8010/batch/next-best-actions?limit=100&persist=true&retrieve_context=false&use_llm=false&audit=true
+

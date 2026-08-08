@@ -1,0 +1,14 @@
+flowchart LR
+  A["Synthetic generator"] --> B["CSV files"]
+  B --> C["Supabase core tables"]
+  C --> D["Feature views"]
+  D --> E["Physical feature tables"]
+  E --> F["Model scoring"]
+  F --> G["model_scores / model_predictions"]
+  G --> H["next_best_actions"]
+  C --> I["Semantic documents"]
+  I --> J["Embeddings"]
+  J --> K["Context retrieval"]
+  H --> L["Dashboards and AI Intelligence"]
+  K --> L
+

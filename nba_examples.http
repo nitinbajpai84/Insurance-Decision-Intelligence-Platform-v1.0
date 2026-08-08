@@ -1,0 +1,37 @@
+### Health check
+GET http://localhost:8010/health
+
+### Decision from payload: complaint suppresses sales
+POST http://localhost:8010/decide
+Content-Type: application/json
+
+{
+  "customer_id": "11111111-1111-1111-1111-111111111111",
+  "agent_id": "22222222-2222-2222-2222-222222222222",
+  "propensity_to_buy_score": 0.91,
+  "campaign_response_score": 0.85,
+  "customer_lifetime_value": 18000,
+  "unresolved_complaint_count": 1,
+  "has_health_policy": false,
+  "marketing_opt_out": false
+}
+
+### Decision from payload: health cross-sell
+POST http://localhost:8010/decide
+Content-Type: application/json
+
+{
+  "customer_id": "33333333-3333-3333-3333-333333333333",
+  "agent_id": "44444444-4444-4444-4444-444444444444",
+  "propensity_to_buy_score": 0.82,
+  "customer_lifetime_value": 12000,
+  "has_health_policy": false,
+  "recommended_product_id": "55555555-5555-5555-5555-555555555555",
+  "customer_contact_preference": "phone"
+}
+
+### Decision for customer from database
+GET http://localhost:8010/customers/33333333-3333-3333-3333-333333333333/next-best-action?persist=false
+
+### Batch decisions from database
+POST http://localhost:8010/batch/next-best-actions?limit=100&persist=false

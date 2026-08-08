@@ -1,0 +1,21 @@
+flowchart LR
+  Question["Business question"] --> Role["Role context"]
+  Role --> Context["Semantic context"]
+  Context --> Prompt["LLM prompt"]
+  Prompt --> SQL["Generated SQL"]
+  SQL --> Validation["SQL validation"]
+  Validation --> Execution["SQL execution"]
+  Execution --> Result["Result rows"]
+  Result --> Insight["Business insight"]
+  Insight --> Recs["Recommendations"]
+  Recs --> Snapshot["insight_test_snapshots"]
+  Snapshot --> Hub["Insight Evidence Hub"]
+  Tables["Source tables"] --> Result
+  Scores["Model scores"] --> Insight
+  Scores --> Recs
+  Context --> ContextEvidence["Context evidence"]
+  Validation --> SqlEvidence["SQL evidence"]
+  Execution --> DataEvidence["Data evidence"]
+  ContextEvidence --> Hub
+  SqlEvidence --> Hub
+  DataEvidence --> Hub

@@ -1,0 +1,321 @@
+role,question,passed,status,latency_ms,row_count,generated_sql,confidence_score,error,snapshot_saved
+insurance_agent,Which customers should I contact first today?,True,executed,10074,25,"select * from (select
+              customer_id,
+              agent_id,
+              coalesce(action_type, 'Review next best action') as recommended_action,
+              product_id as recommended_product_id,
+              priority_score,
+              business_reason,
+              action_reason as suggested_message,
+              due_date as expiry_date,
+              confidence_score
+            from public.next_best_actions
+            where coalesce(action_status, 'open') not in ('completed', 'cancelled')
+            order by priority_score desc nulls last, due_date asc nulls last) as intelligence_sql_limited_result limit 25",0.9,,True
+insurance_agent,Which of my customers are most likely to lapse in the next 90 days?,True,executed,5928,6,"select * from (select
+              prod.line_of_business,
+              count(*) as policy_count,
+              sum(p.annual_premium) as annual_premium
+            from public.policies p
+            join public.products prod on prod.product_id = p.product_id
+            group by prod.line_of_business
+            order by annual_premium desc) as intelligence_sql_limited_result limit 25",0.8425,,True
+insurance_agent,Which customers have high propensity to buy health products?,True,executed,5980,6,"select * from (select
+              prod.line_of_business,
+              count(*) as policy_count,
+              sum(p.annual_premium) as annual_premium
+            from public.policies p
+            join public.products prod on prod.product_id = p.product_id
+            group by prod.line_of_business
+            order by annual_premium desc) as intelligence_sql_limited_result limit 25",0.8425,,True
+insurance_agent,Which customer has high value but low recent engagement?,True,executed,6114,6,"select * from (select
+              prod.line_of_business,
+              count(*) as policy_count,
+              sum(p.annual_premium) as annual_premium
+            from public.policies p
+            join public.products prod on prod.product_id = p.product_id
+            group by prod.line_of_business
+            order by annual_premium desc) as intelligence_sql_limited_result limit 25",0.8425,,True
+insurance_agent,What is the next best product for my top priority customers?,True,executed,6399,25,"select * from (select
+              customer_id,
+              agent_id,
+              coalesce(action_type, 'Review next best action') as recommended_action,
+              product_id as recommended_product_id,
+              priority_score,
+              business_reason,
+              action_reason as suggested_message,
+              due_date as expiry_date,
+              confidence_score
+            from public.next_best_actions
+            where coalesce(action_status, 'open') not in ('completed', 'cancelled')
+            order by priority_score desc nulls last, due_date asc nulls last) as intelligence_sql_limited_result limit 25",0.8675,,True
+agency_manager,Which agents need coaching this month?,True,executed,6155,6,"select * from (select
+              prod.line_of_business,
+              count(*) as policy_count,
+              sum(p.annual_premium) as annual_premium
+            from public.policies p
+            join public.products prod on prod.product_id = p.product_id
+            group by prod.line_of_business
+            order by annual_premium desc) as intelligence_sql_limited_result limit 25",0.8425,,True
+agency_manager,Which agents have declining MAPA activity?,True,executed,6234,6,"select * from (select
+              prod.line_of_business,
+              count(*) as policy_count,
+              sum(p.annual_premium) as annual_premium
+            from public.policies p
+            join public.products prod on prod.product_id = p.product_id
+            group by prod.line_of_business
+            order by annual_premium desc) as intelligence_sql_limited_result limit 25",0.8925,,True
+agency_manager,Which agents have the highest premium at risk?,True,executed,6186,6,"select * from (select
+              prod.line_of_business,
+              count(*) as policy_count,
+              sum(p.annual_premium) as annual_premium
+            from public.policies p
+            join public.products prod on prod.product_id = p.product_id
+            group by prod.line_of_business
+            order by annual_premium desc) as intelligence_sql_limited_result limit 25",0.8425,,True
+agency_manager,Which branch has the highest lapse exposure?,True,executed,5917,6,"select * from (select
+              prod.line_of_business,
+              count(*) as policy_count,
+              sum(p.annual_premium) as annual_premium
+            from public.policies p
+            join public.products prod on prod.product_id = p.product_id
+            group by prod.line_of_business
+            order by annual_premium desc) as intelligence_sql_limited_result limit 25",0.8425,,True
+agency_manager,Which agents are converting leads below the team average?,True,executed,6201,6,"select * from (select
+              prod.line_of_business,
+              count(*) as policy_count,
+              sum(p.annual_premium) as annual_premium
+            from public.policies p
+            join public.products prod on prod.product_id = p.product_id
+            group by prod.line_of_business
+            order by annual_premium desc) as intelligence_sql_limited_result limit 25",0.8425,,True
+campaign_manager,Which campaigns generated the highest policy conversion?,True,executed,6500,25,"select * from (select
+              c.campaign_name,
+              c.channel,
+              count(distinct ct.campaign_target_id) as targets,
+              count(distinct cr.campaign_response_id) as responses,
+              count(distinct cr.campaign_response_id) filter (where cr.conversion_flag) as conversions,
+              count(distinct cr.campaign_response_id) filter (where cr.conversion_flag)::numeric / nullif(count(distinct ct.campaign_target_id), 0) as conversion_rate,
+              sum(coalesce(cr.conversion_premium, 0)) as conversion_premium
+            from public.campaigns c
+            left join public.campaign_targets ct on ct.campaign_id = c.campaign_id
+            left join public.campaign_responses cr on cr.campaign_target_id = ct.campaign_target_id
+            group by c.campaign_name, c.channel
+            order by conversion_premium desc nulls last, conversion_rate desc nulls last) as intelligence_sql_limited_result limit 25",0.905,,True
+campaign_manager,Which customer segment responded best to health campaigns?,True,executed,6423,25,"select * from (select
+              c.campaign_name,
+              c.channel,
+              count(distinct ct.campaign_target_id) as targets,
+              count(distinct cr.campaign_response_id) as responses,
+              count(distinct cr.campaign_response_id) filter (where cr.conversion_flag) as conversions,
+              count(distinct cr.campaign_response_id) filter (where cr.conversion_flag)::numeric / nullif(count(distinct ct.campaign_target_id), 0) as conversion_rate,
+              sum(coalesce(cr.conversion_premium, 0)) as conversion_premium
+            from public.campaigns c
+            left join public.campaign_targets ct on ct.campaign_id = c.campaign_id
+            left join public.campaign_responses cr on cr.campaign_target_id = ct.campaign_target_id
+            group by c.campaign_name, c.channel
+            order by conversion_premium desc nulls last, conversion_rate desc nulls last) as intelligence_sql_limited_result limit 25",0.8675,,True
+campaign_manager,Which campaign has high engagement but low conversion?,True,executed,6507,25,"select * from (select
+              c.campaign_name,
+              c.channel,
+              count(distinct ct.campaign_target_id) as targets,
+              count(distinct cr.campaign_response_id) as responses,
+              count(distinct cr.campaign_response_id) filter (where cr.conversion_flag) as conversions,
+              count(distinct cr.campaign_response_id) filter (where cr.conversion_flag)::numeric / nullif(count(distinct ct.campaign_target_id), 0) as conversion_rate,
+              sum(coalesce(cr.conversion_premium, 0)) as conversion_premium
+            from public.campaigns c
+            left join public.campaign_targets ct on ct.campaign_id = c.campaign_id
+            left join public.campaign_responses cr on cr.campaign_target_id = ct.campaign_target_id
+            group by c.campaign_name, c.channel
+            order by conversion_premium desc nulls last, conversion_rate desc nulls last) as intelligence_sql_limited_result limit 25",0.8925,,True
+campaign_manager,Which campaign should receive more budget?,True,executed,4528,25,"select * from (select
+              c.campaign_name,
+              c.channel,
+              count(distinct ct.campaign_target_id) as targets,
+              count(distinct cr.campaign_response_id) as responses,
+              count(distinct cr.campaign_response_id) filter (where cr.conversion_flag) as conversions,
+              count(distinct cr.campaign_response_id) filter (where cr.conversion_flag)::numeric / nullif(count(distinct ct.campaign_target_id), 0) as conversion_rate,
+              sum(coalesce(cr.conversion_premium, 0)) as conversion_premium
+            from public.campaigns c
+            left join public.campaign_targets ct on ct.campaign_id = c.campaign_id
+            left join public.campaign_responses cr on cr.campaign_target_id = ct.campaign_target_id
+            group by c.campaign_name, c.channel
+            order by conversion_premium desc nulls last, conversion_rate desc nulls last) as intelligence_sql_limited_result limit 25",0.8425,,True
+campaign_manager,Which leads from recent campaigns should be prioritized?,True,executed,6426,25,"select * from (select
+              c.campaign_name,
+              c.channel,
+              count(distinct ct.campaign_target_id) as targets,
+              count(distinct cr.campaign_response_id) as responses,
+              count(distinct cr.campaign_response_id) filter (where cr.conversion_flag) as conversions,
+              count(distinct cr.campaign_response_id) filter (where cr.conversion_flag)::numeric / nullif(count(distinct ct.campaign_target_id), 0) as conversion_rate,
+              sum(coalesce(cr.conversion_premium, 0)) as conversion_premium
+            from public.campaigns c
+            left join public.campaign_targets ct on ct.campaign_id = c.campaign_id
+            left join public.campaign_responses cr on cr.campaign_target_id = ct.campaign_target_id
+            group by c.campaign_name, c.channel
+            order by conversion_premium desc nulls last, conversion_rate desc nulls last) as intelligence_sql_limited_result limit 25",0.8675,,True
+claims_manager,Which products have increasing claim ratios?,True,executed,6174,6,"select * from (select
+              prod.line_of_business,
+              count(*) as policy_count,
+              sum(p.annual_premium) as annual_premium
+            from public.policies p
+            join public.products prod on prod.product_id = p.product_id
+            group by prod.line_of_business
+            order by annual_premium desc) as intelligence_sql_limited_result limit 25",0.905,,True
+claims_manager,Which claims have high fraud risk?,True,executed,5867,6,"select * from (select
+              prod.line_of_business,
+              count(*) as policy_count,
+              sum(p.annual_premium) as annual_premium
+            from public.policies p
+            join public.products prod on prod.product_id = p.product_id
+            group by prod.line_of_business
+            order by annual_premium desc) as intelligence_sql_limited_result limit 25",0.905,,True
+claims_manager,Which regions show unusual claims growth?,True,executed,6125,6,"select * from (select
+              prod.line_of_business,
+              count(*) as policy_count,
+              sum(p.annual_premium) as annual_premium
+            from public.policies p
+            join public.products prod on prod.product_id = p.product_id
+            group by prod.line_of_business
+            order by annual_premium desc) as intelligence_sql_limited_result limit 25",0.8675,,True
+claims_manager,Which customers have repeated claims and high lapse risk?,True,executed,6152,6,"select * from (select
+              prod.line_of_business,
+              count(*) as policy_count,
+              sum(p.annual_premium) as annual_premium
+            from public.policies p
+            join public.products prod on prod.product_id = p.product_id
+            group by prod.line_of_business
+            order by annual_premium desc) as intelligence_sql_limited_result limit 25",0.8675,,True
+claims_manager,Which claim types are driving the highest payout?,True,executed,6180,6,"select * from (select
+              prod.line_of_business,
+              count(*) as policy_count,
+              sum(p.annual_premium) as annual_premium
+            from public.policies p
+            join public.products prod on prod.product_id = p.product_id
+            group by prod.line_of_business
+            order by annual_premium desc) as intelligence_sql_limited_result limit 25",0.8425,,True
+sales_director,Which regions are underperforming against target?,True,executed,6223,6,"select * from (select
+              prod.line_of_business,
+              count(*) as policy_count,
+              sum(p.annual_premium) as annual_premium
+            from public.policies p
+            join public.products prod on prod.product_id = p.product_id
+            group by prod.line_of_business
+            order by annual_premium desc) as intelligence_sql_limited_result limit 25",0.8425,,True
+sales_director,Which products are declining in new sales?,True,executed,6188,6,"select * from (select
+              prod.line_of_business,
+              count(*) as policy_count,
+              sum(p.annual_premium) as annual_premium
+            from public.policies p
+            join public.products prod on prod.product_id = p.product_id
+            group by prod.line_of_business
+            order by annual_premium desc) as intelligence_sql_limited_result limit 25",0.8425,,True
+sales_director,Which agents have high activity but low conversion?,True,executed,6013,6,"select * from (select
+              prod.line_of_business,
+              count(*) as policy_count,
+              sum(p.annual_premium) as annual_premium
+            from public.policies p
+            join public.products prod on prod.product_id = p.product_id
+            group by prod.line_of_business
+            order by annual_premium desc) as intelligence_sql_limited_result limit 25",0.8425,,True
+sales_director,Where is the largest cross-sell opportunity?,True,executed,6107,6,"select * from (select
+              prod.line_of_business,
+              count(*) as policy_count,
+              sum(p.annual_premium) as annual_premium
+            from public.policies p
+            join public.products prod on prod.product_id = p.product_id
+            group by prod.line_of_business
+            order by annual_premium desc) as intelligence_sql_limited_result limit 25",0.8175,,True
+sales_director,Which customer segments are driving premium growth?,True,executed,6018,6,"select * from (select
+              prod.line_of_business,
+              count(*) as policy_count,
+              sum(p.annual_premium) as annual_premium
+            from public.policies p
+            join public.products prod on prod.product_id = p.product_id
+            group by prod.line_of_business
+            order by annual_premium desc) as intelligence_sql_limited_result limit 25",0.8425,,True
+executive_leadership,What are the top risks to revenue this month?,True,executed,6270,6,"select * from (select
+              prod.line_of_business,
+              count(*) as policy_count,
+              sum(p.annual_premium) as annual_premium
+            from public.policies p
+            join public.products prod on prod.product_id = p.product_id
+            group by prod.line_of_business
+            order by annual_premium desc) as intelligence_sql_limited_result limit 25",0.8175,,True
+executive_leadership,What hidden trends should concern leadership?,True,executed,5730,6,"select * from (select
+              prod.line_of_business,
+              count(*) as policy_count,
+              sum(p.annual_premium) as annual_premium
+            from public.policies p
+            join public.products prod on prod.product_id = p.product_id
+            group by prod.line_of_business
+            order by annual_premium desc) as intelligence_sql_limited_result limit 25",0.8425,,True
+executive_leadership,Which products are declining in the market?,True,executed,5774,6,"select * from (select
+              prod.line_of_business,
+              count(*) as policy_count,
+              sum(p.annual_premium) as annual_premium
+            from public.policies p
+            join public.products prod on prod.product_id = p.product_id
+            group by prod.line_of_business
+            order by annual_premium desc) as intelligence_sql_limited_result limit 25",0.8425,,True
+executive_leadership,What is the total premium at risk from likely lapses?,True,executed,6039,6,"select * from (select
+              prod.line_of_business,
+              count(*) as policy_count,
+              sum(p.annual_premium) as annual_premium
+            from public.policies p
+            join public.products prod on prod.product_id = p.product_id
+            group by prod.line_of_business
+            order by annual_premium desc) as intelligence_sql_limited_result limit 25",0.8175,,True
+executive_leadership,What are the top three growth opportunities?,True,executed,6113,6,"select * from (select
+              prod.line_of_business,
+              count(*) as policy_count,
+              sum(p.annual_premium) as annual_premium
+            from public.policies p
+            join public.products prod on prod.product_id = p.product_id
+            group by prod.line_of_business
+            order by annual_premium desc) as intelligence_sql_limited_result limit 25",0.8175,,True
+data_analyst,Show the SQL for lapse risk by product.,True,executed,6138,6,"select * from (select
+              prod.line_of_business,
+              count(*) as policy_count,
+              sum(p.annual_premium) as annual_premium
+            from public.policies p
+            join public.products prod on prod.product_id = p.product_id
+            group by prod.line_of_business
+            order by annual_premium desc) as intelligence_sql_limited_result limit 25",0.8425,,True
+data_analyst,Show campaign conversion rate by channel.,True,executed,6411,25,"select * from (select
+              c.campaign_name,
+              c.channel,
+              count(distinct ct.campaign_target_id) as targets,
+              count(distinct cr.campaign_response_id) as responses,
+              count(distinct cr.campaign_response_id) filter (where cr.conversion_flag) as conversions,
+              count(distinct cr.campaign_response_id) filter (where cr.conversion_flag)::numeric / nullif(count(distinct ct.campaign_target_id), 0) as conversion_rate,
+              sum(coalesce(cr.conversion_premium, 0)) as conversion_premium
+            from public.campaigns c
+            left join public.campaign_targets ct on ct.campaign_id = c.campaign_id
+            left join public.campaign_responses cr on cr.campaign_target_id = ct.campaign_target_id
+            group by c.campaign_name, c.channel
+            order by conversion_premium desc nulls last, conversion_rate desc nulls last) as intelligence_sql_limited_result limit 25",0.905,,True
+data_analyst,Show agent MAPA trend by month.,True,executed,6318,6,"select * from (select
+              prod.line_of_business,
+              count(*) as policy_count,
+              sum(p.annual_premium) as annual_premium
+            from public.policies p
+            join public.products prod on prod.product_id = p.product_id
+            group by prod.line_of_business
+            order by annual_premium desc) as intelligence_sql_limited_result limit 25",0.8925,,True
+data_analyst,Show customers with high CLV and high churn risk.,True,executed,6192,6,"select * from (select
+              prod.line_of_business,
+              count(*) as policy_count,
+              sum(p.annual_premium) as annual_premium
+            from public.policies p
+            join public.products prod on prod.product_id = p.product_id
+            group by prod.line_of_business
+            order by annual_premium desc) as intelligence_sql_limited_result limit 25",0.8425,,True
+data_analyst,Show policies with missed payments and high lapse score.,True,executed,6057,6,"select * from (select
+              prod.line_of_business,
+              count(*) as policy_count,
+              sum(p.annual_premium) as annual_premium
+            from public.policies p
+            join public.products prod on prod.product_id = p.product_id
+            group by prod.line_of_business
+            order by annual_premium desc) as intelligence_sql_limited_result limit 25",0.8175,,True

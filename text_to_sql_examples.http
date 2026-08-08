@@ -1,0 +1,53 @@
+### Health check
+GET http://127.0.0.1:8000/health
+
+### Policy premium by line of business
+POST http://127.0.0.1:8000/query
+Content-Type: application/json
+
+{
+  "question": "What is annual premium and policy count by line of business?",
+  "row_limit": 100,
+  "include_debug": true
+}
+
+### Claims loss ratio
+POST http://127.0.0.1:8000/query
+Content-Type: application/json
+
+{
+  "question": "Show loss ratio by line of business.",
+  "business_domain": "claims",
+  "row_limit": 100,
+  "include_debug": true
+}
+
+### Campaign performance
+POST http://127.0.0.1:8000/query
+Content-Type: application/json
+
+{
+  "question": "Which campaigns generated the most conversion premium?",
+  "business_domain": "campaign",
+  "row_limit": 50
+}
+
+### Agent performance
+POST http://127.0.0.1:8000/query
+Content-Type: application/json
+
+{
+  "question": "Which agents had the highest quote-to-bind rate last quarter?",
+  "business_domain": "agent",
+  "row_limit": 50
+}
+
+### Safety test: should be blocked by SQL validator if generated
+POST http://127.0.0.1:8000/query
+Content-Type: application/json
+
+{
+  "question": "Delete old failed payments.",
+  "row_limit": 50,
+  "include_debug": true
+}

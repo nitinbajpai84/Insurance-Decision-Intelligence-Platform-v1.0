@@ -1,0 +1,78 @@
+### Health
+GET http://127.0.0.1:8060/health
+
+### POST /copilot/ask
+POST http://127.0.0.1:8060/copilot/ask
+Content-Type: application/json
+
+{
+  "question": "Which campaigns performed best?",
+  "role_code": "campaign_manager",
+  "include_context": true,
+  "include_debug": true,
+  "row_limit": 100,
+  "execute_sql": true
+}
+
+### POST /intent/classify
+POST http://127.0.0.1:8060/intent/classify
+Content-Type: application/json
+
+{
+  "question": "Which customers should I call this week?"
+}
+
+### POST /context/search
+POST http://127.0.0.1:8060/context/search
+Content-Type: application/json
+
+{
+  "question": "policy lapse next best action retention",
+  "match_count": 8,
+  "threshold": 0,
+  "business_domain": null
+}
+
+### POST /sql/validate
+POST http://127.0.0.1:8060/sql/validate
+Content-Type: application/json
+
+{
+  "sql": "select campaign_name, channel from public.campaigns",
+  "row_limit": 50
+}
+
+### POST /sql/execute
+POST http://127.0.0.1:8060/sql/execute
+Content-Type: application/json
+
+{
+  "sql": "select campaign_name, channel, status from public.campaigns order by start_date desc",
+  "row_limit": 10,
+  "timeout_ms": 5000
+}
+
+### GET /customers/{id}/360
+GET http://127.0.0.1:8060/customers/{{customer_id}}/360
+
+### GET /agents/{id}/360
+GET http://127.0.0.1:8060/agents/{{agent_id}}/360
+
+### GET /campaigns/{id}/360
+GET http://127.0.0.1:8060/campaigns/{{campaign_id}}/360
+
+### GET /claims/{id}/360
+GET http://127.0.0.1:8060/claims/{{claim_id}}/360
+
+### GET /roles
+GET http://127.0.0.1:8060/roles
+
+### GET /roles/{role}/dashboard
+GET http://127.0.0.1:8060/roles/insurance_agent/dashboard
+
+### GET /recommendations/{entity_id}
+GET http://127.0.0.1:8060/recommendations/{{customer_id}}
+
+### GET /lineage/{insight_id}
+GET http://127.0.0.1:8060/lineage/{{insight_lineage_id}}
+

@@ -1,0 +1,12 @@
+flowchart TD
+  Docs["Semantic documents, glossary, KPI/table/column/join/model catalog"] --> Embed["Embedding pipeline"]
+  Embed --> Vector["semantic_documents.embedding vector"]
+  Q["User question"] --> QE["Question embedding"]
+  QE --> Sim["Vector similarity search"]
+  Q --> Keyword["Keyword/table/model/domain match"]
+  Vector --> Sim
+  Sim --> Hybrid["Hybrid retriever"]
+  Keyword --> Hybrid
+  Hybrid --> Bundle["Business, schema, metric, model, SQL example context"]
+  Bundle --> Prompt["LLM prompt"]
+

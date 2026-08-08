@@ -1,0 +1,20 @@
+sequenceDiagram
+  participant User
+  participant Frontend
+  participant Gateway
+  participant Role as Role Context
+  participant Context as pgvector Context
+  participant Gemini
+  participant Supabase
+  participant Evidence
+  User->>Frontend: Submit business question
+  Frontend->>Gateway: POST /intelligence/ask
+  Gateway->>Role: Load role priorities and KPIs
+  Gateway->>Context: Retrieve relevant semantic context
+  Context-->>Gateway: Context bundle
+  Gateway->>Gemini: Generate SQL, insight, and recommendations
+  Gemini-->>Gateway: SQL and narrative
+  Gateway->>Supabase: Execute validated read-only SQL
+  Supabase-->>Gateway: Result rows
+  Gateway->>Evidence: Save insight snapshot
+  Gateway-->>Frontend: Answer, SQL, rows, context, recommendations, limitations

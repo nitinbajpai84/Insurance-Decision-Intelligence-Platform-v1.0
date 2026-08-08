@@ -1,0 +1,18 @@
+flowchart TB
+  Synth["Synthetic data generator"] --> Load["CSV load into Supabase"]
+  Load --> Core["Core insurance operational tables"]
+  Core --> MLViews["Leakage-safe ML feature views"]
+  MLViews --> MLTables["Physical ML feature tables"]
+  MLTables --> Scoring["Batch scoring pipeline"]
+  Scoring --> Scores["model_scores and model_predictions"]
+  Scores --> NBA["next_best_actions"]
+  Core --> Sem["semantic_documents and business glossary"]
+  Sem --> Emb["Embedding pipeline"]
+  Emb --> Pgvector["pgvector embeddings"]
+  Core --> API["FastAPI services"]
+  Scores --> API
+  NBA --> API
+  Pgvector --> API
+  API --> UI["Insurance intelligence frontend"]
+  API --> Audit["llm_request_log and insight_test_snapshots"]
+

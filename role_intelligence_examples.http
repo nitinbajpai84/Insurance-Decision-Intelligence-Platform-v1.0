@@ -1,0 +1,18 @@
+### List active roles
+GET http://127.0.0.1:8020/api/roles
+
+### Get Insurance Agent profile
+GET http://127.0.0.1:8020/api/roles/insurance_agent/profile
+
+### Get Agency Manager profile
+GET http://127.0.0.1:8020/api/roles/agency_manager/profile
+
+### Role-aware copilot context request
+POST http://127.0.0.1:8020/api/copilot/context
+Content-Type: application/json
+
+{
+  "role_code": "campaign_manager",
+  "question": "Which campaigns generated the highest policy conversion?"
+}
+

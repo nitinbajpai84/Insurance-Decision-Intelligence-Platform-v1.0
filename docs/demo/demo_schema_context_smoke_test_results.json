@@ -1,0 +1,355 @@
+{
+  "generated_at": "2026-06-04T01:17:54.672211+00:00",
+  "summary": {
+    "table_registry_exists": true,
+    "kpi_registry_exists": true,
+    "model_registry_exists": true,
+    "context_registry_exists": true,
+    "allowed_table_count": 65,
+    "trun_table_count": 0,
+    "checks": [
+      {
+        "name": "table_registry_exists",
+        "status": "PASS",
+        "details": "cld_table_registry is available"
+      },
+      {
+        "name": "kpi_registry_exists",
+        "status": "PASS",
+        "details": "cld_kpi_registry is available"
+      },
+      {
+        "name": "model_registry_exists",
+        "status": "PASS",
+        "details": "cld_model_registry is available"
+      },
+      {
+        "name": "context_registry_exists",
+        "status": "PASS",
+        "details": "cld_context_registry is available"
+      },
+      {
+        "name": "prompt_guardrails_present",
+        "status": "PASS",
+        "details": "SQL_SYSTEM_PROMPT contains allowlist guardrails"
+      },
+      {
+        "name": "fake_table_validation",
+        "status": "PASS",
+        "details": "Missing table(s) in actual Supabase schema: public.this_table_does_not_exist"
+      },
+      {
+        "name": "no_trun_tables_in_context",
+        "status": "PASS",
+        "details": "No SQL-usable context rows include TRUN tables"
+      },
+      {
+        "name": "kpis_use_act_tables",
+        "status": "PASS",
+        "details": "All KPI rows reference ACT tables"
+      },
+      {
+        "name": "models_use_act_tables",
+        "status": "PASS",
+        "details": "All model rows reference ACT tables"
+      },
+      {
+        "name": "allowlist_loaded",
+        "status": "PASS",
+        "details": "65 AI SQL allowlisted tables loaded"
+      }
+    ],
+    "demo_question_results": [
+      {
+        "role": "Agency Manager",
+        "question": "Which agents have the highest premium at risk?",
+        "answer_status": "NOT_SUPPORTED",
+        "sql": "select * from (with latest_lapse_scores as (\n                  select distinct on (entity_id)\n                    entity_id as policy_id,\n                    coalesce(probability, score_value, 0) as lapse_score,\n                    score_band\n                  from public.model_scores\n                  where model_name in ('policy_lapse', 'policy_lapse_prediction', 'lapse_risk')\n                    and entity_type in ('policy', 'policies')\n                  order by entity_id, score_ts desc nulls last, created_at desc\n                )\n                select\n                  a.agent_id,\n                  a.agent_number,\n                  coalesce(pt.display_name, a.agent_number) as agent_name,\n                  a.territory_code as branch_or_territory,\n                  count(p.policy_id) as policies_at_risk,\n                  sum(p.annual_premium) as premium_at_risk,\n                  avg(coalesce(ls.lapse_score, 0)) as avg_lapse_score,\n                  count(*) filter (where coalesce(ls.score_band, '') in ('HIGH', 'VERY_HIGH')) as high_risk_policy_count\n                from public.policies p\n                join public.agents a on a.agent_id = p.agent_id\n                left join public.parties pt on pt.party_id = a.party_id\n                left join latest_lapse_scores ls on ls.policy_id = p.policy_id\n                where p.policy_status in ('active', 'in_force', 'issued')\n                group by a.agent_id, a.agent_number, pt.display_name, a.territory_code\n                order by premium_at_risk desc nulls last, high_risk_policy_count desc, avg_lapse_score desc) as intelligence_sql_limited_result limit 25",
+        "sql_validation_status": "VALIDATED",
+        "missing_tables": [],
+        "missing_columns": [],
+        "confidence_score": 0.6925,
+        "provider": {
+          "provider_used": "gemini",
+          "model_used": "validated_sql_template",
+          "fallback_used": false,
+          "llm_latency_ms": 0
+        },
+        "demo_safe": true,
+        "passed": true
+      },
+      {
+        "role": "Campaign Manager",
+        "question": "Which campaigns generated the highest policy conversion?",
+        "answer_status": "NOT_SUPPORTED",
+        "sql": "select * from (select\n                  c.campaign_name,\n                  c.channel,\n                  count(distinct ct.campaign_target_id) as targets,\n                  count(distinct cr.campaign_response_id) as responses,\n                  count(distinct cr.campaign_response_id) filter (where cr.conversion_flag) as conversions,\n                  count(distinct cr.campaign_response_id) filter (where cr.conversion_flag)::numeric / nullif(count(distinct ct.campaign_target_id), 0) as conversion_rate,\n                  sum(coalesce(cr.conversion_premium, 0)) as conversion_premium\n                from public.campaigns c\n                left join public.campaign_targets ct on ct.campaign_id = c.campaign_id\n                left join public.campaign_responses cr on cr.campaign_target_id = ct.campaign_target_id\n                group by c.campaign_name, c.channel\n                order by conversion_premium desc nulls last, conversion_rate desc nulls last) as intelligence_sql_limited_result limit 25",
+        "sql_validation_status": "VALIDATED",
+        "missing_tables": [],
+        "missing_columns": [],
+        "confidence_score": 0.755,
+        "provider": {
+          "provider_used": "gemini",
+          "model_used": "validated_sql_template",
+          "fallback_used": false,
+          "llm_latency_ms": 0
+        },
+        "demo_safe": true,
+        "passed": true
+      },
+      {
+        "role": "Insurance Agent",
+        "question": "Which customers are likely to lapse in the next 90 days?",
+        "answer_status": "NOT_SUPPORTED",
+        "sql": "select * from (WITH latest_lapse_scores AS (\n              SELECT DISTINCT ON (entity_id)\n                entity_id AS policy_id,\n                COALESCE(probability, score_value, 0) AS lapse_score,\n                score_band\n              FROM public.model_scores\n              WHERE model_name IN ('policy_lapse', 'policy_lapse_prediction', 'lapse_risk')\n                AND entity_type IN ('policy', 'policies')\n              ORDER BY entity_id, score_ts DESC NULLS LAST, created_at DESC\n            )\n            SELECT\n              p.policy_id,\n              p.policy_number,\n              p.policy_status,\n              p.effective_date,\n              p.annual_premium,\n              c.customer_id,\n              COALESCE(cp.display_name, c.customer_number) AS customer_name,\n              a.agent_id,\n              a.agent_number,\n              COALESCE(ap.display_name, a.agent_number) AS agent_name,\n              COALESCE(ls.lapse_score, 0) AS lapse_score,\n              COALESCE(ls.score_band, 'UNSCORED') AS score_band\n            FROM public.policies p\n            JOIN public.customers c ON c.customer_id = p.customer_id\n            LEFT JOIN public.parties cp ON cp.party_id = c.party_id\n            LEFT JOIN public.agents a ON a.agent_id = p.agent_id\n            LEFT JOIN public.parties ap ON ap.party_id = a.party_id\n            LEFT JOIN latest_lapse_scores ls ON ls.policy_id = p.policy_id\n            WHERE p.policy_status IN ('active', 'in_force', 'issued')\n            ORDER BY\n              COALESCE(ls.lapse_score, 0) DESC\n            LIMIT 25) as intelligence_sql_limited_result limit 25",
+        "sql_validation_status": "VALIDATED",
+        "missing_tables": [],
+        "missing_columns": [],
+        "confidence_score": 0.6925,
+        "provider": {
+          "provider_used": "gemini",
+          "model_used": "validated_sql_template",
+          "fallback_used": false,
+          "llm_latency_ms": 0
+        },
+        "demo_safe": true,
+        "passed": true
+      },
+      {
+        "role": "Sales Director",
+        "question": "Which products are declining in new sales?",
+        "answer_status": "NOT_SUPPORTED",
+        "sql": "select * from (with anchor as (\n              select max(effective_date)::date as max_effective_date\n              from public.policies\n            ),\n            sales as (\n              select\n                prod.product_id,\n                prod.product_name,\n                prod.line_of_business,\n                count(p.policy_id) filter (\n                  where p.effective_date >= a.max_effective_date - interval '180 days'\n                ) as current_period_policies,\n                count(p.policy_id) filter (\n                  where p.effective_date < a.max_effective_date - interval '180 days'\n                    and p.effective_date >= a.max_effective_date - interval '360 days'\n                ) as prior_period_policies,\n                sum(p.annual_premium) filter (\n                  where p.effective_date >= a.max_effective_date - interval '180 days'\n                ) as current_period_premium,\n                sum(p.annual_premium) filter (\n                  where p.effective_date < a.max_effective_date - interval '180 days'\n                    and p.effective_date >= a.max_effective_date - interval '360 days'\n                ) as prior_period_premium\n              from public.products prod\n              cross join anchor a\n              left join public.policies p on p.product_id = prod.product_id\n              group by prod.product_id, prod.product_name, prod.line_of_business\n            )\n            select\n              product_id,\n              product_name,\n              line_of_business,\n              coalesce(current_period_policies, 0) as current_period_policies,\n              coalesce(prior_period_policies, 0) as prior_period_policies,\n              coalesce(current_period_policies, 0) - coalesce(prior_period_policies, 0) as policy_growth_delta,\n              coalesce(current_period_premium, 0) as current_period_premium,\n              coalesce(prior_period_premium, 0) as prior_period_premium,\n              coalesce(current_period_premium, 0) - coalesce(prior_period_premium, 0) as premium_growth_delta\n            from sales\n            where coalesce(current_period_policies, 0) + coalesce(prior_period_policies, 0) > 0\n            order by policy_growth_delta asc, premium_growth_delta asc nulls first, prior_period_policies desc) as intelligence_sql_limited_result limit 25",
+        "sql_validation_status": "VALIDATED",
+        "missing_tables": [],
+        "missing_columns": [],
+        "confidence_score": 0.6925,
+        "provider": {
+          "provider_used": "gemini",
+          "model_used": "validated_sql_template",
+          "fallback_used": false,
+          "llm_latency_ms": 0
+        },
+        "demo_safe": true,
+        "passed": true
+      },
+      {
+        "role": "Insurance Agent",
+        "question": "Which customers should agents contact this week?",
+        "answer_status": "NOT_SUPPORTED",
+        "sql": "select * from (select\n              customer_id,\n              agent_id,\n              coalesce(action_type, 'Review next best action') as recommended_action,\n              product_id as recommended_product_id,\n              priority_score,\n              business_reason,\n              action_reason as suggested_message,\n              due_date as expiry_date,\n              confidence_score\n            from public.next_best_actions\n            where coalesce(action_status, 'open') not in ('completed', 'cancelled')\n            order by priority_score desc nulls last, due_date asc nulls last) as intelligence_sql_limited_result limit 25",
+        "sql_validation_status": "VALIDATED",
+        "missing_tables": [],
+        "missing_columns": [],
+        "confidence_score": 0.75,
+        "provider": {
+          "provider_used": "gemini",
+          "model_used": "validated_sql_template",
+          "fallback_used": false,
+          "llm_latency_ms": 0
+        },
+        "demo_safe": true,
+        "passed": true
+      },
+      {
+        "role": "Executive Leadership",
+        "question": "What are the top risks to revenue this month?",
+        "answer_status": "NOT_SUPPORTED",
+        "sql": "select * from (with latest_lapse_scores as (\n              select distinct on (entity_id)\n                entity_id as policy_id,\n                coalesce(probability, score_value, 0) as lapse_score,\n                score_band\n              from public.model_scores\n              where model_name in ('policy_lapse', 'policy_lapse_prediction', 'lapse_risk')\n                and entity_type in ('policy', 'policies')\n              order by entity_id, score_ts desc nulls last, created_at desc\n            ),\n            policy_risk as (\n              select\n                p.policy_id,\n                p.policy_number,\n                p.policy_status,\n                p.annual_premium,\n                coalesce(ls.lapse_score, 0) as lapse_score,\n                coalesce(ls.score_band, 'UNSCORED') as score_band,\n                case\n                  when p.policy_status = 'lapsed' then 'Lapsed premium already lost'\n                  when coalesce(ls.score_band, '') = 'VERY_HIGH' or coalesce(ls.lapse_score, 0) >= 0.80 then 'Very high lapse risk premium'\n                  when coalesce(ls.score_band, '') = 'HIGH' or coalesce(ls.lapse_score, 0) >= 0.60 then 'High lapse risk premium'\n                  when coalesce(ls.lapse_score, 0) >= 0.40 then 'Medium lapse risk premium'\n                  else 'Active premium watch'\n                end as revenue_risk_area\n              from public.policies p\n              left join latest_lapse_scores ls on ls.policy_id = p.policy_id\n            )\n            select\n              revenue_risk_area,\n              count(policy_id) as policy_count,\n              sum(annual_premium) as premium_exposure,\n              avg(lapse_score) as avg_lapse_score,\n              count(policy_id) filter (where score_band in ('HIGH', 'VERY_HIGH')) as high_risk_policy_count\n            from policy_risk\n            group by revenue_risk_area\n            order by\n              case\n                when revenue_risk_area = 'Lapsed premium already lost' then 1\n                when revenue_risk_area = 'Very high lapse risk premium' then 2\n                when revenue_risk_area = 'High lapse risk premium' then 3\n                when revenue_risk_area = 'Medium lapse risk premium' then 4\n                else 5\n              end,\n              premium_exposure desc nulls last) as intelligence_sql_limited_result limit 25",
+        "sql_validation_status": "VALIDATED",
+        "missing_tables": [],
+        "missing_columns": [],
+        "confidence_score": 0.6675,
+        "provider": {
+          "provider_used": "gemini",
+          "model_used": "validated_sql_template",
+          "fallback_used": false,
+          "llm_latency_ms": 0
+        },
+        "demo_safe": true,
+        "passed": true
+      },
+      {
+        "role": "Campaign Manager",
+        "question": "Show campaign conversion rate by channel.",
+        "answer_status": "NOT_SUPPORTED",
+        "sql": "select * from (select\n                  c.channel,\n                  count(distinct c.campaign_id) as campaign_count,\n                  count(distinct ct.campaign_target_id) as targets,\n                  count(distinct cr.campaign_response_id) as responses,\n                  count(distinct cr.campaign_response_id) filter (where cr.conversion_flag) as conversions,\n                  count(distinct cr.campaign_response_id)::numeric / nullif(count(distinct ct.campaign_target_id), 0) as response_rate,\n                  count(distinct cr.campaign_response_id) filter (where cr.conversion_flag)::numeric / nullif(count(distinct ct.campaign_target_id), 0) as conversion_rate,\n                  sum(coalesce(cr.conversion_premium, 0)) as conversion_premium\n                from public.campaigns c\n                left join public.campaign_targets ct on ct.campaign_id = c.campaign_id\n                left join public.campaign_responses cr on cr.campaign_target_id = ct.campaign_target_id\n                group by c.channel\n                having count(distinct ct.campaign_target_id) > 0\n                order by conversion_rate desc nulls last, conversion_premium desc nulls last) as intelligence_sql_limited_result limit 25",
+        "sql_validation_status": "VALIDATED",
+        "missing_tables": [],
+        "missing_columns": [],
+        "confidence_score": 0.755,
+        "provider": {
+          "provider_used": "gemini",
+          "model_used": "validated_sql_template",
+          "fallback_used": false,
+          "llm_latency_ms": 0
+        },
+        "demo_safe": true,
+        "passed": true
+      },
+      {
+        "role": "Insurance Agent",
+        "question": "Show SQL for lapse risk by product.",
+        "answer_status": "NOT_SUPPORTED",
+        "sql": "select * from (SELECT\n  p.product_id,\n  pr.product_name,\n  COUNT(p.policy_id) AS total_policies,\n  SUM(CASE WHEN ls.score_band IN ('HIGH', 'VERY_HIGH') THEN 1 ELSE 0 END) AS high_risk_policies,\n  AVG(ls.lapse_score) AS average_lapse_score\nFROM public.policies AS p\nLEFT JOIN public.cld_policy_lapse_summary AS ls ON p.policy_id = ls.policy_id\nLEFT JOIN public.products AS pr ON p.product_id = pr.product_id\nGROUP BY\n  p.product_id,\n  pr.product_name\nORDER BY\n  average_lapse_score DESC\nLIMIT 25) as intelligence_sql_limited_result limit 25",
+        "sql_validation_status": "VALIDATED",
+        "missing_tables": [],
+        "missing_columns": [],
+        "confidence_score": 0.6925,
+        "provider": {
+          "provider_used": "gemini",
+          "model_used": "validated_sql_template",
+          "fallback_used": false,
+          "llm_latency_ms": 0
+        },
+        "demo_safe": true,
+        "passed": true
+      }
+    ]
+  },
+  "results": [
+    {
+      "role": "Agency Manager",
+      "question": "Which agents have the highest premium at risk?",
+      "answer_status": "NOT_SUPPORTED",
+      "sql": "select * from (with latest_lapse_scores as (\n                  select distinct on (entity_id)\n                    entity_id as policy_id,\n                    coalesce(probability, score_value, 0) as lapse_score,\n                    score_band\n                  from public.model_scores\n                  where model_name in ('policy_lapse', 'policy_lapse_prediction', 'lapse_risk')\n                    and entity_type in ('policy', 'policies')\n                  order by entity_id, score_ts desc nulls last, created_at desc\n                )\n                select\n                  a.agent_id,\n                  a.agent_number,\n                  coalesce(pt.display_name, a.agent_number) as agent_name,\n                  a.territory_code as branch_or_territory,\n                  count(p.policy_id) as policies_at_risk,\n                  sum(p.annual_premium) as premium_at_risk,\n                  avg(coalesce(ls.lapse_score, 0)) as avg_lapse_score,\n                  count(*) filter (where coalesce(ls.score_band, '') in ('HIGH', 'VERY_HIGH')) as high_risk_policy_count\n                from public.policies p\n                join public.agents a on a.agent_id = p.agent_id\n                left join public.parties pt on pt.party_id = a.party_id\n                left join latest_lapse_scores ls on ls.policy_id = p.policy_id\n                where p.policy_status in ('active', 'in_force', 'issued')\n                group by a.agent_id, a.agent_number, pt.display_name, a.territory_code\n                order by premium_at_risk desc nulls last, high_risk_policy_count desc, avg_lapse_score desc) as intelligence_sql_limited_result limit 25",
+      "sql_validation_status": "VALIDATED",
+      "missing_tables": [],
+      "missing_columns": [],
+      "confidence_score": 0.6925,
+      "provider": {
+        "provider_used": "gemini",
+        "model_used": "validated_sql_template",
+        "fallback_used": false,
+        "llm_latency_ms": 0
+      },
+      "demo_safe": true,
+      "passed": true
+    },
+    {
+      "role": "Campaign Manager",
+      "question": "Which campaigns generated the highest policy conversion?",
+      "answer_status": "NOT_SUPPORTED",
+      "sql": "select * from (select\n                  c.campaign_name,\n                  c.channel,\n                  count(distinct ct.campaign_target_id) as targets,\n                  count(distinct cr.campaign_response_id) as responses,\n                  count(distinct cr.campaign_response_id) filter (where cr.conversion_flag) as conversions,\n                  count(distinct cr.campaign_response_id) filter (where cr.conversion_flag)::numeric / nullif(count(distinct ct.campaign_target_id), 0) as conversion_rate,\n                  sum(coalesce(cr.conversion_premium, 0)) as conversion_premium\n                from public.campaigns c\n                left join public.campaign_targets ct on ct.campaign_id = c.campaign_id\n                left join public.campaign_responses cr on cr.campaign_target_id = ct.campaign_target_id\n                group by c.campaign_name, c.channel\n                order by conversion_premium desc nulls last, conversion_rate desc nulls last) as intelligence_sql_limited_result limit 25",
+      "sql_validation_status": "VALIDATED",
+      "missing_tables": [],
+      "missing_columns": [],
+      "confidence_score": 0.755,
+      "provider": {
+        "provider_used": "gemini",
+        "model_used": "validated_sql_template",
+        "fallback_used": false,
+        "llm_latency_ms": 0
+      },
+      "demo_safe": true,
+      "passed": true
+    },
+    {
+      "role": "Insurance Agent",
+      "question": "Which customers are likely to lapse in the next 90 days?",
+      "answer_status": "NOT_SUPPORTED",
+      "sql": "select * from (WITH latest_lapse_scores AS (\n              SELECT DISTINCT ON (entity_id)\n                entity_id AS policy_id,\n                COALESCE(probability, score_value, 0) AS lapse_score,\n                score_band\n              FROM public.model_scores\n              WHERE model_name IN ('policy_lapse', 'policy_lapse_prediction', 'lapse_risk')\n                AND entity_type IN ('policy', 'policies')\n              ORDER BY entity_id, score_ts DESC NULLS LAST, created_at DESC\n            )\n            SELECT\n              p.policy_id,\n              p.policy_number,\n              p.policy_status,\n              p.effective_date,\n              p.annual_premium,\n              c.customer_id,\n              COALESCE(cp.display_name, c.customer_number) AS customer_name,\n              a.agent_id,\n              a.agent_number,\n              COALESCE(ap.display_name, a.agent_number) AS agent_name,\n              COALESCE(ls.lapse_score, 0) AS lapse_score,\n              COALESCE(ls.score_band, 'UNSCORED') AS score_band\n            FROM public.policies p\n            JOIN public.customers c ON c.customer_id = p.customer_id\n            LEFT JOIN public.parties cp ON cp.party_id = c.party_id\n            LEFT JOIN public.agents a ON a.agent_id = p.agent_id\n            LEFT JOIN public.parties ap ON ap.party_id = a.party_id\n            LEFT JOIN latest_lapse_scores ls ON ls.policy_id = p.policy_id\n            WHERE p.policy_status IN ('active', 'in_force', 'issued')\n            ORDER BY\n              COALESCE(ls.lapse_score, 0) DESC\n            LIMIT 25) as intelligence_sql_limited_result limit 25",
+      "sql_validation_status": "VALIDATED",
+      "missing_tables": [],
+      "missing_columns": [],
+      "confidence_score": 0.6925,
+      "provider": {
+        "provider_used": "gemini",
+        "model_used": "validated_sql_template",
+        "fallback_used": false,
+        "llm_latency_ms": 0
+      },
+      "demo_safe": true,
+      "passed": true
+    },
+    {
+      "role": "Sales Director",
+      "question": "Which products are declining in new sales?",
+      "answer_status": "NOT_SUPPORTED",
+      "sql": "select * from (with anchor as (\n              select max(effective_date)::date as max_effective_date\n              from public.policies\n            ),\n            sales as (\n              select\n                prod.product_id,\n                prod.product_name,\n                prod.line_of_business,\n                count(p.policy_id) filter (\n                  where p.effective_date >= a.max_effective_date - interval '180 days'\n                ) as current_period_policies,\n                count(p.policy_id) filter (\n                  where p.effective_date < a.max_effective_date - interval '180 days'\n                    and p.effective_date >= a.max_effective_date - interval '360 days'\n                ) as prior_period_policies,\n                sum(p.annual_premium) filter (\n                  where p.effective_date >= a.max_effective_date - interval '180 days'\n                ) as current_period_premium,\n                sum(p.annual_premium) filter (\n                  where p.effective_date < a.max_effective_date - interval '180 days'\n                    and p.effective_date >= a.max_effective_date - interval '360 days'\n                ) as prior_period_premium\n              from public.products prod\n              cross join anchor a\n              left join public.policies p on p.product_id = prod.product_id\n              group by prod.product_id, prod.product_name, prod.line_of_business\n            )\n            select\n              product_id,\n              product_name,\n              line_of_business,\n              coalesce(current_period_policies, 0) as current_period_policies,\n              coalesce(prior_period_policies, 0) as prior_period_policies,\n              coalesce(current_period_policies, 0) - coalesce(prior_period_policies, 0) as policy_growth_delta,\n              coalesce(current_period_premium, 0) as current_period_premium,\n              coalesce(prior_period_premium, 0) as prior_period_premium,\n              coalesce(current_period_premium, 0) - coalesce(prior_period_premium, 0) as premium_growth_delta\n            from sales\n            where coalesce(current_period_policies, 0) + coalesce(prior_period_policies, 0) > 0\n            order by policy_growth_delta asc, premium_growth_delta asc nulls first, prior_period_policies desc) as intelligence_sql_limited_result limit 25",
+      "sql_validation_status": "VALIDATED",
+      "missing_tables": [],
+      "missing_columns": [],
+      "confidence_score": 0.6925,
+      "provider": {
+        "provider_used": "gemini",
+        "model_used": "validated_sql_template",
+        "fallback_used": false,
+        "llm_latency_ms": 0
+      },
+      "demo_safe": true,
+      "passed": true
+    },
+    {
+      "role": "Insurance Agent",
+      "question": "Which customers should agents contact this week?",
+      "answer_status": "NOT_SUPPORTED",
+      "sql": "select * from (select\n              customer_id,\n              agent_id,\n              coalesce(action_type, 'Review next best action') as recommended_action,\n              product_id as recommended_product_id,\n              priority_score,\n              business_reason,\n              action_reason as suggested_message,\n              due_date as expiry_date,\n              confidence_score\n            from public.next_best_actions\n            where coalesce(action_status, 'open') not in ('completed', 'cancelled')\n            order by priority_score desc nulls last, due_date asc nulls last) as intelligence_sql_limited_result limit 25",
+      "sql_validation_status": "VALIDATED",
+      "missing_tables": [],
+      "missing_columns": [],
+      "confidence_score": 0.75,
+      "provider": {
+        "provider_used": "gemini",
+        "model_used": "validated_sql_template",
+        "fallback_used": false,
+        "llm_latency_ms": 0
+      },
+      "demo_safe": true,
+      "passed": true
+    },
+    {
+      "role": "Executive Leadership",
+      "question": "What are the top risks to revenue this month?",
+      "answer_status": "NOT_SUPPORTED",
+      "sql": "select * from (with latest_lapse_scores as (\n              select distinct on (entity_id)\n                entity_id as policy_id,\n                coalesce(probability, score_value, 0) as lapse_score,\n                score_band\n              from public.model_scores\n              where model_name in ('policy_lapse', 'policy_lapse_prediction', 'lapse_risk')\n                and entity_type in ('policy', 'policies')\n              order by entity_id, score_ts desc nulls last, created_at desc\n            ),\n            policy_risk as (\n              select\n                p.policy_id,\n                p.policy_number,\n                p.policy_status,\n                p.annual_premium,\n                coalesce(ls.lapse_score, 0) as lapse_score,\n                coalesce(ls.score_band, 'UNSCORED') as score_band,\n                case\n                  when p.policy_status = 'lapsed' then 'Lapsed premium already lost'\n                  when coalesce(ls.score_band, '') = 'VERY_HIGH' or coalesce(ls.lapse_score, 0) >= 0.80 then 'Very high lapse risk premium'\n                  when coalesce(ls.score_band, '') = 'HIGH' or coalesce(ls.lapse_score, 0) >= 0.60 then 'High lapse risk premium'\n                  when coalesce(ls.lapse_score, 0) >= 0.40 then 'Medium lapse risk premium'\n                  else 'Active premium watch'\n                end as revenue_risk_area\n              from public.policies p\n              left join latest_lapse_scores ls on ls.policy_id = p.policy_id\n            )\n            select\n              revenue_risk_area,\n              count(policy_id) as policy_count,\n              sum(annual_premium) as premium_exposure,\n              avg(lapse_score) as avg_lapse_score,\n              count(policy_id) filter (where score_band in ('HIGH', 'VERY_HIGH')) as high_risk_policy_count\n            from policy_risk\n            group by revenue_risk_area\n            order by\n              case\n                when revenue_risk_area = 'Lapsed premium already lost' then 1\n                when revenue_risk_area = 'Very high lapse risk premium' then 2\n                when revenue_risk_area = 'High lapse risk premium' then 3\n                when revenue_risk_area = 'Medium lapse risk premium' then 4\n                else 5\n              end,\n              premium_exposure desc nulls last) as intelligence_sql_limited_result limit 25",
+      "sql_validation_status": "VALIDATED",
+      "missing_tables": [],
+      "missing_columns": [],
+      "confidence_score": 0.6675,
+      "provider": {
+        "provider_used": "gemini",
+        "model_used": "validated_sql_template",
+        "fallback_used": false,
+        "llm_latency_ms": 0
+      },
+      "demo_safe": true,
+      "passed": true
+    },
+    {
+      "role": "Campaign Manager",
+      "question": "Show campaign conversion rate by channel.",
+      "answer_status": "NOT_SUPPORTED",
+      "sql": "select * from (select\n                  c.channel,\n                  count(distinct c.campaign_id) as campaign_count,\n                  count(distinct ct.campaign_target_id) as targets,\n                  count(distinct cr.campaign_response_id) as responses,\n                  count(distinct cr.campaign_response_id) filter (where cr.conversion_flag) as conversions,\n                  count(distinct cr.campaign_response_id)::numeric / nullif(count(distinct ct.campaign_target_id), 0) as response_rate,\n                  count(distinct cr.campaign_response_id) filter (where cr.conversion_flag)::numeric / nullif(count(distinct ct.campaign_target_id), 0) as conversion_rate,\n                  sum(coalesce(cr.conversion_premium, 0)) as conversion_premium\n                from public.campaigns c\n                left join public.campaign_targets ct on ct.campaign_id = c.campaign_id\n                left join public.campaign_responses cr on cr.campaign_target_id = ct.campaign_target_id\n                group by c.channel\n                having count(distinct ct.campaign_target_id) > 0\n                order by conversion_rate desc nulls last, conversion_premium desc nulls last) as intelligence_sql_limited_result limit 25",
+      "sql_validation_status": "VALIDATED",
+      "missing_tables": [],
+      "missing_columns": [],
+      "confidence_score": 0.755,
+      "provider": {
+        "provider_used": "gemini",
+        "model_used": "validated_sql_template",
+        "fallback_used": false,
+        "llm_latency_ms": 0
+      },
+      "demo_safe": true,
+      "passed": true
+    },
+    {
+      "role": "Insurance Agent",
+      "question": "Show SQL for lapse risk by product.",
+      "answer_status": "NOT_SUPPORTED",
+      "sql": "select * from (SELECT\n  p.product_id,\n  pr.product_name,\n  COUNT(p.policy_id) AS total_policies,\n  SUM(CASE WHEN ls.score_band IN ('HIGH', 'VERY_HIGH') THEN 1 ELSE 0 END) AS high_risk_policies,\n  AVG(ls.lapse_score) AS average_lapse_score\nFROM public.policies AS p\nLEFT JOIN public.cld_policy_lapse_summary AS ls ON p.policy_id = ls.policy_id\nLEFT JOIN public.products AS pr ON p.product_id = pr.product_id\nGROUP BY\n  p.product_id,\n  pr.product_name\nORDER BY\n  average_lapse_score DESC\nLIMIT 25) as intelligence_sql_limited_result limit 25",
+      "sql_validation_status": "VALIDATED",
+      "missing_tables": [],
+      "missing_columns": [],
+      "confidence_score": 0.6925,
+      "provider": {
+        "provider_used": "gemini",
+        "model_used": "validated_sql_template",
+        "fallback_used": false,
+        "llm_latency_ms": 0
+      },
+      "demo_safe": true,
+      "passed": true
+    }
+  ]
+}

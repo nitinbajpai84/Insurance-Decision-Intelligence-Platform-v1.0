@@ -1,0 +1,14 @@
+flowchart TB
+  Home["Home"] --> KYC["Know Your Customer"]
+  Home --> KYA["Know Your Agent"]
+  Home --> Campaign["Campaign Effectiveness"]
+  Home --> AgentPerf["Agent Performance Tracking"]
+  Home --> Lapse["Policy Lapse Risk"]
+  Home --> AI["AI Intelligence"]
+  AI --> Evidence["Insight Evidence Hub"]
+  KYC --> AI
+  KYA --> AgentPerf
+  Campaign --> AI
+  Lapse --> AI
+  AgentPerf --> AI
+

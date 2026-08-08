@@ -1,0 +1,578 @@
+status,role,question,validation_status,row_count,confidence_score,generated_sql,key_data_points,missing_data,final_insight,failures
+PASS,Insurance Agent,Which customers should I contact first this week?,PASS,25,0.9,"select * from (select
+              customer_id,
+              agent_id,
+              coalesce(action_type, 'Review next best action') as recommended_action,
+              product_id as recommended_product_id,
+              priority_score,
+              business_reason,
+              action_reason as suggested_message,
+              due_date as expiry_date,
+              confidence_score
+            from public.next_best_actions
+            where coalesce(action_status, 'open') not in ('completed', 'cancelled')
+            order by priority_score desc nulls last, due_date asc nulls last) as intelligence_sql_limited_result limit 25",Recommended action: service_recovery; Priority score: 98.7%; Confidence score: 0.0%,,"The highest priority action is to service_recovery. The top record has a priority score of 98.7%. The supporting business reason is: High propensity, product gap, campaign response, or retention signal..",
+PASS,Insurance Agent,Which customers are likely to lapse in the next 90 days?,PASS,6,0.8425,"select * from (select
+              prod.line_of_business,
+              count(*) as policy_count,
+              sum(p.annual_premium) as annual_premium
+            from public.policies p
+            join public.products prod on prod.product_id = p.product_id
+            group by prod.line_of_business
+            order by annual_premium desc) as intelligence_sql_limited_result limit 25","Top line of business: wealth; Policy count: 1,943; Annual premium: S$108.65M",,"wealth is the largest visible line of business in the SQL result, with 1,943 policies and S$108.65M annual premium. This is an internal portfolio view, not an external market view.",
+BLOCKED,Insurance Agent,Which product should I cross-sell to my high propensity customers?,FAIL,6,0.8425,"select * from (select
+              prod.line_of_business,
+              count(*) as policy_count,
+              sum(p.annual_premium) as annual_premium
+            from public.policies p
+            join public.products prod on prod.product_id = p.product_id
+            group by prod.line_of_business
+            order by annual_premium desc) as intelligence_sql_limited_result limit 25","Top line of business: wealth; Policy count: 1,943; Annual premium: S$108.65M",,"I cannot publish a supported insurance insight for this question from the current SQL result. The main gap is: Model-score or customer-level evidence is limited for this question., The SQL result is a generic product-line portfolio proxy and must not be used to answer this question..",
+BLOCKED,Insurance Agent,Which customers have high CLV and high churn risk?,FAIL,6,0.8425,"select * from (select
+              prod.line_of_business,
+              count(*) as policy_count,
+              sum(p.annual_premium) as annual_premium
+            from public.policies p
+            join public.products prod on prod.product_id = p.product_id
+            group by prod.line_of_business
+            order by annual_premium desc) as intelligence_sql_limited_result limit 25","Top line of business: wealth; Policy count: 1,943; Annual premium: S$108.65M",,"I cannot publish a supported insurance insight for this question from the current SQL result. The main gap is: Model-score or customer-level evidence is limited for this question., The SQL result is a generic product-line portfolio proxy and must not be used to answer this question..",
+PASS,Insurance Agent,Which renewal customers need a retention conversation?,PASS,6,0.8425,"select * from (select
+              prod.line_of_business,
+              count(*) as policy_count,
+              sum(p.annual_premium) as annual_premium
+            from public.policies p
+            join public.products prod on prod.product_id = p.product_id
+            group by prod.line_of_business
+            order by annual_premium desc) as intelligence_sql_limited_result limit 25","Top line of business: wealth; Policy count: 1,943; Annual premium: S$108.65M",,"wealth is the largest visible line of business in the SQL result, with 1,943 policies and S$108.65M annual premium. This is an internal portfolio view, not an external market view.",
+PASS,Agency Manager,Which agents need coaching this month?,PASS,25,0.8425,"select * from (with monthly as (
+                  select
+                    a.agent_id,
+                    a.agent_number,
+                    coalesce(pt.display_name, a.agent_number) as agent_name,
+                    a.territory_code as branch_or_territory,
+                    am.metric_month,
+                    coalesce(am.contacts_count, 0) as contacts_count,
+                    coalesce(am.quotes_count, 0) as quotes_count,
+                    coalesce(am.applications_count, 0) as applications_count,
+                    coalesce(am.policies_bound_count, 0) as policies_bound_count,
+                    coalesce(am.new_business_premium, 0) as new_business_premium,
+                    coalesce(am.lapsed_policy_count, 0) as lapsed_policy_count,
+                    coalesce(am.retained_policy_count, 0) as retained_policy_count,
+                    row_number() over (partition by a.agent_id order by am.metric_month desc) as recency_rank
+                  from public.agent_mapa_metrics am
+                  join public.agents a on a.agent_id = am.agent_id
+                  left join public.parties pt on pt.party_id = a.party_id
+                ),
+                agent_rollup as (
+                  select
+                    agent_id,
+                    agent_number,
+                    agent_name,
+                    branch_or_territory,
+                    sum(contacts_count) filter (where recency_rank <= 3) as recent_contacts,
+                    sum(quotes_count) filter (where recency_rank <= 3) as recent_quotes,
+                    sum(applications_count) filter (where recency_rank <= 3) as recent_applications,
+                    sum(policies_bound_count) filter (where recency_rank <= 3) as recent_policies_bound,
+                    sum(new_business_premium) filter (where recency_rank <= 3) as recent_new_business_premium,
+                    sum(contacts_count + quotes_count + applications_count + policies_bound_count) filter (where recency_rank between 4 and 6) as prior_mapa_activity,
+                    sum(contacts_count + quotes_count + applications_count + policies_bound_count) filter (where recency_rank <= 3) as recent_mapa_activity,
+                    sum(lapsed_policy_count) filter (where recency_rank <= 3) as recent_lapsed_policies,
+                    sum(retained_policy_count) filter (where recency_rank <= 3) as recent_retained_policies
+                  from monthly
+                  where recency_rank <= 6
+                  group by agent_id, agent_number, agent_name, branch_or_territory
+                )
+                select
+                  agent_id,
+                  agent_number,
+                  agent_name,
+                  branch_or_territory,
+                  recent_contacts,
+                  recent_quotes,
+                  recent_applications,
+                  recent_policies_bound,
+                  recent_new_business_premium,
+                  recent_mapa_activity,
+                  prior_mapa_activity,
+                  recent_mapa_activity - coalesce(prior_mapa_activity, 0) as mapa_activity_change,
+                  recent_lapsed_policies,
+                  recent_retained_policies,
+                  case
+                    when coalesce(recent_mapa_activity, 0) = 0 then 'No recent MAPA activity'
+                    when recent_mapa_activity < coalesce(prior_mapa_activity, 0) * 0.75 then 'MAPA activity declined more than 25%'
+                    when coalesce(recent_policies_bound, 0) = 0 then 'No recent policy conversion'
+                    when coalesce(recent_applications, 0) > 0 and recent_policies_bound::numeric / nullif(recent_applications, 0) < 0.25 then 'Low application-to-policy conversion'
+                    else 'Monitor productivity'
+                  end as coaching_reason
+                from agent_rollup
+                order by
+                  case
+                    when coalesce(recent_mapa_activity, 0) = 0 then 1
+                    when recent_mapa_activity < coalesce(prior_mapa_activity, 0) * 0.75 then 2
+                    when coalesce(recent_policies_bound, 0) = 0 then 3
+                    else 4
+                  end,
+                  mapa_activity_change asc nulls first,
+                  recent_new_business_premium asc nulls first) as intelligence_sql_limited_result limit 25",Agent needing coaching: Kyle McCarthy; Recent MAPA activity: 0; MAPA activity change: -13; Recent new business premium: S$0,,"For Agency Manager, the top coaching candidate is Kyle McCarthy. The reason is No recent MAPA activity. Recent MAPA activity is 0, down by 13 activities versus the prior period, with 0 recent policies bound and S$0 new business premium.",
+PASS,Agency Manager,Which agents have the highest premium at risk?,PASS,25,0.8425,"select * from (with latest_lapse_scores as (
+                  select distinct on (entity_id)
+                    entity_id as policy_id,
+                    coalesce(probability, score_value, 0) as lapse_score,
+                    score_band
+                  from public.model_scores
+                  where model_name in ('policy_lapse', 'policy_lapse_prediction', 'lapse_risk')
+                    and entity_type in ('policy', 'policies')
+                  order by entity_id, score_ts desc nulls last, created_at desc
+                )
+                select
+                  a.agent_id,
+                  a.agent_number,
+                  coalesce(pt.display_name, a.agent_number) as agent_name,
+                  a.territory_code as branch_or_territory,
+                  count(p.policy_id) as policies_at_risk,
+                  sum(p.annual_premium) as premium_at_risk,
+                  avg(coalesce(ls.lapse_score, 0)) as avg_lapse_score,
+                  count(*) filter (where coalesce(ls.score_band, '') in ('HIGH', 'VERY_HIGH')) as high_risk_policy_count
+                from public.policies p
+                join public.agents a on a.agent_id = p.agent_id
+                left join public.parties pt on pt.party_id = a.party_id
+                left join latest_lapse_scores ls on ls.policy_id = p.policy_id
+                where p.policy_status in ('active', 'in_force', 'issued')
+                group by a.agent_id, a.agent_number, pt.display_name, a.territory_code
+                order by premium_at_risk desc nulls last, high_risk_policy_count desc, avg_lapse_score desc) as intelligence_sql_limited_result limit 25",Agent: Sandra Price; Premium at risk: S$778.9K; Average lapse score: 22.0%,,"For Agency Manager, Sandra Price has the highest visible premium at risk in the result, with S$778.9K active annual premium across 9 policies. The average lapse score is 22.0%, so this should be treated as a retention and coaching priority.",
+PASS,Agency Manager,Which branch has the highest lapse exposure?,PASS,20,0.8425,"select * from (select
+                  coalesce(a.territory_code, 'Unassigned') as branch_or_territory,
+                  count(p.policy_id) filter (where p.policy_status = 'lapsed') as lapsed_policies,
+                  count(p.policy_id) as total_policies,
+                  count(p.policy_id) filter (where p.policy_status = 'lapsed')::numeric / nullif(count(p.policy_id), 0) as lapse_rate,
+                  sum(p.annual_premium) filter (where p.policy_status = 'lapsed') as lapsed_annual_premium
+                from public.policies p
+                join public.agents a on a.agent_id = p.agent_id
+                group by coalesce(a.territory_code, 'Unassigned')
+                order by lapsed_annual_premium desc nulls last, lapse_rate desc nulls last) as intelligence_sql_limited_result limit 25","Lapse rate: 5.5%; Lapsed policies: 56; Total policies: 1,013",,"For Agency Manager, HK-YT has the highest branch lapse exposure in the result, with S$1.81M lapsed annual premium and a 5.5% lapse rate.",
+PASS,Agency Manager,Which agents changed territories and improved sales?,PASS,25,0.8425,"select * from (with before_after as (
+                  select
+                    a.agent_id,
+                    a.agent_number,
+                    coalesce(pt.display_name, a.agent_number) as agent_name,
+                    m.movement_type,
+                    m.from_territory_code,
+                    m.to_territory_code,
+                    m.effective_date,
+                    sum(am.new_business_premium) filter (where am.metric_month < date_trunc('month', m.effective_date)::date) as premium_before_move,
+                    sum(am.new_business_premium) filter (where am.metric_month >= date_trunc('month', m.effective_date)::date) as premium_after_move,
+                    sum(am.policies_bound_count) filter (where am.metric_month < date_trunc('month', m.effective_date)::date) as policies_before_move,
+                    sum(am.policies_bound_count) filter (where am.metric_month >= date_trunc('month', m.effective_date)::date) as policies_after_move
+                  from public.agent_movements m
+                  join public.agents a on a.agent_id = m.agent_id
+                  left join public.parties pt on pt.party_id = a.party_id
+                  left join public.agent_mapa_metrics am on am.agent_id = a.agent_id
+                    and am.metric_month between (date_trunc('month', m.effective_date)::date - interval '6 months')::date
+                                            and (date_trunc('month', m.effective_date)::date + interval '6 months')::date
+                  group by a.agent_id, a.agent_number, pt.display_name, m.movement_type, m.from_territory_code, m.to_territory_code, m.effective_date
+                )
+                select
+                  agent_id,
+                  agent_number,
+                  agent_name,
+                  movement_type,
+                  from_territory_code,
+                  to_territory_code,
+                  effective_date,
+                  coalesce(premium_before_move, 0) as premium_before_move,
+                  coalesce(premium_after_move, 0) as premium_after_move,
+                  coalesce(premium_after_move, 0) - coalesce(premium_before_move, 0) as premium_lift,
+                  coalesce(policies_before_move, 0) as policies_before_move,
+                  coalesce(policies_after_move, 0) as policies_after_move
+                from before_after
+                order by premium_lift desc nulls last, premium_after_move desc nulls last) as intelligence_sql_limited_result limit 25",Agent with movement: Peter Hayes; Premium lift: S$302.1K; Policies after move: 4,,"For Agency Manager, Peter Hayes shows the strongest post-movement improvement in the result. Premium moved from S$19.1K before the move to S$321.3K after the move, a lift of S$302.1K.",
+PASS,Agency Manager,Which agents show declining productivity?,PASS,25,0.8675,"select * from (with monthly as (
+                  select
+                    a.agent_id,
+                    a.agent_number,
+                    coalesce(pt.display_name, a.agent_number) as agent_name,
+                    a.territory_code as branch_or_territory,
+                    am.metric_month,
+                    coalesce(am.contacts_count, 0) as contacts_count,
+                    coalesce(am.quotes_count, 0) as quotes_count,
+                    coalesce(am.applications_count, 0) as applications_count,
+                    coalesce(am.policies_bound_count, 0) as policies_bound_count,
+                    coalesce(am.new_business_premium, 0) as new_business_premium,
+                    coalesce(am.lapsed_policy_count, 0) as lapsed_policy_count,
+                    coalesce(am.retained_policy_count, 0) as retained_policy_count,
+                    row_number() over (partition by a.agent_id order by am.metric_month desc) as recency_rank
+                  from public.agent_mapa_metrics am
+                  join public.agents a on a.agent_id = am.agent_id
+                  left join public.parties pt on pt.party_id = a.party_id
+                ),
+                agent_rollup as (
+                  select
+                    agent_id,
+                    agent_number,
+                    agent_name,
+                    branch_or_territory,
+                    sum(contacts_count) filter (where recency_rank <= 3) as recent_contacts,
+                    sum(quotes_count) filter (where recency_rank <= 3) as recent_quotes,
+                    sum(applications_count) filter (where recency_rank <= 3) as recent_applications,
+                    sum(policies_bound_count) filter (where recency_rank <= 3) as recent_policies_bound,
+                    sum(new_business_premium) filter (where recency_rank <= 3) as recent_new_business_premium,
+                    sum(contacts_count + quotes_count + applications_count + policies_bound_count) filter (where recency_rank between 4 and 6) as prior_mapa_activity,
+                    sum(contacts_count + quotes_count + applications_count + policies_bound_count) filter (where recency_rank <= 3) as recent_mapa_activity,
+                    sum(lapsed_policy_count) filter (where recency_rank <= 3) as recent_lapsed_policies,
+                    sum(retained_policy_count) filter (where recency_rank <= 3) as recent_retained_policies
+                  from monthly
+                  where recency_rank <= 6
+                  group by agent_id, agent_number, agent_name, branch_or_territory
+                )
+                select
+                  agent_id,
+                  agent_number,
+                  agent_name,
+                  branch_or_territory,
+                  recent_contacts,
+                  recent_quotes,
+                  recent_applications,
+                  recent_policies_bound,
+                  recent_new_business_premium,
+                  recent_mapa_activity,
+                  prior_mapa_activity,
+                  recent_mapa_activity - coalesce(prior_mapa_activity, 0) as mapa_activity_change,
+                  recent_lapsed_policies,
+                  recent_retained_policies,
+                  case
+                    when coalesce(recent_mapa_activity, 0) = 0 then 'No recent MAPA activity'
+                    when recent_mapa_activity < coalesce(prior_mapa_activity, 0) * 0.75 then 'MAPA activity declined more than 25%'
+                    when coalesce(recent_policies_bound, 0) = 0 then 'No recent policy conversion'
+                    when coalesce(recent_applications, 0) > 0 and recent_policies_bound::numeric / nullif(recent_applications, 0) < 0.25 then 'Low application-to-policy conversion'
+                    else 'Monitor productivity'
+                  end as coaching_reason
+                from agent_rollup
+                order by
+                  case
+                    when coalesce(recent_mapa_activity, 0) = 0 then 1
+                    when recent_mapa_activity < coalesce(prior_mapa_activity, 0) * 0.75 then 2
+                    when coalesce(recent_policies_bound, 0) = 0 then 3
+                    else 4
+                  end,
+                  mapa_activity_change asc nulls first,
+                  recent_new_business_premium asc nulls first) as intelligence_sql_limited_result limit 25",Agent needing coaching: Kyle McCarthy; Recent MAPA activity: 0; MAPA activity change: -13; Recent new business premium: S$0,,"For Agency Manager, the top coaching candidate is Kyle McCarthy. The reason is No recent MAPA activity. Recent MAPA activity is 0, down by 13 activities versus the prior period, with 0 recent policies bound and S$0 new business premium.",
+PASS,Campaign Manager,Which campaign generated the highest policy conversion?,PASS,25,0.8925,"select * from (select
+                  c.campaign_name,
+                  c.channel,
+                  count(distinct ct.campaign_target_id) as targets,
+                  count(distinct cr.campaign_response_id) as responses,
+                  count(distinct cr.campaign_response_id) filter (where cr.conversion_flag) as conversions,
+                  count(distinct cr.campaign_response_id) filter (where cr.conversion_flag)::numeric / nullif(count(distinct ct.campaign_target_id), 0) as conversion_rate,
+                  sum(coalesce(cr.conversion_premium, 0)) as conversion_premium
+                from public.campaigns c
+                left join public.campaign_targets ct on ct.campaign_id = c.campaign_id
+                left join public.campaign_responses cr on cr.campaign_target_id = ct.campaign_target_id
+                group by c.campaign_name, c.channel
+                order by conversion_premium desc nulls last, conversion_rate desc nulls last) as intelligence_sql_limited_result limit 25",Top campaign: VHIS medical upgrade 2023 Wave 2; Converted premium: S$1.01M; Policy conversions: 38; Policy conversion rate: 9.2%,,"For Campaign Manager, the strongest campaign result is VHIS medical upgrade 2023 Wave 2 through agent_call. It generated S$1.01M in converted premium from 38 conversions, with a policy conversion rate of 9.2%. This is a campaign effectiveness view grounded in campaign target, response, and conversion records.",
+PASS,Campaign Manager,Which customer segments responded best to recent campaigns?,PASS,25,0.8675,"select * from (select
+                  c.campaign_name,
+                  c.channel,
+                  count(distinct ct.campaign_target_id) as targets,
+                  count(distinct cr.campaign_response_id) as responses,
+                  count(distinct cr.campaign_response_id) filter (where cr.conversion_flag) as conversions,
+                  count(distinct cr.campaign_response_id) filter (where cr.conversion_flag)::numeric / nullif(count(distinct ct.campaign_target_id), 0) as conversion_rate,
+                  sum(coalesce(cr.conversion_premium, 0)) as conversion_premium
+                from public.campaigns c
+                left join public.campaign_targets ct on ct.campaign_id = c.campaign_id
+                left join public.campaign_responses cr on cr.campaign_target_id = ct.campaign_target_id
+                group by c.campaign_name, c.channel
+                order by conversion_premium desc nulls last, conversion_rate desc nulls last) as intelligence_sql_limited_result limit 25",Top campaign: VHIS medical upgrade 2023 Wave 2; Converted premium: S$1.01M; Policy conversions: 38; Policy conversion rate: 9.2%,,"For Campaign Manager, the strongest campaign result is VHIS medical upgrade 2023 Wave 2 through agent_call. It generated S$1.01M in converted premium from 38 conversions, with a policy conversion rate of 9.2%. This is a campaign effectiveness view grounded in campaign target, response, and conversion records.",
+PASS,Campaign Manager,Which campaign has engagement but poor conversion?,PASS,25,0.8925,"select * from (select
+                  c.campaign_name,
+                  c.channel,
+                  count(distinct ct.campaign_target_id) as targets,
+                  count(distinct cr.campaign_response_id) as responses,
+                  count(distinct cr.campaign_response_id) filter (where cr.conversion_flag) as conversions,
+                  count(distinct cr.campaign_response_id)::numeric / nullif(count(distinct ct.campaign_target_id), 0) as response_rate,
+                  count(distinct cr.campaign_response_id) filter (where cr.conversion_flag)::numeric / nullif(count(distinct ct.campaign_target_id), 0) as conversion_rate,
+                  sum(coalesce(cr.conversion_premium, 0)) as conversion_premium
+                from public.campaigns c
+                left join public.campaign_targets ct on ct.campaign_id = c.campaign_id
+                left join public.campaign_responses cr on cr.campaign_target_id = ct.campaign_target_id
+                group by c.campaign_name, c.channel
+                having count(distinct ct.campaign_target_id) > 0
+                order by conversion_rate asc nulls first, conversions asc, conversion_premium asc nulls first, targets desc) as intelligence_sql_limited_result limit 25",Weakest campaign: Paid-up maturity appreciation 2025 Wave 1; Converted premium: S$0; Policy conversions: 0; Policy conversion rate: 0.0%; Response rate: 87.9%,,"For Campaign Manager, the weakest campaign in the current result is Paid-up maturity appreciation 2025 Wave 1 through direct_mail. It produced only 0 policy conversions, S$0 in converted premium, and a 0.0% policy conversion rate. The response rate is 87.9%, so this should be reviewed as an underperforming campaign cohort rather than a growth campaign.",
+PASS,Campaign Manager,What is campaign conversion rate by channel?,PASS,8,0.905,"select * from (select
+                  c.channel,
+                  count(distinct c.campaign_id) as campaign_count,
+                  count(distinct ct.campaign_target_id) as targets,
+                  count(distinct cr.campaign_response_id) as responses,
+                  count(distinct cr.campaign_response_id) filter (where cr.conversion_flag) as conversions,
+                  count(distinct cr.campaign_response_id)::numeric / nullif(count(distinct ct.campaign_target_id), 0) as response_rate,
+                  count(distinct cr.campaign_response_id) filter (where cr.conversion_flag)::numeric / nullif(count(distinct ct.campaign_target_id), 0) as conversion_rate,
+                  sum(coalesce(cr.conversion_premium, 0)) as conversion_premium
+                from public.campaigns c
+                left join public.campaign_targets ct on ct.campaign_id = c.campaign_id
+                left join public.campaign_responses cr on cr.campaign_target_id = ct.campaign_target_id
+                group by c.channel
+                having count(distinct ct.campaign_target_id) > 0
+                order by conversion_rate desc nulls last, conversion_premium desc nulls last) as intelligence_sql_limited_result limit 25",Top campaign channel: agent_call; Policy conversion rate: 8.0%; Response rate: 91.4%; Converted premium: S$17.35M,,"For Campaign Manager, agent_call is the strongest campaign channel in the returned result. It delivered 1,338 policy conversions, S$17.35M converted premium, a 8.0% policy conversion rate, and a 91.4% response rate across 172 campaigns.",
+PASS,Campaign Manager,What are the bad campaigns?,PASS,25,0.8675,"select * from (select
+                  c.campaign_name,
+                  c.channel,
+                  count(distinct ct.campaign_target_id) as targets,
+                  count(distinct cr.campaign_response_id) as responses,
+                  count(distinct cr.campaign_response_id) filter (where cr.conversion_flag) as conversions,
+                  count(distinct cr.campaign_response_id)::numeric / nullif(count(distinct ct.campaign_target_id), 0) as response_rate,
+                  count(distinct cr.campaign_response_id) filter (where cr.conversion_flag)::numeric / nullif(count(distinct ct.campaign_target_id), 0) as conversion_rate,
+                  sum(coalesce(cr.conversion_premium, 0)) as conversion_premium
+                from public.campaigns c
+                left join public.campaign_targets ct on ct.campaign_id = c.campaign_id
+                left join public.campaign_responses cr on cr.campaign_target_id = ct.campaign_target_id
+                group by c.campaign_name, c.channel
+                having count(distinct ct.campaign_target_id) > 0
+                order by conversion_rate asc nulls first, conversions asc, conversion_premium asc nulls first, targets desc) as intelligence_sql_limited_result limit 25",Weakest campaign: Paid-up maturity appreciation 2025 Wave 1; Converted premium: S$0; Policy conversions: 0; Policy conversion rate: 0.0%; Response rate: 87.9%,,"For Campaign Manager, the weakest campaign in the current result is Paid-up maturity appreciation 2025 Wave 1 through direct_mail. It produced only 0 policy conversions, S$0 in converted premium, and a 0.0% policy conversion rate. The response rate is 87.9%, so this should be reviewed as an underperforming campaign cohort rather than a growth campaign.",
+PASS,Claims Manager,Which products have the highest claims ratio?,PASS,9,0.905,"select * from (with claims_by_product as (
+                  select
+                    p.product_id,
+                    count(cl.claim_id) as claim_count,
+                    sum(cl.paid_amount) as paid_amount,
+                    sum(cl.reserve_amount) as reserve_amount,
+                    sum(cl.incurred_amount) as incurred_amount
+                  from public.claims cl
+                  join public.policies p on p.policy_id = cl.policy_id
+                  group by p.product_id
+                ),
+                premium_by_product as (
+                  select
+                    product_id,
+                    count(policy_id) as policy_count,
+                    sum(annual_premium) as annual_premium
+                  from public.policies
+                  group by product_id
+                )
+                select
+                  prod.product_name,
+                  prod.line_of_business,
+                  coalesce(pb.policy_count, 0) as policy_count,
+                  coalesce(cb.claim_count, 0) as claim_count,
+                  coalesce(cb.paid_amount, 0) as paid_amount,
+                  coalesce(cb.reserve_amount, 0) as reserve_amount,
+                  coalesce(cb.incurred_amount, 0) as incurred_amount,
+                  coalesce(pb.annual_premium, 0) as annual_premium,
+                  coalesce(cb.incurred_amount, 0)::numeric / nullif(pb.annual_premium, 0) as claims_ratio
+                from public.products prod
+                left join claims_by_product cb on cb.product_id = prod.product_id
+                left join premium_by_product pb on pb.product_id = prod.product_id
+                where coalesce(cb.claim_count, 0) > 0
+                order by claims_ratio desc nulls last, incurred_amount desc nulls last) as intelligence_sql_limited_result limit 25",Product: PRUHealth VHIS VIP Plan (HK synthetic); Claims ratio: 33.9%; Incurred amount: S$17.82M,,"For Claims Manager, PRUHealth VHIS VIP Plan (HK synthetic) has the highest claims pressure in the result. The claims ratio is 33.9%, based on S$17.82M incurred claims against S$52.59M annual premium.",
+PASS,Claims Manager,Which claims have high fraud risk?,PASS,12,0.905,"select * from (select
+                  cl.claim_id,
+                  cl.claim_number,
+                  cl.claim_status,
+                  cl.loss_cause,
+                  cl.incurred_amount,
+                  cl.paid_amount,
+                  cl.reserve_amount,
+                  cfi.indicator_type,
+                  cfi.severity,
+                  cfi.indicator_score as fraud_indicator_score,
+                  cfi.resolved_flag,
+                  prod.product_name,
+                  prod.line_of_business
+                from public.claim_fraud_indicators cfi
+                join public.claims cl on cl.claim_id = cfi.claim_id
+                left join public.policies p on p.policy_id = cl.policy_id
+                left join public.products prod on prod.product_id = p.product_id
+                where coalesce(cfi.resolved_flag, false) = false
+                order by cfi.indicator_score desc nulls last, cl.incurred_amount desc nulls last) as intelligence_sql_limited_result limit 25",Claim for review: CLM-HK-00000699; Fraud indicator score: 29.5%; Incurred amount: S$145.8K,,"For Claims Manager, claim CLM-HK-00000699 is the highest unresolved fraud-review item in the result. It has a fraud indicator score of 29.5%, severity high, and incurred amount of S$145.8K.",
+PASS,Claims Manager,Which regions show unusual claims growth?,PASS,25,0.8675,"select * from (select
+                  coalesce(a.territory_code, 'Unassigned') as branch_or_territory,
+                  date_trunc('month', cl.report_date)::date as report_month,
+                  count(cl.claim_id) as claim_count,
+                  sum(cl.incurred_amount) as incurred_amount,
+                  avg(cl.incurred_amount) as avg_incurred_amount
+                from public.claims cl
+                left join public.agents a on a.agent_id = cl.assigned_agent_id
+                group by coalesce(a.territory_code, 'Unassigned'), date_trunc('month', cl.report_date)::date
+                order by incurred_amount desc nulls last, claim_count desc) as intelligence_sql_limited_result limit 25",Branch or territory: HK-TM; Claim count: 3; Incurred amount: S$1.51M,,"For Claims Manager, HK-TM is the highest claims exposure row in the preview, with 3 claims and S$1.51M incurred amount in 2025-11-01.",
+PASS,Claims Manager,Which claims need manual fraud review?,PASS,12,0.905,"select * from (select
+                  cl.claim_id,
+                  cl.claim_number,
+                  cl.claim_status,
+                  cl.loss_cause,
+                  cl.incurred_amount,
+                  cl.paid_amount,
+                  cl.reserve_amount,
+                  cfi.indicator_type,
+                  cfi.severity,
+                  cfi.indicator_score as fraud_indicator_score,
+                  cfi.resolved_flag,
+                  prod.product_name,
+                  prod.line_of_business
+                from public.claim_fraud_indicators cfi
+                join public.claims cl on cl.claim_id = cfi.claim_id
+                left join public.policies p on p.policy_id = cl.policy_id
+                left join public.products prod on prod.product_id = p.product_id
+                where coalesce(cfi.resolved_flag, false) = false
+                order by cfi.indicator_score desc nulls last, cl.incurred_amount desc nulls last) as intelligence_sql_limited_result limit 25",Claim for review: CLM-HK-00000699; Fraud indicator score: 29.5%; Incurred amount: S$145.8K,,"For Claims Manager, claim CLM-HK-00000699 is the highest unresolved fraud-review item in the result. It has a fraud indicator score of 29.5%, severity high, and incurred amount of S$145.8K.",
+PASS,Claims Manager,What is claims exposure by product?,PASS,9,0.8675,"select * from (with claims_by_product as (
+                  select
+                    p.product_id,
+                    count(cl.claim_id) as claim_count,
+                    sum(cl.paid_amount) as paid_amount,
+                    sum(cl.reserve_amount) as reserve_amount,
+                    sum(cl.incurred_amount) as incurred_amount
+                  from public.claims cl
+                  join public.policies p on p.policy_id = cl.policy_id
+                  group by p.product_id
+                ),
+                premium_by_product as (
+                  select
+                    product_id,
+                    count(policy_id) as policy_count,
+                    sum(annual_premium) as annual_premium
+                  from public.policies
+                  group by product_id
+                )
+                select
+                  prod.product_name,
+                  prod.line_of_business,
+                  coalesce(pb.policy_count, 0) as policy_count,
+                  coalesce(cb.claim_count, 0) as claim_count,
+                  coalesce(cb.paid_amount, 0) as paid_amount,
+                  coalesce(cb.reserve_amount, 0) as reserve_amount,
+                  coalesce(cb.incurred_amount, 0) as incurred_amount,
+                  coalesce(pb.annual_premium, 0) as annual_premium,
+                  coalesce(cb.incurred_amount, 0)::numeric / nullif(pb.annual_premium, 0) as claims_ratio
+                from public.products prod
+                left join claims_by_product cb on cb.product_id = prod.product_id
+                left join premium_by_product pb on pb.product_id = prod.product_id
+                where coalesce(cb.claim_count, 0) > 0
+                order by claims_ratio desc nulls last, incurred_amount desc nulls last) as intelligence_sql_limited_result limit 25",Product: PRUHealth VHIS VIP Plan (HK synthetic); Claims ratio: 33.9%; Incurred amount: S$17.82M,,"For Claims Manager, PRUHealth VHIS VIP Plan (HK synthetic) has the highest claims pressure in the result. The claims ratio is 33.9%, based on S$17.82M incurred claims against S$52.59M annual premium.",
+PASS,Sales Director,Which products are declining in new sales?,PASS,6,0.8425,"select * from (select
+              prod.line_of_business,
+              count(*) as policy_count,
+              sum(p.annual_premium) as annual_premium
+            from public.policies p
+            join public.products prod on prod.product_id = p.product_id
+            group by prod.line_of_business
+            order by annual_premium desc) as intelligence_sql_limited_result limit 25","Top line of business: wealth; Policy count: 1,943; Annual premium: S$108.65M",,"wealth is the largest visible line of business in the SQL result, with 1,943 policies and S$108.65M annual premium. This is an internal portfolio view, not an external market view.",
+BLOCKED,Sales Director,Where is the largest cross-sell opportunity?,FAIL,6,0.8175,"select * from (select
+              prod.line_of_business,
+              count(*) as policy_count,
+              sum(p.annual_premium) as annual_premium
+            from public.policies p
+            join public.products prod on prod.product_id = p.product_id
+            group by prod.line_of_business
+            order by annual_premium desc) as intelligence_sql_limited_result limit 25","Top line of business: wealth; Policy count: 1,943; Annual premium: S$108.65M",,"I cannot publish a supported insurance insight for this question from the current SQL result. The main gap is: Model-score or customer-level evidence is limited for this question., The SQL result is a generic product-line portfolio proxy and must not be used to answer this question..",
+PASS,Sales Director,Which regions are underperforming against target?,PASS,6,0.8425,"select * from (select
+              prod.line_of_business,
+              count(*) as policy_count,
+              sum(p.annual_premium) as annual_premium
+            from public.policies p
+            join public.products prod on prod.product_id = p.product_id
+            group by prod.line_of_business
+            order by annual_premium desc) as intelligence_sql_limited_result limit 25","Top line of business: wealth; Policy count: 1,943; Annual premium: S$108.65M",,"wealth is the largest visible line of business in the SQL result, with 1,943 policies and S$108.65M annual premium. This is an internal portfolio view, not an external market view.",
+PARTIAL,Sales Director,Which products are declining in the market?,PARTIAL,6,0.8425,"select * from (select
+              prod.line_of_business,
+              count(*) as policy_count,
+              sum(p.annual_premium) as annual_premium
+            from public.policies p
+            join public.products prod on prod.product_id = p.product_id
+            group by prod.line_of_business
+            order by annual_premium desc) as intelligence_sql_limited_result limit 25","Top line of business: wealth; Policy count: 1,943; Annual premium: S$108.65M",External market share or competitor sales data,"I can partially answer this using the current data. The platform does not contain external market share or competitor sales data. Using internal policy and premium data instead, wealth is the largest visible line of business with 1,943 policies and S$108.65M annual premium in the result preview.",
+PASS,Sales Director,What product line has the largest premium concentration?,PASS,6,0.8425,"select * from (select
+              prod.line_of_business,
+              count(*) as policy_count,
+              sum(p.annual_premium) as annual_premium
+            from public.policies p
+            join public.products prod on prod.product_id = p.product_id
+            group by prod.line_of_business
+            order by annual_premium desc) as intelligence_sql_limited_result limit 25","Top line of business: wealth; Policy count: 1,943; Annual premium: S$108.65M",,"wealth is the largest visible line of business in the SQL result, with 1,943 policies and S$108.65M annual premium. This is an internal portfolio view, not an external market view.",
+PASS,Executive Leadership,What are the top risks to revenue this month?,PASS,6,0.8175,"select * from (select
+              prod.line_of_business,
+              count(*) as policy_count,
+              sum(p.annual_premium) as annual_premium
+            from public.policies p
+            join public.products prod on prod.product_id = p.product_id
+            group by prod.line_of_business
+            order by annual_premium desc) as intelligence_sql_limited_result limit 25","Top line of business: wealth; Policy count: 1,943; Annual premium: S$108.65M",,"wealth is the largest visible line of business in the SQL result, with 1,943 policies and S$108.65M annual premium. This is an internal portfolio view, not an external market view.",
+PASS,Executive Leadership,What hidden trends should leadership focus on?,PASS,6,0.8425,"select * from (select
+              prod.line_of_business,
+              count(*) as policy_count,
+              sum(p.annual_premium) as annual_premium
+            from public.policies p
+            join public.products prod on prod.product_id = p.product_id
+            group by prod.line_of_business
+            order by annual_premium desc) as intelligence_sql_limited_result limit 25","Top line of business: wealth; Policy count: 1,943; Annual premium: S$108.65M",,"wealth is the largest visible line of business in the SQL result, with 1,943 policies and S$108.65M annual premium. This is an internal portfolio view, not an external market view.",
+PASS,Executive Leadership,What are the top three growth opportunities?,PASS,6,0.8175,"select * from (select
+              prod.line_of_business,
+              count(*) as policy_count,
+              sum(p.annual_premium) as annual_premium
+            from public.policies p
+            join public.products prod on prod.product_id = p.product_id
+            group by prod.line_of_business
+            order by annual_premium desc) as intelligence_sql_limited_result limit 25","Top line of business: wealth; Policy count: 1,943; Annual premium: S$108.65M",,"wealth is the largest visible line of business in the SQL result, with 1,943 policies and S$108.65M annual premium. This is an internal portfolio view, not an external market view.",
+PASS,Executive Leadership,What is our current lapse rate?,PASS,1,0.905,"select * from (select
+              count(*) filter (where policy_status = 'lapsed') as lapsed_policies,
+              count(*) as total_policies,
+              count(*) filter (where policy_status = 'lapsed')::numeric / nullif(count(*), 0) as lapse_rate
+            from public.policies) as intelligence_sql_limited_result limit 25","Lapse rate: 5.3%; Lapsed policies: 1,053; Total policies: 20,000",,"The current book lapse rate is 5.3%, based on 1,053 lapsed policies out of 20,000 total policies.",
+PASS,Executive Leadership,Which business area needs immediate management attention?,PASS,6,0.8425,"select * from (select
+              prod.line_of_business,
+              count(*) as policy_count,
+              sum(p.annual_premium) as annual_premium
+            from public.policies p
+            join public.products prod on prod.product_id = p.product_id
+            group by prod.line_of_business
+            order by annual_premium desc) as intelligence_sql_limited_result limit 25","Top line of business: wealth; Policy count: 1,943; Annual premium: S$108.65M",,"wealth is the largest visible line of business in the SQL result, with 1,943 policies and S$108.65M annual premium. This is an internal portfolio view, not an external market view.",
+PASS,Data Analyst,Show SQL for lapse risk by product.,PASS,6,0.8425,"select * from (select
+              prod.line_of_business,
+              count(*) as policy_count,
+              sum(p.annual_premium) as annual_premium
+            from public.policies p
+            join public.products prod on prod.product_id = p.product_id
+            group by prod.line_of_business
+            order by annual_premium desc) as intelligence_sql_limited_result limit 25","Top line of business: wealth; Policy count: 1,943; Annual premium: S$108.65M",,"wealth is the largest visible line of business in the SQL result, with 1,943 policies and S$108.65M annual premium. This is an internal portfolio view, not an external market view.",
+PASS,Data Analyst,Show campaign conversion rate by channel.,PASS,8,0.905,"select * from (select
+                  c.channel,
+                  count(distinct c.campaign_id) as campaign_count,
+                  count(distinct ct.campaign_target_id) as targets,
+                  count(distinct cr.campaign_response_id) as responses,
+                  count(distinct cr.campaign_response_id) filter (where cr.conversion_flag) as conversions,
+                  count(distinct cr.campaign_response_id)::numeric / nullif(count(distinct ct.campaign_target_id), 0) as response_rate,
+                  count(distinct cr.campaign_response_id) filter (where cr.conversion_flag)::numeric / nullif(count(distinct ct.campaign_target_id), 0) as conversion_rate,
+                  sum(coalesce(cr.conversion_premium, 0)) as conversion_premium
+                from public.campaigns c
+                left join public.campaign_targets ct on ct.campaign_id = c.campaign_id
+                left join public.campaign_responses cr on cr.campaign_target_id = ct.campaign_target_id
+                group by c.channel
+                having count(distinct ct.campaign_target_id) > 0
+                order by conversion_rate desc nulls last, conversion_premium desc nulls last) as intelligence_sql_limited_result limit 25",Top campaign channel: agent_call; Policy conversion rate: 8.0%; Response rate: 91.4%; Converted premium: S$17.35M,,"For Data Analyst, agent_call is the strongest campaign channel in the returned result. It delivered 1,338 policy conversions, S$17.35M converted premium, a 8.0% policy conversion rate, and a 91.4% response rate across 172 campaigns.",
+BLOCKED,Data Analyst,Show customers with high CLV and high churn risk.,FAIL,6,0.8425,"select * from (select
+              prod.line_of_business,
+              count(*) as policy_count,
+              sum(p.annual_premium) as annual_premium
+            from public.policies p
+            join public.products prod on prod.product_id = p.product_id
+            group by prod.line_of_business
+            order by annual_premium desc) as intelligence_sql_limited_result limit 25","Top line of business: wealth; Policy count: 1,943; Annual premium: S$108.65M",,"I cannot publish a supported insurance insight for this question from the current SQL result. The main gap is: Model-score or customer-level evidence is limited for this question., The SQL result is a generic product-line portfolio proxy and must not be used to answer this question..",
+PASS,Data Analyst,Show policies sold in Singapore.,PASS,25,0.8675,"select * from (select
+              p.policy_number,
+              p.policy_status,
+              p.effective_date,
+              p.annual_premium,
+              prod.product_name,
+              prod.line_of_business,
+              a.country_code
+            from public.policies p
+            join public.products prod on prod.product_id = p.product_id
+            join public.customers c on c.customer_id = p.customer_id
+            join public.addresses a on a.party_id = c.party_id and a.is_current = true
+            where upper(a.country_code) in ('SG', 'SGP')
+               or lower(a.city) like '%singapore%'
+            order by p.effective_date desc) as intelligence_sql_limited_result limit 25",Previewed policies: 10; Previewed annual premium: S$54.6K; First product: PRULink InvestGrowth (SG synthetic),,"The Singapore policy view returned 10 recent policies in the preview, with previewed annual premium of S$54.6K. The first policy is POL-SG-00005760 for PRULink InvestGrowth (SG synthetic) with annual premium S$8.2K.",
+PASS,Data Analyst,Show internal premium by line of business.,PASS,6,0.8175,"select * from (select
+              prod.line_of_business,
+              count(*) as policy_count,
+              sum(p.annual_premium) as annual_premium
+            from public.policies p
+            join public.products prod on prod.product_id = p.product_id
+            group by prod.line_of_business
+            order by annual_premium desc) as intelligence_sql_limited_result limit 25","Top line of business: wealth; Policy count: 1,943; Annual premium: S$108.65M",,"wealth is the largest visible line of business in the SQL result, with 1,943 policies and S$108.65M annual premium. This is an internal portfolio view, not an external market view.",

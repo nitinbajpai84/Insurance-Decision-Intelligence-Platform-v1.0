@@ -1,0 +1,287 @@
+{
+  "generated_at": "2026-06-03T07:28:56.846490+00:00",
+  "frontend_url": "http://127.0.0.1:3000",
+  "api_url": "http://127.0.0.1:8071",
+  "results": [
+    {
+      "area": "frontend_route",
+      "name": "Home",
+      "status": "PASS",
+      "details": "HTTP 200; route=/; brand_present=True"
+    },
+    {
+      "area": "frontend_route",
+      "name": "Know Your Customer",
+      "status": "PASS",
+      "details": "HTTP 200; route=/?view=customer; brand_present=True"
+    },
+    {
+      "area": "frontend_route",
+      "name": "Know Your Agent",
+      "status": "PASS",
+      "details": "HTTP 200; route=/?view=agent; brand_present=True"
+    },
+    {
+      "area": "frontend_route",
+      "name": "Campaign Effectiveness",
+      "status": "PASS",
+      "details": "HTTP 200; route=/?view=campaign; brand_present=True"
+    },
+    {
+      "area": "frontend_route",
+      "name": "Agent Performance Tracking",
+      "status": "PASS",
+      "details": "HTTP 200; route=/?view=agent-performance; brand_present=True"
+    },
+    {
+      "area": "frontend_route",
+      "name": "Policy Lapse Risk",
+      "status": "PASS",
+      "details": "HTTP 200; route=/?view=lapse-risk; brand_present=True"
+    },
+    {
+      "area": "frontend_route",
+      "name": "AI Intelligence",
+      "status": "PASS",
+      "details": "HTTP 200; route=/ai-intelligence; brand_present=True"
+    },
+    {
+      "area": "frontend_route",
+      "name": "Insight Evidence Hub",
+      "status": "PASS",
+      "details": "HTTP 200; route=/insight-evidence-hub; brand_present=True"
+    },
+    {
+      "area": "backend_endpoint",
+      "name": "backend health",
+      "status": "PASS",
+      "details": "{\"status\":\"ok\",\"service\":\"insurance-decision-intelligence-api\"}"
+    },
+    {
+      "area": "backend_endpoint",
+      "name": "llm health",
+      "status": "PASS",
+      "details": "provider=gemini; gemini_available=True; quota_exhausted=False"
+    },
+    {
+      "area": "backend_endpoint",
+      "name": "sql context health",
+      "status": "PASS",
+      "details": "{\"verified_context_count\":289,\"embedding_count\":289,\"missing_embedding_count\":0,\"invalid_context_count\":21,\"planned_only_context_count\":0}"
+    },
+    {
+      "area": "backend_endpoint",
+      "name": "latest insight evidence",
+      "status": "PASS",
+      "details": "{\"insight_id\":\"23e8d5f9-4894-4fad-80ca-bfa0121815c3\",\"role\":\"Data Analyst\",\"question\":\"Show campaign conversion rate by channel.\",\"timestamp\":\"2026-06-03T07:26:26.100117+00:00\",\"recent_insight_runs\":[{\"snapshot_id\":\"23e8d5f9-4894-4fad-80ca-bfa0121815c3\",\"role\":\"Data Analyst\",\"question\":\"Show campaig"
+    },
+    {
+      "area": "sql_safety",
+      "name": "blocks destructive SQL",
+      "status": "PASS",
+      "details": "HTTP 200; response={\"valid\":false,\"sql\":null,\"referenced_tables\":[],\"safety_decision\":\"blocked_by_validator\",\"error_message\":\"Only SELECT or WITH statements are allowed\"}"
+    },
+    {
+      "area": "ai_question",
+      "name": "Agency Manager: Which agents have the highest premium at risk?",
+      "status": "PASS",
+      "details": "validation=VALIDATED; execution=executed; rows=25; answer=VALIDATED"
+    },
+    {
+      "area": "ai_question",
+      "name": "Agency Manager: Which agents need coaching this month?",
+      "status": "PASS",
+      "details": "validation=VALIDATED; execution=executed; rows=25; answer=VALIDATED"
+    },
+    {
+      "area": "ai_question",
+      "name": "Campaign Manager: Which campaign generated the highest policy conversion?",
+      "status": "PASS",
+      "details": "validation=VALIDATED; execution=executed; rows=25; answer=VALIDATED"
+    },
+    {
+      "area": "ai_question",
+      "name": "Campaign Manager: Which customer segment responded best to health campaigns?",
+      "status": "PASS",
+      "details": "validation=VALIDATED; execution=executed; rows=25; answer=VALIDATED"
+    },
+    {
+      "area": "ai_question",
+      "name": "Sales Director: Which products are declining in new sales?",
+      "status": "PASS",
+      "details": "validation=VALIDATED; execution=executed; rows=9; answer=VALIDATED"
+    },
+    {
+      "area": "ai_question",
+      "name": "Insurance Agent: Which policies are likely to lapse in the next 90 days?",
+      "status": "PASS",
+      "details": "validation=VALIDATED; execution=executed; rows=25; answer=VALIDATED"
+    },
+    {
+      "area": "ai_question",
+      "name": "Insurance Agent: Which customers should agents contact this week?",
+      "status": "PASS",
+      "details": "validation=VALIDATED; execution=executed; rows=25; answer=VALIDATED"
+    },
+    {
+      "area": "ai_question",
+      "name": "Executive Leadership: What are the top risks to revenue this month?",
+      "status": "PASS",
+      "details": "validation=VALIDATED; execution=executed; rows=5; answer=VALIDATED"
+    },
+    {
+      "area": "ai_question",
+      "name": "Executive Leadership: What are the top growth opportunities?",
+      "status": "PASS",
+      "details": "validation=VALIDATED; execution=executed; rows=7; answer=VALIDATED"
+    },
+    {
+      "area": "ai_question",
+      "name": "Data Analyst: Show campaign conversion rate by channel.",
+      "status": "PASS",
+      "details": "validation=VALIDATED; execution=executed; rows=8; answer=VALIDATED"
+    }
+  ],
+  "question_catalog": [
+    {
+      "role": "Agency Manager",
+      "question": "Which agents have the highest premium at risk?",
+      "demo_ready": true,
+      "validation_status": "VALIDATED",
+      "execution_status": "executed",
+      "row_count": 25,
+      "answer_status": "VALIDATED",
+      "sql_preview": "select * from (with latest_lapse_scores as (\n                  select distinct on (entity_id)\n                    entity_id as policy_id,\n                    coalesce(probability, score_value, 0) as lapse_score,\n                    score_band\n                  from public.model_scores\n                  where model_name in ('policy_lapse', 'policy_lapse_prediction', 'lapse_risk')\n                    and entity_type in ('policy', 'policies')\n                  order by entity_id, score_ts desc null",
+      "fallback_used": false,
+      "provider_used": "gemini",
+      "model_used": "validated_sql_template",
+      "unsupported_reason": ""
+    },
+    {
+      "role": "Agency Manager",
+      "question": "Which agents need coaching this month?",
+      "demo_ready": true,
+      "validation_status": "VALIDATED",
+      "execution_status": "executed",
+      "row_count": 25,
+      "answer_status": "VALIDATED",
+      "sql_preview": "select * from (with monthly as (\n                  select\n                    a.agent_id,\n                    a.agent_number,\n                    coalesce(pt.display_name, a.agent_number) as agent_name,\n                    a.territory_code as branch_or_territory,\n                    am.metric_month,\n                    coalesce(am.contacts_count, 0) as contacts_count,\n                    coalesce(am.quotes_count, 0) as quotes_count,\n                    coalesce(am.applications_count, 0) as appli",
+      "fallback_used": false,
+      "provider_used": "gemini",
+      "model_used": "validated_sql_template",
+      "unsupported_reason": ""
+    },
+    {
+      "role": "Campaign Manager",
+      "question": "Which campaign generated the highest policy conversion?",
+      "demo_ready": true,
+      "validation_status": "VALIDATED",
+      "execution_status": "executed",
+      "row_count": 25,
+      "answer_status": "VALIDATED",
+      "sql_preview": "select * from (select\n                  c.campaign_name,\n                  c.channel,\n                  count(distinct ct.campaign_target_id) as targets,\n                  count(distinct cr.campaign_response_id) as responses,\n                  count(distinct cr.campaign_response_id) filter (where cr.conversion_flag) as conversions,\n                  count(distinct cr.campaign_response_id) filter (where cr.conversion_flag)::numeric / nullif(count(distinct ct.campaign_target_id), 0) as conversion_",
+      "fallback_used": false,
+      "provider_used": "gemini",
+      "model_used": "validated_sql_template",
+      "unsupported_reason": ""
+    },
+    {
+      "role": "Campaign Manager",
+      "question": "Which customer segment responded best to health campaigns?",
+      "demo_ready": true,
+      "validation_status": "VALIDATED",
+      "execution_status": "executed",
+      "row_count": 25,
+      "answer_status": "VALIDATED",
+      "sql_preview": "select * from (select\n                  c.campaign_name,\n                  c.channel,\n                  count(distinct ct.campaign_target_id) as targets,\n                  count(distinct cr.campaign_response_id) as responses,\n                  count(distinct cr.campaign_response_id) filter (where cr.conversion_flag) as conversions,\n                  count(distinct cr.campaign_response_id) filter (where cr.conversion_flag)::numeric / nullif(count(distinct ct.campaign_target_id), 0) as conversion_",
+      "fallback_used": false,
+      "provider_used": "gemini",
+      "model_used": "validated_sql_template",
+      "unsupported_reason": ""
+    },
+    {
+      "role": "Sales Director",
+      "question": "Which products are declining in new sales?",
+      "demo_ready": true,
+      "validation_status": "VALIDATED",
+      "execution_status": "executed",
+      "row_count": 9,
+      "answer_status": "VALIDATED",
+      "sql_preview": "select * from (with anchor as (\n              select max(effective_date)::date as max_effective_date\n              from public.policies\n            ),\n            sales as (\n              select\n                prod.product_id,\n                prod.product_name,\n                prod.line_of_business,\n                count(p.policy_id) filter (\n                  where p.effective_date >= a.max_effective_date - interval '180 days'\n                ) as current_period_policies,\n                count",
+      "fallback_used": false,
+      "provider_used": "gemini",
+      "model_used": "validated_sql_template",
+      "unsupported_reason": ""
+    },
+    {
+      "role": "Insurance Agent",
+      "question": "Which policies are likely to lapse in the next 90 days?",
+      "demo_ready": true,
+      "validation_status": "VALIDATED",
+      "execution_status": "executed",
+      "row_count": 25,
+      "answer_status": "VALIDATED",
+      "sql_preview": "select * from (WITH latest_lapse_scores AS (\n              SELECT DISTINCT ON (entity_id)\n                entity_id AS policy_id,\n                COALESCE(probability, score_value, 0) AS lapse_score,\n                score_band\n              FROM public.model_scores\n              WHERE model_name IN ('policy_lapse', 'policy_lapse_prediction', 'lapse_risk')\n                AND entity_type IN ('policy', 'policies')\n              ORDER BY entity_id, score_ts DESC NULLS LAST, created_at DESC\n        ",
+      "fallback_used": false,
+      "provider_used": "gemini",
+      "model_used": "validated_sql_template",
+      "unsupported_reason": ""
+    },
+    {
+      "role": "Insurance Agent",
+      "question": "Which customers should agents contact this week?",
+      "demo_ready": true,
+      "validation_status": "VALIDATED",
+      "execution_status": "executed",
+      "row_count": 25,
+      "answer_status": "VALIDATED",
+      "sql_preview": "select * from (select\n              customer_id,\n              agent_id,\n              coalesce(action_type, 'Review next best action') as recommended_action,\n              product_id as recommended_product_id,\n              priority_score,\n              business_reason,\n              action_reason as suggested_message,\n              due_date as expiry_date,\n              confidence_score\n            from public.next_best_actions\n            where coalesce(action_status, 'open') not in ('complet",
+      "fallback_used": false,
+      "provider_used": "gemini",
+      "model_used": "validated_sql_template",
+      "unsupported_reason": ""
+    },
+    {
+      "role": "Executive Leadership",
+      "question": "What are the top risks to revenue this month?",
+      "demo_ready": true,
+      "validation_status": "VALIDATED",
+      "execution_status": "executed",
+      "row_count": 5,
+      "answer_status": "VALIDATED",
+      "sql_preview": "select * from (with latest_lapse_scores as (\n              select distinct on (entity_id)\n                entity_id as policy_id,\n                coalesce(probability, score_value, 0) as lapse_score,\n                score_band\n              from public.model_scores\n              where model_name in ('policy_lapse', 'policy_lapse_prediction', 'lapse_risk')\n                and entity_type in ('policy', 'policies')\n              order by entity_id, score_ts desc nulls last, created_at desc\n        ",
+      "fallback_used": false,
+      "provider_used": "gemini",
+      "model_used": "validated_sql_template",
+      "unsupported_reason": ""
+    },
+    {
+      "role": "Executive Leadership",
+      "question": "What are the top growth opportunities?",
+      "demo_ready": true,
+      "validation_status": "VALIDATED",
+      "execution_status": "executed",
+      "row_count": 7,
+      "answer_status": "VALIDATED",
+      "sql_preview": "select * from (SELECT\n  o.opportunity_stage,\n  COUNT(o.opportunity_id) AS number_of_opportunities,\n  SUM(o.estimated_premium) AS total_estimated_premium\nFROM public.opportunities AS o\nWHERE\n  o.opportunity_stage NOT IN ('Lost', 'Closed')\nGROUP BY\n  o.opportunity_stage\nORDER BY\n  total_estimated_premium DESC\nLIMIT 25) as intelligence_sql_limited_result limit 25",
+      "fallback_used": false,
+      "provider_used": "gemini",
+      "model_used": "gemini-2.5-flash-lite",
+      "unsupported_reason": ""
+    },
+    {
+      "role": "Data Analyst",
+      "question": "Show campaign conversion rate by channel.",
+      "demo_ready": true,
+      "validation_status": "VALIDATED",
+      "execution_status": "executed",
+      "row_count": 8,
+      "answer_status": "VALIDATED",
+      "sql_preview": "select * from (select\n                  c.channel,\n                  count(distinct c.campaign_id) as campaign_count,\n                  count(distinct ct.campaign_target_id) as targets,\n                  count(distinct cr.campaign_response_id) as responses,\n                  count(distinct cr.campaign_response_id) filter (where cr.conversion_flag) as conversions,\n                  count(distinct cr.campaign_response_id)::numeric / nullif(count(distinct ct.campaign_target_id), 0) as response_rate",
+      "fallback_used": false,
+      "provider_used": "gemini",
+      "model_used": "validated_sql_template",
+      "unsupported_reason": ""
+    }
+  ]
+}

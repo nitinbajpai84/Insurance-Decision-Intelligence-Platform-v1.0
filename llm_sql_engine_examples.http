@@ -1,0 +1,68 @@
+### Health
+GET http://127.0.0.1:8050/health
+
+### Analytics: campaigns performed best
+POST http://127.0.0.1:8050/copilot/query
+Content-Type: application/json
+
+{
+  "question": "Which campaigns performed best?",
+  "role_code": "campaign_manager",
+  "include_context": true,
+  "execute_sql": true,
+  "row_limit": 100,
+  "include_debug": true
+}
+
+### Recommendation: customers to call
+POST http://127.0.0.1:8050/copilot/query
+Content-Type: application/json
+
+{
+  "question": "Which customers should I call this week?",
+  "role_code": "insurance_agent",
+  "include_context": true,
+  "execute_sql": true,
+  "row_limit": 100,
+  "include_debug": true
+}
+
+### Explanation: high lapse risk
+POST http://127.0.0.1:8050/copilot/query
+Content-Type: application/json
+
+{
+  "question": "Why is this customer at high lapse risk?",
+  "role_code": "insurance_agent",
+  "include_context": true,
+  "execute_sql": true,
+  "row_limit": 100,
+  "include_debug": true
+}
+
+### Exploration: Singapore policies
+POST http://127.0.0.1:8050/copilot/query
+Content-Type: application/json
+
+{
+  "question": "Show me policies sold in Singapore.",
+  "role_code": "data_analyst",
+  "include_context": true,
+  "execute_sql": true,
+  "row_limit": 100,
+  "include_debug": true
+}
+
+### KPI: lapse rate
+POST http://127.0.0.1:8050/copilot/query
+Content-Type: application/json
+
+{
+  "question": "What is our current lapse rate?",
+  "role_code": "executive_leadership",
+  "include_context": true,
+  "execute_sql": true,
+  "row_limit": 100,
+  "include_debug": true
+}
+
