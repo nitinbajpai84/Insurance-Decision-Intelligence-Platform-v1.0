@@ -85,11 +85,11 @@ returns "Repository not found" unless you connect a StackBlitz account with repo
    regression, not app code — tracked in
    [vercel/next.js#84026](https://github.com/vercel/next.js/issues/84026) and
    [stackblitz/webcontainer-core#1978](https://github.com/stackblitz/webcontainer-core/issues/1978).
-   15.4.x is unaffected. `package.json` previously said `"next": "^15.0.0"`, which resolved
-   to the broken 15.5.19. Now pinned to exactly `15.4.1`, and **the lockfile was
-   regenerated** — StackBlitz installs from `package-lock.json`, so pinning `package.json`
-   alone would not have changed anything. If you ever bump Next again, re-test in
-   WebContainer before relying on it for a demo.
+   15.4.x is unaffected, so the project was first pinned to `15.4.1`. **Superseded — the
+   project now runs Next 16.3.0**; see "Next.js version" below for why. Note that whichever
+   version you use, the **lockfile is what decides**: StackBlitz and Vercel both install
+   from `package-lock.json`, so editing `package.json` without regenerating the lock changes
+   nothing.
 
 2. **The API URL fell back to localhost.** `services/*.ts` default to
    `http://127.0.0.1:3001` when `NEXT_PUBLIC_API_V2_URL` is unset, and `.env.local` is
@@ -107,6 +107,39 @@ cd frontend_v2
 npx vercel --prod
 ```
 Set the same `NEXT_PUBLIC_API_V2_URL` env var in the Vercel project settings.
+
+## Mobile access (Vercel)
+
+StackBlitz is an IDE — it boots a whole WebContainer and is heavy/unreliable on phone
+browsers. For demoing on a phone, deploy the frontend to Vercel and just open the URL.
+
+```powershell
+cd frontend_v2
+npx vercel --prod
+```
+
+The frontend needs no env var there: `services/apiBase.ts` sees a non-localhost hostname and
+targets the hosted Render backend automatically.
+
+**Deployment Protection must be turned off** or the URL redirects to a Vercel login page
+(useless for a demo, and it will block anyone you share it with):
+Vercel dashboard → project `frontend_v2` → **Settings** → **Deployment Protection** →
+set **Vercel Authentication** to **Disabled** → Save.
+
+### Next.js version
+
+`next` is pinned to **16.3.0**, and this pin is load-bearing in two directions:
+
+- **Below 16.3.0, Vercel refuses to deploy at all** — it hard-fails the build with
+  "Vulnerable version of Next.js detected". The advisory range is
+  `9.3.4-canary.0 – 16.3.0-preview.10`, which covers the whole 15.x line, so 15.4.1 *and*
+  15.5.19 are both blocked. 16.3.0 is the first patched stable release.
+- **15.5.x specifically is broken in WebContainer** (see above), so "just use latest 15" is
+  not an option either.
+
+16.3.0 is the version that satisfies both. It was verified to build clean and render all 14
+routes with no code changes (15 → 16 needed no migration for this app). If you bump Next
+again, re-check both constraints.
 
 ## Notes
 
