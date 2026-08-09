@@ -1,0 +1,35 @@
+name: Keep Render backend warm
+
+# Render's free tier spins the service down after ~15 minutes of no traffic;
+# the next request then pays a 30-90s cold-boot penalty (measured: 63.5s cold
+# vs 0.07-1.1s warm on 2026-08-08). This workflow pings /api/v2/health every
+# 10 minutes so Render never sees enough idle time to sleep it.
+#
+# Notes:
+# - GitHub disables scheduled workflows automatically after 60 days with no
+#   commits to the repo. If pings stop, push any commit to re-enable it, or
+#   trigger a run manually below.
+# - Cron intervals under 5 minutes aren't supported, and GitHub does not
+#   guarantee exact timing under load — treat "every 10 min" as approximate.
+# - This does NOT replace fixing the underlying cold-start behavior for a
+#   real client-facing demo; see DEPLOY.md for the paid always-on option.
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch: {} # lets you trigger a run manually from the Actions tab
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping backend health endpoint
+        run: |
+          set -e
+          status=$(curl -sS -o /tmp/health.json -w "%{http_code}" -m 90 \
+            https://insurance-poc-v2-backend-latest.onrender.com/api/v2/health)
+          echo "HTTP status: $status"
+          cat /tmp/health.json
+          if [ "$status" != "200" ]; then
+            echo "::warning::Backend health check returned $status"
+          fi

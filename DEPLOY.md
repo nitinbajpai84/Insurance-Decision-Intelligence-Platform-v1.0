@@ -57,10 +57,18 @@ docker push <your-dockerhub-username>/insurance-poc-v2-backend:latest
 5. Deploy, then confirm: `https://<your-service>.onrender.com/api/v2/health` returns
    `duckdb.status: ok` and `lancedb.status: ok`.
 
-**Free-tier note:** Render's free web services spin down after inactivity and take ~30-60s
-to wake on the next request — fine for a demo you're about to use, just expect the first
-`/api/v2/ask` after idle time to be slow. Upgrade to a paid instance if you need it always
-warm.
+**Free-tier note:** Render's free web services spin down after inactivity. Measured cold
+start on 2026-08-08: **63.5s** for the first request after idle, vs 0.07-1.1s once warm —
+this is almost certainly the "it's slow / not syncing" symptom if you hit it mid-demo. Two
+ways to address it:
+
+- **Free — keep-alive ping** (what's set up here): `.github/workflows/keep-backend-warm.yml`
+  pings `/api/v2/health` every 10 minutes via GitHub Actions, so Render never idles long
+  enough to sleep. GitHub auto-disables scheduled workflows after 60 days with no commits —
+  push anything to re-enable, or trigger a run manually from the Actions tab.
+- **Paid — always-on instance (~$7/mo Starter):** the only way to *guarantee* zero cold
+  starts. Worth it if this needs to be reliably fast for a real client-facing demo rather
+  than personal/occasional use.
 
 ## 5. Open the frontend anywhere, pointed at the hosted backend
 
