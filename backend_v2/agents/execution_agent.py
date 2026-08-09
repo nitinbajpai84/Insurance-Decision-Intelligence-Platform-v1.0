@@ -18,7 +18,7 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from backend_v2.config import DUCKDB_PATH, GEMINI_MODEL, SQL_ROW_LIMIT, require_api_key
+from backend_v2.config import DUCKDB_CONFIG, DUCKDB_PATH, GEMINI_MODEL, SQL_ROW_LIMIT, require_api_key
 from backend_v2.agents.models import ContextResult, ExecutionResult
 from backend_v2.agents.sql_agent import enforce_limit, parse_llm_json, validate_sql
 
@@ -37,7 +37,7 @@ def _json_safe(value: Any) -> Any:
 
 def _run_sql(sql: str) -> tuple[list[dict[str, Any]], list[str], bool]:
     """EXPLAIN then execute on a read-only connection. Returns (rows, columns, explain_passed)."""
-    conn = duckdb.connect(DUCKDB_PATH, read_only=True)
+    conn = duckdb.connect(DUCKDB_PATH, read_only=True, config=DUCKDB_CONFIG)
     try:
         conn.execute(f"EXPLAIN {sql}")  # plan check mirrors V1's Supabase EXPLAIN gate
         explain_passed = True

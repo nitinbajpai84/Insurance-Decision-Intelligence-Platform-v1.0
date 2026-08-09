@@ -22,6 +22,7 @@ if str(PROJECT_ROOT) not in sys.path:
 
 from backend_v2.agents.orchestrator import stream_pipeline
 from backend_v2.config import (
+    DUCKDB_CONFIG,
     DUCKDB_PATH,
     GEMINI_API_KEY,
     GEMINI_MODEL,
@@ -99,7 +100,7 @@ def get_roles() -> list[dict[str, str]]:
 # ---------------------------------------------------------------------------
 @router.get("/glossary")
 def get_glossary() -> list[dict[str, Any]]:
-    conn = duckdb.connect(DUCKDB_PATH, read_only=True)
+    conn = duckdb.connect(DUCKDB_PATH, read_only=True, config=DUCKDB_CONFIG)
     try:
         rows = conn.execute(
             "SELECT glossary_id, term, domain, definition, synonyms, owner, active_flag, updated_at "
@@ -125,7 +126,7 @@ class GlossaryUpdateRequest(BaseModel):
 @router.post("/glossary/update")
 def update_glossary(request: GlossaryUpdateRequest) -> dict[str, Any]:
     """Governed update: DuckDB write + LanceDB re-embed + audit trail."""
-    conn = duckdb.connect(DUCKDB_PATH, read_only=False)
+    conn = duckdb.connect(DUCKDB_PATH, read_only=False, config=DUCKDB_CONFIG)
     try:
         row = conn.execute(
             "SELECT term, definition, coalesce(domain,''), coalesce(synonyms,'') "

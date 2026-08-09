@@ -70,6 +70,22 @@ ALLOW_UNGOVERNED_FALLBACK: bool = _bool("ALLOW_UNGOVERNED_FALLBACK", False)
 DUCKDB_PATH: str = _str("DUCKDB_PATH", str(PROJECT_ROOT / "database" / "insurance_v2.duckdb"))
 LANCEDB_PATH: str = _str("LANCEDB_PATH", str(PROJECT_ROOT / "lance_store"))
 
+# DuckDB caches one instance per file per process, keyed by configuration —
+# opening the same file with two different configs in one process raises
+# ConnectionException: "different configuration than existing connections"
+# (see graph/db_util.py). So every duckdb.connect() call anywhere in the app
+# MUST pass this exact same dict; do not add a differently-configured connect
+# call without updating this constant.
+#
+# The values themselves matter separately: Render's free tier is a 512MB hard
+# ceiling (OOM-killed, not throttled), and DuckDB's buffer manager is
+# otherwise unbounded. Override via DUCKDB_MEMORY_LIMIT / DUCKDB_THREADS on a
+# host with more headroom.
+DUCKDB_CONFIG: dict[str, object] = {
+    "memory_limit": _str("DUCKDB_MEMORY_LIMIT", "256MB"),
+    "threads": _int("DUCKDB_THREADS", 2),
+}
+
 # --- API --------------------------------------------------------------------
 API_PORT: int = _int("API_PORT", 3001)
 # CORS_ORIGINS env var: comma-separated origins, or "*" to allow any origin

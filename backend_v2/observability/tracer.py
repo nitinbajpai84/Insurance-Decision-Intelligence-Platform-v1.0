@@ -15,7 +15,7 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from backend_v2.config import DUCKDB_PATH
+from backend_v2.config import DUCKDB_CONFIG, DUCKDB_PATH
 
 
 def log_step(
@@ -29,7 +29,7 @@ def log_step(
 ) -> None:
     """Insert one reasoning step. Never raises — tracing must not break the pipeline."""
     try:
-        conn = duckdb.connect(DUCKDB_PATH, read_only=False)
+        conn = duckdb.connect(DUCKDB_PATH, read_only=False, config=DUCKDB_CONFIG)
         try:
             conn.execute(
                 "INSERT INTO agent_reasoning_log "
@@ -61,7 +61,7 @@ def _rows_to_dicts(rows: list[tuple]) -> list[dict[str, Any]]:
 def get_trace(query_id: str) -> list[dict[str, Any]]:
     """Full reasoning chain for one query — Insight Evidence Hub detail view."""
     try:
-        conn = duckdb.connect(DUCKDB_PATH, read_only=True)
+        conn = duckdb.connect(DUCKDB_PATH, read_only=True, config=DUCKDB_CONFIG)
     except Exception as exc:
         print(f"[tracer] WARN cannot open DB for get_trace: {exc}", file=sys.stderr)
         return []
@@ -78,7 +78,7 @@ def get_trace(query_id: str) -> list[dict[str, Any]]:
 def get_recent_traces(limit: int = 20) -> list[dict[str, Any]]:
     """Last N distinct queries with summaries — Evidence Hub history view."""
     try:
-        conn = duckdb.connect(DUCKDB_PATH, read_only=True)
+        conn = duckdb.connect(DUCKDB_PATH, read_only=True, config=DUCKDB_CONFIG)
     except Exception as exc:
         print(f"[tracer] WARN cannot open DB for get_recent_traces: {exc}", file=sys.stderr)
         return []
@@ -120,7 +120,7 @@ def get_recent_traces(limit: int = 20) -> list[dict[str, Any]]:
 def cache_hit_rate_24h() -> float:
     """Share of queries in the last 24h that hit the semantic cache."""
     try:
-        conn = duckdb.connect(DUCKDB_PATH, read_only=True)
+        conn = duckdb.connect(DUCKDB_PATH, read_only=True, config=DUCKDB_CONFIG)
     except Exception:
         return 0.0
     try:

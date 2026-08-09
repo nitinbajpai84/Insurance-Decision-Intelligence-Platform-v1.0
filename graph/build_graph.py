@@ -29,6 +29,10 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 PROJECT_ROOT = SCRIPT_DIR.parent
 DB_PATH = str(PROJECT_ROOT / "database" / "insurance_v2.duckdb")
 
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+from backend_v2.config import DUCKDB_CONFIG
+
 PROPERTY_GRAPH_DDL = """
 CREATE OR REPLACE PROPERTY GRAPH insurance_graph
 VERTEX TABLES (graph_nodes_all LABEL gnode)
@@ -177,7 +181,7 @@ def add_edge(con, src, src_type, dst, dst_type, edge_type, weight=None, metadata
 
 
 def main() -> int:
-    con = duckdb.connect(DB_PATH, read_only=False)
+    con = duckdb.connect(DB_PATH, read_only=False, config=DUCKDB_CONFIG)
     try:
         # 1. schema
         con.execute((SCRIPT_DIR / "graph_schema.sql").read_text(encoding="utf-8"))

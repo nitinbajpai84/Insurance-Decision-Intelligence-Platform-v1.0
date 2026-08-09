@@ -24,10 +24,21 @@ _CONFIG_ERR = "different configuration"
 
 
 def robust_connect(path: str, read_only: bool, retries: int = 6, delay: float = 0.15):
+    # Lazy + defensive import: robust_connect is also used by standalone
+    # graph-building scripts invoked directly (python graph/build_graph.py
+    # etc.), which don't put the project root on sys.path themselves.
+    import sys
+    from pathlib import Path as _Path
+
+    project_root = _Path(__file__).resolve().parent.parent
+    if str(project_root) not in sys.path:
+        sys.path.insert(0, str(project_root))
+    from backend_v2.config import DUCKDB_CONFIG
+
     last: Exception | None = None
     for attempt in range(retries):
         try:
-            return duckdb.connect(path, read_only=read_only)
+            return duckdb.connect(path, read_only=read_only, config=DUCKDB_CONFIG)
         except duckdb.ConnectionException as exc:
             last = exc
             if _CONFIG_ERR in str(exc) and attempt < retries - 1:

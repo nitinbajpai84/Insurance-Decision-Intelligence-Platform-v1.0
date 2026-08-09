@@ -11,6 +11,9 @@ name: Keep Render backend warm
 #   trigger a run manually below.
 # - Cron intervals under 5 minutes aren't supported, and GitHub does not
 #   guarantee exact timing under load — treat "every 10 min" as approximate.
+# - Pings "/" (a static, zero-DB-touch route), not /api/v2/health, which opens
+#   a fresh LanceDB connection and count_rows()s every table on every call --
+#   too heavy to run every 10 minutes on a 512MB instance.
 # - This does NOT replace fixing the underlying cold-start behavior for a
 #   real client-facing demo; see DEPLOY.md for the paid always-on option.
 
@@ -23,13 +26,13 @@ jobs:
   ping:
     runs-on: ubuntu-latest
     steps:
-      - name: Ping backend health endpoint
+      - name: Ping backend root endpoint
         run: |
           set -e
-          status=$(curl -sS -o /tmp/health.json -w "%{http_code}" -m 90 \
-            https://insurance-poc-v2-backend-latest.onrender.com/api/v2/health)
+          status=$(curl -sS -o /tmp/root.json -w "%{http_code}" -m 90 \
+            https://insurance-poc-v2-backend-latest.onrender.com/)
           echo "HTTP status: $status"
-          cat /tmp/health.json
+          cat /tmp/root.json
           if [ "$status" != "200" ]; then
-            echo "::warning::Backend health check returned $status"
+            echo "::warning::Backend ping returned $status"
           fi

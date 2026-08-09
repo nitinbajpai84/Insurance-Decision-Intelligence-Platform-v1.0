@@ -18,11 +18,22 @@ from __future__ import annotations
 
 import logging
 import os
+import sys
 import time
 from pathlib import Path
 from typing import Any
 
 import duckdb
+
+_PROJECT_ROOT_FOR_IMPORT = Path(__file__).resolve().parent.parent
+if str(_PROJECT_ROOT_FOR_IMPORT) not in sys.path:
+    sys.path.insert(0, str(_PROJECT_ROOT_FOR_IMPORT))
+
+# Single source of truth for DuckDB config — see backend_v2/config.py's
+# DUCKDB_CONFIG docstring for why every connect() call in the app must use
+# the exact same dict (DuckDB caches one instance per file per process,
+# keyed by configuration; mismatched configs raise ConnectionException).
+from backend_v2.config import DUCKDB_CONFIG as _DUCKDB_CONFIG
 
 logger = logging.getLogger("insurance_v2.db")
 if not logger.handlers:
@@ -65,7 +76,7 @@ def read_connection() -> duckdb.DuckDBPyConnection:
     """Read-only connection — safe for the SQL agent / analytics paths."""
     path = get_duckdb_path()
     logger.debug("Opening read-only connection: %s", path)
-    return duckdb.connect(path, read_only=True)
+    return duckdb.connect(path, read_only=True, config=_DUCKDB_CONFIG)
 
 
 def write_connection() -> duckdb.DuckDBPyConnection:
@@ -75,7 +86,7 @@ def write_connection() -> duckdb.DuckDBPyConnection:
     """
     path = get_duckdb_path()
     logger.debug("Opening write connection: %s", path)
-    return duckdb.connect(path, read_only=False)
+    return duckdb.connect(path, read_only=False, config=_DUCKDB_CONFIG)
 
 
 def execute_query(
@@ -111,7 +122,7 @@ def health_check() -> dict[str, Any]:
     result: dict[str, Any] = {"status": "ok", "duckdb_path": path, "exists": Path(path).exists()}
     try:
         started = time.perf_counter()
-        conn = duckdb.connect(path, read_only=True)
+        conn = duckdb.connect(path, read_only=True, config=_DUCKDB_CONFIG)
         try:
             conn.execute("SELECT 1").fetchone()
             result["table_count"] = conn.execute(

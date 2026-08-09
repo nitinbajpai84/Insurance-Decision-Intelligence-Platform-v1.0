@@ -23,7 +23,7 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from backend_v2.config import DUCKDB_PATH
+from backend_v2.config import DUCKDB_CONFIG, DUCKDB_PATH
 
 router = APIRouter(prefix="/api/v2", tags=["data-products"])
 
@@ -44,7 +44,7 @@ def _json_safe(value: Any) -> Any:
 
 
 def query(sql: str, params: list[Any] | None = None) -> list[dict[str, Any]]:
-    conn = duckdb.connect(DUCKDB_PATH, read_only=True)
+    conn = duckdb.connect(DUCKDB_PATH, read_only=True, config=DUCKDB_CONFIG)
     try:
         cur = conn.execute(sql, params or [])
         cols = [d[0] for d in (cur.description or [])]
