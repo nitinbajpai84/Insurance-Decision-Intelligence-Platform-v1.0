@@ -70,6 +70,46 @@ ways to address it:
   starts. Worth it if this needs to be reliably fast for a real client-facing demo rather
   than personal/occasional use.
 
+### OOM crash loop (found and fixed 2026-08-09)
+
+**Symptom:** Render dashboard showed a repeating "Instance failed: ran out of memory (used
+over 512MB)" -> recover -> fail again, roughly every minute.
+
+**Two contributing causes:**
+
+1. `/api/v2/health` (what the keep-alive workflow above was pinging every 10 minutes) opens
+   a fresh LanceDB connection and `count_rows()`s every table on *every single call*, with
+   nothing explicitly released. The keep-alive ping now targets `/` instead — a static route
+   that touches neither DuckDB nor LanceDB.
+2. No DuckDB connection anywhere set a `memory_limit`, so its buffer manager was free to grow
+   unbounded against Render's 512MB hard ceiling. `backend_v2.config.DUCKDB_CONFIG`
+   (`memory_limit=256MB, threads=2`, both overridable via env) is now the single enforced
+   cap, applied to every `duckdb.connect()` call in the live request path.
+
+DuckDB caches one instance per file per process, keyed by configuration — opening the same
+file with two *different* configs in one process raises `ConnectionException` ("different
+configuration than existing connections"). So the fix had to be applied consistently to
+every connection (execution agent, data products, glossary read/write, the tracer that logs
+every pipeline step, and `graph/db_util.robust_connect` — the primary grounded-SQL path),
+not just the ones that looked heaviest.
+
+**Verified with a real 512MB cgroup limit** (`docker run --memory=512m --memory-swap=512m`,
+which enforces the same Linux memory accounting Render's OOM-killer actually uses — Windows
+process metrics do not, since Windows aggressively trims an idle process's working set):
+
+| Scenario | Result |
+|---|---|
+| Baseline at idle | 223MB / 512MB (43.6%) |
+| 30 concurrent mixed read/write requests | 0 errors, 0 `ConnectionException`, peaked ~241MB, settled to 227MB |
+| 5 real sequential `/api/v2/ask` questions | 0 errors, peaked **414MB (81%)**, settled to 307MB after |
+
+**Honest caveat:** 81% peak under 5 sequential real AI queries means this is *not* a hard
+guarantee under heavy concurrent load — several people asking questions at once could still
+approach the ceiling. The fix eliminates the specific waste that was crash-looping the
+service (repeated LanceDB churn from the health-check ping, an unbounded DuckDB), but if OOM
+crashes recur specifically during heavy multi-question bursts rather than after idle time,
+the durable fix is the paid tier, not further memory tuning.
+
 ## 5. Open the frontend anywhere, pointed at the hosted backend
 
 **Via StackBlitz (no local setup needed, no config required):**
