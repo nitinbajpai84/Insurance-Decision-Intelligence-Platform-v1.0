@@ -18,6 +18,7 @@ This module does NOT modify the Prompt-6 sql_agent; it imports its helpers.
 """
 from __future__ import annotations
 
+import json
 import re
 import sys
 from dataclasses import dataclass, field
@@ -85,11 +86,49 @@ class GroundedSQLResult:
             "canonical_views": self.allowed_surface.get("views", []),
             "allowed_tables": self.allowed_surface.get("tables", []),
             "subgraph_triples": self.subgraph_triples[:12],
-            "applicable_rules": [r.get("name") for r in self.applicable_rules],
+            # Full governed rule detail (not just names) so the UI can show
+            # "which threshold governed this answer" and link to its editor.
+            "applicable_rules": [
+                {"rule_id": r.get("rule_id"), "name": r.get("name"),
+                 "threshold_json": r.get("threshold_json") or {},
+                 "action_text": r.get("action_text"), "assigned_role": r.get("assigned_role")}
+                for r in self.applicable_rules
+            ],
             "traversal_path": self.traversal_path,
             "validation": self.validation,
             "grounded": True,
         }
+
+
+def _rules_for_metrics(metric_ids: list[str]) -> list[dict[str, Any]]:
+    """Active decision_rules that `considers` any of the given metric node ids.
+    See generate_grounded_sql for why this must be direct, not graph-traversed."""
+    if not metric_ids:
+        return []
+    con = robust_connect(DB_PATH, read_only=True)
+    try:
+        ph = ",".join("?" * len(metric_ids))
+        rows = con.execute(
+            f"select distinct dr.rule_id, dr.name, dr.condition_text, dr.action_text, "
+            f"dr.assigned_role, dr.priority, dr.threshold_json "
+            f"from graph_edges ge join decision_rules dr on dr.rule_id = replace(ge.src_node_id, 'rule::', '') "
+            f"where ge.dst_node_id in ({ph}) and ge.edge_type = 'considers' and dr.status = 'active' "
+            f"order by dr.priority",
+            metric_ids,
+        ).fetchall()
+        out = []
+        for rid, name, cond, action, role_, prio, thresholds in rows:
+            if isinstance(thresholds, str):
+                try:
+                    thresholds = json.loads(thresholds)
+                except (ValueError, TypeError):
+                    thresholds = {}
+            out.append({"rule_id": rid, "name": name, "condition_text": cond, "action_text": action,
+                       "assigned_role": role_, "priority": prio, "threshold_json": thresholds or {},
+                       "reached_via": "direct_metric_match"})
+        return out
+    finally:
+        con.close()
 
 
 def _binding_ids(con, metric_ids: list[str]) -> list[str]:
@@ -107,7 +146,9 @@ def _primary_formula(surface: dict[str, Any]) -> str:
     return ""
 
 
-def _build_prompt(question: str, role: str, surface: dict[str, Any], gctx, repair: dict | None = None) -> str:
+def _build_prompt(question: str, role: str, surface: dict[str, Any], gctx,
+                  applicable_rules: list[dict[str, Any]] | None = None,
+                  repair: dict | None = None) -> str:
     views = ", ".join(surface.get("views", [])) or "(none — use base tables)"
     tables = "\n".join(f"- {t}" for t in surface.get("tables", [])) or "- (none)"
     columns = "\n".join(f"- {c}" for c in surface.get("columns", [])) or "- (none)"
@@ -116,7 +157,17 @@ def _build_prompt(question: str, role: str, surface: dict[str, Any], gctx, repai
     row_filter = surface.get("row_filter_for_role")
     formula = _primary_formula(surface)
     triples = "\n".join(f"- {t}" for t in (gctx.subgraph_summary or [])[:12]) or "- (none)"
-    rules = "\n".join(f"- {r.get('name')}: {r.get('action_text')}" for r in (gctx.applicable_rules or [])[:5]) or "- (none)"
+    # applicable_rules (threshold_json-aware, direct-metric-matched — see
+    # generate_grounded_sql) drives WHERE-clause cut-offs. Without the numeric
+    # value here, the SQL hardcodes whatever number the LLM's training data
+    # suggests, which then silently diverges from the governed rule shown to
+    # the answer-writing step: the query and the prose disagree.
+    rule_lines = []
+    for r in (applicable_rules or [])[:5]:
+        th = r.get("threshold_json") or {}
+        th_text = f" [governed threshold: {', '.join(f'{k}={v}' for k, v in th.items())}]" if th else ""
+        rule_lines.append(f"- {r.get('name')}: {r.get('action_text')}{th_text}")
+    rules = "\n".join(rule_lines) or "- (none)"
 
     repair_block = ""
     if repair:
@@ -158,6 +209,9 @@ APPLICABLE BUSINESS RULES:
 {rules}
 {repair_block}
 RULES:
+- If a rule above carries a [governed threshold: ...], and the question implies filtering
+  or flagging against that cut-off, use that EXACT numeric value in the WHERE clause —
+  never substitute a different or rounder number from general knowledge.
 - One single read-only SELECT (or WITH ... SELECT). No INSERT/UPDATE/DELETE/DDL.
 - Use ONLY the allowed tables/views and columns above.
 - GRAIN: pick the allowed table/view whose grain matches the question. If the
@@ -203,8 +257,26 @@ async def generate_grounded_sql(question: str, role: str = "Executive Leadership
     result.allowed_surface = surface
     result.metrics_used = surface.get("metric_ids", [])
     result.subgraph_triples = gctx.subgraph_summary or []
-    result.applicable_rules = gctx.applicable_rules or []
     result.traversal_path = gctx.traversal_path
+
+    # Rules found by graph_context_agent's fuzzy entry-node traversal (from
+    # question-embedding matches) PLUS rules resolved directly from the metrics
+    # binding_resolver actually confirmed. These frequently disagree: a question
+    # like "which agents need coaching?" can vector-match a loosely-related term
+    # while the SQL that actually gets generated queries `persistency` — so a
+    # rule governing persistency must still surface even when the fuzzy
+    # traversal missed it. Direct resolution is authoritative because it's keyed
+    # on the metric the SQL will actually use, not on question phrasing.
+    direct_rules = _rules_for_metrics(result.metrics_used) if result.metrics_used else []
+    seen_ids = set()
+    result.applicable_rules = []
+    for r in direct_rules + (gctx.applicable_rules or []):
+        rid = r.get("rule_id")
+        if rid and rid in seen_ids:
+            continue
+        if rid:
+            seen_ids.add(rid)
+        result.applicable_rules.append(r)
 
     # 2. GUARD — no sanctioned metric => unsupported (do NOT generate SQL)
     if not result.metrics_used:
@@ -230,7 +302,7 @@ async def generate_grounded_sql(question: str, role: str = "Executive Leadership
 
     # 3-4. PROMPT + GENERATE
     try:
-        sql = await _generate(_build_prompt(question, role, surface, gctx))
+        sql = await _generate(_build_prompt(question, role, surface, gctx, result.applicable_rules))
     except Exception as exc:
         result.validation = {"ok": False, "violations": [f"LLM generation failed: {type(exc).__name__}: {exc}"], "repaired": False}
         result.generation_time_ms = int((perf_counter() - started) * 1000)
@@ -243,7 +315,7 @@ async def generate_grounded_sql(question: str, role: str = "Executive Leadership
     repaired = False
     if not v["ok"]:
         try:
-            fixed = await _generate(_build_prompt(question, role, surface, gctx,
+            fixed = await _generate(_build_prompt(question, role, surface, gctx, result.applicable_rules,
                                                   repair={"violations": v["violations"], "sql": sql}))
             fixed = _enforce_limit(fixed)
             v2 = binding_resolver.validate_sql_against_binding(fixed, surface)

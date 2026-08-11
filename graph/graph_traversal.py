@@ -9,6 +9,7 @@ passed in.
 """
 from __future__ import annotations
 
+import json
 import sys
 from pathlib import Path
 from typing import Any, Iterable
@@ -139,14 +140,20 @@ def find_decision_paths(question_entities: list[str], hops: int = 3,
         metric_ids = {nid for nid in reachable if str(nid).startswith("metric::")}
         results: list[dict[str, Any]] = []
         rules = con.execute(
-            "select rule_id, name, condition_text, action_text, assigned_role, priority, status "
+            "select rule_id, name, condition_text, action_text, assigned_role, priority, status, "
+            # threshold_json carries the GOVERNED numbers (e.g. lapse_risk 0.70).
+            # Without it downstream, the insight LLM invents its own cut-offs.
+            "threshold_json "
             "from decision_rules "
-            # Adaptation loop (Prompt 13): rejected/needs_review rules are withheld
-            # from retrieval until a reviewer re-activates them.
-            "where coalesce(status, 'active') not in ('needs_review', 'rejected')"
+            # Only status='active' governs answers. This used to be an allowlist-by-
+            # exclusion (only 'needs_review'/'rejected' were withheld), which meant
+            # newly captured 'draft' rules -- never reviewed by anyone -- silently
+            # applied as if governing. NULL status is treated as active for rows
+            # seeded before the status column existed.
+            "where coalesce(status, 'active') = 'active'"
         ).fetchall()
         adj = _adjacency(sub["edges"])
-        for rid, name, cond, action, role_, prio, status in rules:
+        for rid, name, cond, action, role_, prio, status, thresholds in rules:
             rnode = f"rule::{rid}"
             considered = {e["dst"] for e in sub["edges"] if e["src"] == rnode}
             direct = rnode in rule_node_ids
@@ -154,9 +161,15 @@ def find_decision_paths(question_entities: list[str], hops: int = 3,
             if not (direct or via_metric):
                 continue
             path = _explain_path(question_entities, rnode, adj) if direct else None
+            if isinstance(thresholds, str):
+                try:
+                    thresholds = json.loads(thresholds)
+                except (ValueError, TypeError):
+                    thresholds = {}
             results.append({
                 "rule_id": rid, "name": name, "condition_text": cond, "action_text": action,
                 "assigned_role": role_, "priority": prio, "status": status,
+                "threshold_json": thresholds or {},
                 "reached_via": "direct" if direct else "shared_metric",
                 "considered_metrics": sorted(considered & metric_ids),
                 "path": path,

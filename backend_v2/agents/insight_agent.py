@@ -37,16 +37,36 @@ def _format_rows(rows: list[dict[str, Any]]) -> str:
     return "\n".join(lines)
 
 
+def _format_rules(rules: list[dict[str, Any]] | None) -> str:
+    """Governed decision_rules (thresholds, escalation actions) as a hard
+    constraint block. Without this, the LLM invents its own cut-offs (e.g.
+    "flagged agents below 70%") that no one in the business owns or can
+    change — see docs/context-layer/DESIGN.md norms discussion."""
+    if not rules:
+        return "- (no governed rule matched this question — say so; do not invent a threshold)"
+    lines = []
+    for r in rules:
+        thresholds = r.get("threshold_json") or {}
+        th_text = ", ".join(f"{k} = {v}" for k, v in thresholds.items()) or "(no numeric threshold)"
+        lines.append(
+            f"- [{r.get('name')}] {th_text} -> {r.get('action_text')} "
+            f"(owner: {r.get('assigned_role') or 'unassigned'}, rule_id: {r.get('rule_id')})"
+        )
+    return "\n".join(lines)
+
+
 def build_prompt(
     question: str,
     role: str,
     context: ContextResult,
     sql_result: SQLResult,
     exec_result: ExecutionResult,
+    applicable_rules: list[dict[str, Any]] | None = None,
 ) -> str:
     glossary_block = "\n".join(
         f"- {g['term']}: {g['definition']}" for g in context.glossary_terms if g.get("term")
     ) or "- (none)"
+    rules_block = _format_rules(applicable_rules)
     return f"""You are answering for a {role} at a Singapore life & health insurer.
 Role guidance: {ROLE_PROMPTS.get(role, ROLE_PROMPTS["Data Analyst"])}
 
@@ -61,12 +81,19 @@ KEY RESULT ROWS (max {MAX_PROMPT_ROWS} of {exec_result.row_count}):
 GLOSSARY DEFINITIONS USED:
 {glossary_block}
 
+GOVERNED THRESHOLDS AND ESCALATION RULES (business-owned, versioned in the context layer):
+{rules_block}
+
 INSTRUCTIONS:
 - Answer in clear business language for the role above.
 - Cite specific numbers from the result rows (amounts are SGD).
+- If you reference a threshold, cut-off, or escalation trigger, you MUST use the exact
+  value from GOVERNED THRESHOLDS above and name the rule it came from — never invent
+  or approximate a threshold yourself. If no governed rule covers the question, say
+  plainly that no threshold is currently governed for it, instead of guessing one.
 - Flag any data limitations (zero rows, sampled rows, synthetic data).
 - End with one clearly labelled "Recommended action:" line.
-- Do not invent numbers that are not in the result rows."""
+- Do not invent numbers that are not in the result rows or the governed thresholds."""
 
 
 def extract_key_data_points(
@@ -106,6 +133,7 @@ async def generate_insight(
     context: ContextResult,
     sql_result: SQLResult,
     exec_result: ExecutionResult,
+    applicable_rules: list[dict[str, Any]] | None = None,
 ) -> InsightResult:
     started = perf_counter()
     result = InsightResult(
@@ -125,7 +153,7 @@ async def generate_insight(
         confidence += 0.10
     result.confidence_score = round(min(1.0, confidence), 3)
 
-    prompt = build_prompt(question, role, context, sql_result, exec_result)
+    prompt = build_prompt(question, role, context, sql_result, exec_result, applicable_rules)
 
     async def stream_tokens() -> AsyncGenerator[str, None]:
         collected: list[str] = []

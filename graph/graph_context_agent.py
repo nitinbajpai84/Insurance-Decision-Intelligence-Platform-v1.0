@@ -117,9 +117,10 @@ def _sync_graph_context(question: str, role: str, vector_results: dict[str, Any]
 
         rules = gt.find_decision_paths(entry_ids, hops=3, con=con)
         ctx.applicable_rules = [
-            {"name": r["name"], "condition_text": r["condition_text"],
+            {"rule_id": r["rule_id"], "name": r["name"], "condition_text": r["condition_text"],
              "action_text": r["action_text"], "assigned_role": r["assigned_role"],
-             "priority": r["priority"], "reached_via": r["reached_via"]}
+             "priority": r["priority"], "threshold_json": r.get("threshold_json") or {},
+             "reached_via": r["reached_via"]}
             for r in rules
         ]
         if rules and rules[0].get("path"):

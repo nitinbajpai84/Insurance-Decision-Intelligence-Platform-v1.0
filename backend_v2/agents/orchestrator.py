@@ -243,7 +243,10 @@ async def stream_pipeline(
            "time_ms": exec_result.execution_time_ms}
 
     # ---- Step 5: insight — streams immediately ------------------------------
-    insight = await insight_agent.generate_insight(question, role, context, sql_result, exec_result)
+    insight = await insight_agent.generate_insight(
+        question, role, context, sql_result, exec_result,
+        applicable_rules=grounding.applicable_rules if grounding is not None else None,
+    )
     answer_parts: list[str] = []
     if insight.insight_stream is not None:
         async for token in insight.insight_stream:
