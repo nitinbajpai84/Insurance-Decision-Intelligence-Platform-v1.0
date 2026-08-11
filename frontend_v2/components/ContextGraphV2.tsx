@@ -179,6 +179,29 @@ export default function ContextGraphV2() {
                 return `${nn.label} (${nn.type})${nn.health != null ? ` · health ${nn.health}` : ""}`;
               }}
               nodeRelSize={4}
+              // nodeLabel above is only the hover tooltip — without this the canvas
+              // renders unlabelled dots. Draw the name beside each node, gated so a
+              // 300-node graph does not turn into a wall of text: hubs are always
+              // labelled, everything else appears as you zoom in.
+              nodeCanvasObjectMode={() => "after"}
+              nodeCanvasObject={(n: object, ctx: CanvasRenderingContext2D, globalScale: number) => {
+                const nn = n as GraphNode & { x?: number; y?: number };
+                if (nn.x == null || nn.y == null) return;
+                const isHub = (nn.degree ?? 0) >= 6;
+                if (globalScale < 1.4 && !isHub) return;
+                const text = nn.label || nn.id;
+                const fontSize = Math.min(4.5, 11 / globalScale);
+                ctx.font = `${fontSize}px ui-sans-serif, system-ui, sans-serif`;
+                ctx.textAlign = "center";
+                ctx.textBaseline = "top";
+                const y = nn.y + 5;
+                // halo keeps text legible over links and overlapping nodes
+                ctx.lineWidth = fontSize / 3;
+                ctx.strokeStyle = "rgba(255,255,255,0.9)";
+                ctx.strokeText(text, nn.x, y);
+                ctx.fillStyle = "#334155";
+                ctx.fillText(text, nn.x, y);
+              }}
               linkWidth={(l: object) => Math.max(0.5, ((l as GraphLink).weight || 1) * 1.5)}
               linkColor={() => "#cbd5e1"}
               linkDirectionalArrowLength={3}
