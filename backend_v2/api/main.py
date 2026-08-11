@@ -39,6 +39,12 @@ except Exception as _fb_exc:  # feedback layer optional — never block API star
     graph_feedback_router = None
     print(f"[startup] WARN graph feedback routes unavailable: {type(_fb_exc).__name__}: {_fb_exc}")
 
+try:
+    from context_layer.registry_routes import router as context_layer_router
+except Exception as _cl_exc:  # context layer optional — never block API startup
+    context_layer_router = None
+    print(f"[startup] WARN context layer routes unavailable: {type(_cl_exc).__name__}: {_cl_exc}")
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -87,6 +93,8 @@ if graph_router is not None:
     app.include_router(graph_router)
 if graph_feedback_router is not None:
     app.include_router(graph_feedback_router)
+if context_layer_router is not None:
+    app.include_router(context_layer_router)
 
 
 @app.exception_handler(StarletteHTTPException)
