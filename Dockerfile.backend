@@ -26,6 +26,7 @@ RUN pip install --no-cache-dir -r embeddings/requirements.txt
 
 COPY backend_v2/ ./backend_v2/
 COPY graph/ ./graph/
+COPY context_layer/ ./context_layer/
 COPY embeddings/ ./embeddings/
 COPY database/db_connection.py ./database/db_connection.py
 COPY database/insurance_v2.duckdb ./database/insurance_v2.duckdb
