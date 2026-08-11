@@ -205,6 +205,39 @@ def infer_role_scope(primary_users: str | None) -> str:
     return "Executive Leadership"
 
 
+def build_persona(ini: dict) -> str:
+    """Compose an agent persona from the initiative's own charter fields.
+
+    Deterministic (no LLM): every sentence traces to a workbook/Vol2 column the
+    business authored. Per DESIGN.md the persona carries *framing only* — remit,
+    audience, output shape, KPIs. Facts, definitions and thresholds stay in the
+    shared context layer so all agents inherit one truth.
+    """
+    iid = ini.get("initiative_id", "")
+    parts = [
+        f"You are the {ini.get('name')} agent ({iid}), operating in the "
+        f"{ini.get('domain')} domain of a pan-Asian life & health insurer (Singapore and Hong Kong books)."
+    ]
+    if ini.get("strategic_goal"):
+        parts.append(f"Your remit: {ini['strategic_goal']}.")
+    if ini.get("business_problem"):
+        parts.append(f"The problem you exist to solve: {ini['business_problem']}.")
+    if ini.get("primary_users"):
+        parts.append(f"You are speaking to: {ini['primary_users']}. Pitch your answer at their level.")
+    if ini.get("expected_output"):
+        parts.append(f"Shape your answer toward: {ini['expected_output']}.")
+    if ini.get("kpis"):
+        parts.append(f"You are measured on: {ini['kpis']}. Reference these when relevant.")
+    if ini.get("ai_capability"):
+        parts.append(f"Your underlying capability: {ini['ai_capability']}.")
+    parts.append(
+        "Ground every claim in the shared context layer — the ontology, metric bindings and "
+        "governed data. If the available data cannot support an answer, say so plainly and name "
+        "what is missing rather than estimating."
+    )
+    return " ".join(parts)
+
+
 def infer_skills(ini: dict) -> list[str]:
     fams = set(ini.get("model_families") or [])
     approach = (ini.get("genai_ml_approach") or "").lower()
@@ -352,22 +385,60 @@ def main() -> int:
                  role],
             )
         for iid, ini in initiatives.items():
+            # Upsert enrichment (persona/skills/scopes) but never clobber a status
+            # an operator promoted or retired by hand.
             con.execute(
                 "insert into agent_registry (agent_id, initiative_id, name, description, persona_prompt, "
                 "skills, knowledge_scopes, role_scope, status, owner) "
-                "values (?, ?, ?, ?, null, ?, ?, ?, 'draft', 'playbook') "
-                "on conflict (agent_id) do nothing",
+                "values (?, ?, ?, ?, ?, ?, ?, ?, 'functional', 'playbook') "
+                "on conflict (agent_id) do update set "
+                "name = excluded.name, description = excluded.description, "
+                "persona_prompt = excluded.persona_prompt, skills = excluded.skills, "
+                "knowledge_scopes = excluded.knowledge_scopes, role_scope = excluded.role_scope, "
+                "status = case when agent_registry.status in ('retired', 'live') "
+                "then agent_registry.status else 'functional' end, "
+                "updated_at = now()",
                 [f"agent::{iid.lower()}", iid, ini.get("name") or iid,
                  ini.get("strategic_goal"),
+                 build_persona(ini),
                  json.dumps(infer_skills(ini)),
                  json.dumps({"subject_areas": [(ini.get("domain") or "").lower()],
+                             "core_tables": ini.get("core_tables") or [],
                              "lance_collections": ["insurance_glossary_vectors",
-                                                   "insurance_semantic_vectors"]}),
+                                                   "insurance_semantic_vectors",
+                                                   "insurance_schema_vectors"]}),
                  infer_role_scope(ini.get("primary_users"))],
             )
 
+        # --- backfill definitions on playbook-created entity classes ---
+        # These were created from workbook table names, so they had a name but no
+        # meaning. Define each by the initiatives that consume it — the graph can
+        # then explain what a table is *for*, not just that it exists.
+        con.execute(
+            """
+            update concept_nodes set definition = sub.definition
+            from (
+              select e.dst_node_id as node_id,
+                     'Core data entity consumed by ' || count(distinct i.initiative_id) ||
+                     ' AI initiative(s): ' ||
+                     string_agg(distinct i.initiative_id || ' (' || i.name || ')', '; ') as definition
+              from graph_edges e
+              join initiative_registry i
+                on i.initiative_id = upper(replace(e.src_node_id, 'initiative::', ''))
+              where e.edge_type = 'consumes_data_from'
+              group by e.dst_node_id
+            ) sub
+            where concept_nodes.node_id = sub.node_id
+              and (concept_nodes.definition is null or trim(concept_nodes.definition) = '')
+            """
+        )
+
         counts = {
             "initiatives": con.execute("select count(*) from initiative_registry where status != 'retired'").fetchone()[0],
+            "nodes_missing_definition": con.execute(
+                "select count(*) from concept_nodes where definition is null or trim(definition) = ''").fetchone()[0],
+            "agents_with_persona": con.execute(
+                "select count(*) from agent_registry where persona_prompt is not null").fetchone()[0],
             "agents": con.execute("select count(*) from agent_registry").fetchone()[0],
             "functional_agents": con.execute("select count(*) from agent_registry where status in ('functional','live')").fetchone()[0],
             "initiative_edges": edge_count,
