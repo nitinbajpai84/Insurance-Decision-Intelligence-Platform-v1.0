@@ -13,6 +13,7 @@ import {
   Repeat,
   Share2,
   ShieldAlert,
+  ShieldCheck,
   Sparkles,
   TrendingUp,
   UserRound,
@@ -38,6 +39,7 @@ export const NAV: NavItem[] = [
   { href: "/policy-lapse-risk", label: "Policy Lapse Risk", short: "Lapse Risk", icon: ShieldAlert },
   { href: "/ai-intelligence-v2", label: "AI Intelligence", short: "AI", icon: Sparkles },
   { href: "/agent-gallery-v2", label: "Agent Gallery", short: "Agents", icon: Bot },
+  { href: "/governed-rules-v2", label: "Governed Rules", short: "Rules", icon: ShieldCheck },
   { href: "/insight-evidence-hub-v2", label: "Insight Evidence Hub", short: "Evidence", icon: Brain },
   { href: "/context-graph-v2", label: "Context Graph", short: "Graph", icon: Share2 }
 ];

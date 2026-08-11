@@ -82,7 +82,11 @@ app.add_middleware(
     # this API is a stateless, keyless demo endpoint, so drop credentials when
     # wildcard origins are configured.
     allow_credentials=CORS_ORIGINS != ["*"],
-    allow_methods=["GET", "POST", "OPTIONS"],
+    # PATCH was missing until the governed-rules editor needed it: the browser's
+    # CORS preflight OPTIONS for PATCH /graph/rules/{id} was rejected with 400,
+    # silently blocking every save (caught via browser network-request testing,
+    # not by hitting the API directly with httpx, which never preflights).
+    allow_methods=["GET", "POST", "PATCH", "OPTIONS"],
     allow_headers=["*"],
 )
 
