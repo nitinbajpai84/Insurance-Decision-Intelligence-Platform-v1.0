@@ -1,0 +1,504 @@
+{
+  "summary": {
+    "total_base_tables": 71,
+    "total_views": 18,
+    "orphan_findings": 56,
+    "unused_table_candidates": 11
+  },
+  "referential_integrity": [
+    {
+      "child_table": "agent_assessments",
+      "fk_column": "agent_id",
+      "parent_table": "agents",
+      "total_rows": 200,
+      "orphan_rows": 200,
+      "orphan_pct": 100.0
+    },
+    {
+      "child_table": "agent_calls",
+      "fk_column": "agent_id",
+      "parent_table": "agents",
+      "total_rows": 12400,
+      "orphan_rows": 12400,
+      "orphan_pct": 100.0
+    },
+    {
+      "child_table": "agent_calls",
+      "fk_column": "lead_id",
+      "parent_table": "leads",
+      "total_rows": 12400,
+      "orphan_rows": 12400,
+      "orphan_pct": 100.0
+    },
+    {
+      "child_table": "agent_commissions",
+      "fk_column": "agent_id",
+      "parent_table": "agents",
+      "total_rows": 20000,
+      "orphan_rows": 20000,
+      "orphan_pct": 100.0
+    },
+    {
+      "child_table": "agent_commissions",
+      "fk_column": "policy_id",
+      "parent_table": "policies",
+      "total_rows": 20000,
+      "orphan_rows": 20000,
+      "orphan_pct": 100.0
+    },
+    {
+      "child_table": "agent_commissions",
+      "fk_column": "product_id",
+      "parent_table": "products",
+      "total_rows": 20000,
+      "orphan_rows": 20000,
+      "orphan_pct": 100.0
+    },
+    {
+      "child_table": "agent_meetings",
+      "fk_column": "agent_id",
+      "parent_table": "agents",
+      "total_rows": 2414,
+      "orphan_rows": 2414,
+      "orphan_pct": 100.0
+    },
+    {
+      "child_table": "agent_meetings",
+      "fk_column": "lead_id",
+      "parent_table": "leads",
+      "total_rows": 2414,
+      "orphan_rows": 2414,
+      "orphan_pct": 100.0
+    },
+    {
+      "child_table": "agent_meetings",
+      "fk_column": "product_id",
+      "parent_table": "products",
+      "total_rows": 2414,
+      "orphan_rows": 2414,
+      "orphan_pct": 100.0
+    },
+    {
+      "child_table": "agent_registry",
+      "fk_column": "agent_id",
+      "parent_table": "agents",
+      "total_rows": 53,
+      "orphan_rows": 53,
+      "orphan_pct": 100.0
+    },
+    {
+      "child_table": "agent_service_events",
+      "fk_column": "agent_id",
+      "parent_table": "agents",
+      "total_rows": 300,
+      "orphan_rows": 300,
+      "orphan_pct": 100.0
+    },
+    {
+      "child_table": "agent_service_events",
+      "fk_column": "customer_id",
+      "parent_table": "customers",
+      "total_rows": 300,
+      "orphan_rows": 300,
+      "orphan_pct": 100.0
+    },
+    {
+      "child_table": "agent_service_events",
+      "fk_column": "policy_id",
+      "parent_table": "policies",
+      "total_rows": 300,
+      "orphan_rows": 300,
+      "orphan_pct": 100.0
+    },
+    {
+      "child_table": "agent_training",
+      "fk_column": "agent_id",
+      "parent_table": "agents",
+      "total_rows": 15042,
+      "orphan_rows": 15042,
+      "orphan_pct": 100.0
+    },
+    {
+      "child_table": "claim_parties",
+      "fk_column": "claim_id",
+      "parent_table": "claims",
+      "total_rows": 1140,
+      "orphan_rows": 1140,
+      "orphan_pct": 100.0
+    },
+    {
+      "child_table": "conversations",
+      "fk_column": "agent_id",
+      "parent_table": "agents",
+      "total_rows": 10,
+      "orphan_rows": 10,
+      "orphan_pct": 100.0
+    },
+    {
+      "child_table": "customer_behavior_daily",
+      "fk_column": "customer_id",
+      "parent_table": "customers",
+      "total_rows": 162107,
+      "orphan_rows": 162107,
+      "orphan_pct": 100.0
+    },
+    {
+      "child_table": "customer_complaints",
+      "fk_column": "customer_id",
+      "parent_table": "customers",
+      "total_rows": 450,
+      "orphan_rows": 450,
+      "orphan_pct": 100.0
+    },
+    {
+      "child_table": "customer_digital_events",
+      "fk_column": "customer_id",
+      "parent_table": "customers",
+      "total_rows": 122931,
+      "orphan_rows": 122931,
+      "orphan_pct": 100.0
+    },
+    {
+      "child_table": "customer_digital_events",
+      "fk_column": "party_id",
+      "parent_table": "parties",
+      "total_rows": 122931,
+      "orphan_rows": 122931,
+      "orphan_pct": 100.0
+    },
+    {
+      "child_table": "customer_engagement_events",
+      "fk_column": "customer_id",
+      "parent_table": "customers",
+      "total_rows": 120000,
+      "orphan_rows": 120000,
+      "orphan_pct": 100.0
+    },
+    {
+      "child_table": "customer_satisfaction_survey",
+      "fk_column": "customer_id",
+      "parent_table": "customers",
+      "total_rows": 2721,
+      "orphan_rows": 2721,
+      "orphan_pct": 100.0
+    },
+    {
+      "child_table": "customer_service_requests",
+      "fk_column": "customer_id",
+      "parent_table": "customers",
+      "total_rows": 8015,
+      "orphan_rows": 8015,
+      "orphan_pct": 100.0
+    },
+    {
+      "child_table": "policy_coverage",
+      "fk_column": "policy_id",
+      "parent_table": "policies",
+      "total_rows": 36883,
+      "orphan_rows": 36883,
+      "orphan_pct": 100.0
+    },
+    {
+      "child_table": "policy_coverage",
+      "fk_column": "product_id",
+      "parent_table": "products",
+      "total_rows": 36883,
+      "orphan_rows": 36883,
+      "orphan_pct": 100.0
+    },
+    {
+      "child_table": "policy_events",
+      "fk_column": "agent_id",
+      "parent_table": "agents",
+      "total_rows": 40000,
+      "orphan_rows": 40000,
+      "orphan_pct": 100.0
+    },
+    {
+      "child_table": "policy_events",
+      "fk_column": "customer_id",
+      "parent_table": "customers",
+      "total_rows": 40000,
+      "orphan_rows": 40000,
+      "orphan_pct": 100.0
+    },
+    {
+      "child_table": "policy_events",
+      "fk_column": "policy_id",
+      "parent_table": "policies",
+      "total_rows": 40000,
+      "orphan_rows": 40000,
+      "orphan_pct": 100.0
+    },
+    {
+      "child_table": "policy_renewals",
+      "fk_column": "agent_id",
+      "parent_table": "agents",
+      "total_rows": 20000,
+      "orphan_rows": 20000,
+      "orphan_pct": 100.0
+    },
+    {
+      "child_table": "policy_renewals",
+      "fk_column": "customer_id",
+      "parent_table": "customers",
+      "total_rows": 20000,
+      "orphan_rows": 20000,
+      "orphan_pct": 100.0
+    },
+    {
+      "child_table": "policy_renewals",
+      "fk_column": "policy_id",
+      "parent_table": "policies",
+      "total_rows": 20000,
+      "orphan_rows": 20000,
+      "orphan_pct": 100.0
+    },
+    {
+      "child_table": "premiums",
+      "fk_column": "policy_id",
+      "parent_table": "policies",
+      "total_rows": 419864,
+      "orphan_rows": 419864,
+      "orphan_pct": 100.0
+    },
+    {
+      "child_table": "table_access_policy",
+      "fk_column": "policy_id",
+      "parent_table": "policies",
+      "total_rows": 301,
+      "orphan_rows": 301,
+      "orphan_pct": 100.0
+    },
+    {
+      "child_table": "underwriting_decisions",
+      "fk_column": "application_id",
+      "parent_table": "applications",
+      "total_rows": 2653,
+      "orphan_rows": 2653,
+      "orphan_pct": 100.0
+    },
+    {
+      "child_table": "underwriting_decisions",
+      "fk_column": "customer_id",
+      "parent_table": "customers",
+      "total_rows": 2653,
+      "orphan_rows": 2653,
+      "orphan_pct": 100.0
+    },
+    {
+      "child_table": "underwriting_decisions",
+      "fk_column": "product_id",
+      "parent_table": "products",
+      "total_rows": 2653,
+      "orphan_rows": 2653,
+      "orphan_pct": 100.0
+    },
+    {
+      "child_table": "customer_satisfaction_survey",
+      "fk_column": "agent_id",
+      "parent_table": "agents",
+      "total_rows": 2721,
+      "orphan_rows": 2352,
+      "orphan_pct": 86.44
+    },
+    {
+      "child_table": "customer_satisfaction_survey",
+      "fk_column": "policy_id",
+      "parent_table": "policies",
+      "total_rows": 2721,
+      "orphan_rows": 2352,
+      "orphan_pct": 86.44
+    },
+    {
+      "child_table": "agent_meetings",
+      "fk_column": "customer_id",
+      "parent_table": "customers",
+      "total_rows": 2414,
+      "orphan_rows": 1893,
+      "orphan_pct": 78.42
+    },
+    {
+      "child_table": "agent_calls",
+      "fk_column": "customer_id",
+      "parent_table": "customers",
+      "total_rows": 12400,
+      "orphan_rows": 9698,
+      "orphan_pct": 78.21
+    },
+    {
+      "child_table": "agent_calls",
+      "fk_column": "campaign_id",
+      "parent_table": "campaigns",
+      "total_rows": 12400,
+      "orphan_rows": 8455,
+      "orphan_pct": 68.19
+    },
+    {
+      "child_table": "customer_service_requests",
+      "fk_column": "policy_id",
+      "parent_table": "policies",
+      "total_rows": 8015,
+      "orphan_rows": 5238,
+      "orphan_pct": 65.35
+    },
+    {
+      "child_table": "claim_parties",
+      "fk_column": "customer_id",
+      "parent_table": "customers",
+      "total_rows": 1140,
+      "orphan_rows": 741,
+      "orphan_pct": 65.0
+    },
+    {
+      "child_table": "claim_parties",
+      "fk_column": "party_id",
+      "parent_table": "parties",
+      "total_rows": 1140,
+      "orphan_rows": 741,
+      "orphan_pct": 65.0
+    },
+    {
+      "child_table": "customer_complaints",
+      "fk_column": "agent_id",
+      "parent_table": "agents",
+      "total_rows": 450,
+      "orphan_rows": 249,
+      "orphan_pct": 55.33
+    },
+    {
+      "child_table": "customer_complaints",
+      "fk_column": "policy_id",
+      "parent_table": "policies",
+      "total_rows": 450,
+      "orphan_rows": 249,
+      "orphan_pct": 55.33
+    },
+    {
+      "child_table": "customer_engagement_events",
+      "fk_column": "policy_id",
+      "parent_table": "policies",
+      "total_rows": 120000,
+      "orphan_rows": 56719,
+      "orphan_pct": 47.27
+    },
+    {
+      "child_table": "customer_engagement_events",
+      "fk_column": "agent_id",
+      "parent_table": "agents",
+      "total_rows": 120000,
+      "orphan_rows": 39757,
+      "orphan_pct": 33.13
+    },
+    {
+      "child_table": "customer_digital_events",
+      "fk_column": "policy_id",
+      "parent_table": "policies",
+      "total_rows": 122931,
+      "orphan_rows": 36962,
+      "orphan_pct": 30.07
+    },
+    {
+      "child_table": "customer_digital_events",
+      "fk_column": "product_id",
+      "parent_table": "products",
+      "total_rows": 122931,
+      "orphan_rows": 33737,
+      "orphan_pct": 27.44
+    },
+    {
+      "child_table": "customer_engagement_events",
+      "fk_column": "campaign_id",
+      "parent_table": "campaigns",
+      "total_rows": 120000,
+      "orphan_rows": 26490,
+      "orphan_pct": 22.07
+    },
+    {
+      "child_table": "customer_digital_events",
+      "fk_column": "campaign_id",
+      "parent_table": "campaigns",
+      "total_rows": 122931,
+      "orphan_rows": 22028,
+      "orphan_pct": 17.92
+    },
+    {
+      "child_table": "customer_service_requests",
+      "fk_column": "claim_id",
+      "parent_table": "claims",
+      "total_rows": 8015,
+      "orphan_rows": 262,
+      "orphan_pct": 3.27
+    },
+    {
+      "child_table": "customer_complaints",
+      "fk_column": "claim_id",
+      "parent_table": "claims",
+      "total_rows": 450,
+      "orphan_rows": 14,
+      "orphan_pct": 3.11
+    },
+    {
+      "child_table": "customer_satisfaction_survey",
+      "fk_column": "claim_id",
+      "parent_table": "claims",
+      "total_rows": 2721,
+      "orphan_rows": 51,
+      "orphan_pct": 1.87
+    },
+    {
+      "child_table": "customer_engagement_events",
+      "fk_column": "claim_id",
+      "parent_table": "claims",
+      "total_rows": 120000,
+      "orphan_rows": 897,
+      "orphan_pct": 0.75
+    }
+  ],
+  "unused_tables": [
+    {
+      "table": "agent_assessments",
+      "row_count": 200
+    },
+    {
+      "table": "agent_calls",
+      "row_count": 12400
+    },
+    {
+      "table": "agent_training",
+      "row_count": 15042
+    },
+    {
+      "table": "claim_parties",
+      "row_count": 1140
+    },
+    {
+      "table": "customer_behavior_daily",
+      "row_count": 162107
+    },
+    {
+      "table": "customer_complaints",
+      "row_count": 450
+    },
+    {
+      "table": "customer_satisfaction_survey",
+      "row_count": 2721
+    },
+    {
+      "table": "household_members",
+      "row_count": 3582
+    },
+    {
+      "table": "policy_renewals",
+      "row_count": 20000
+    },
+    {
+      "table": "policy_type_config",
+      "row_count": 8
+    },
+    {
+      "table": "query_audit_log",
+      "row_count": 5
+    }
+  ]
+}

@@ -214,6 +214,13 @@ RULES:
   never substitute a different or rounder number from general knowledge.
 - One single read-only SELECT (or WITH ... SELECT). No INSERT/UPDATE/DELETE/DDL.
 - Use ONLY the allowed tables/views and columns above.
+- If the question names a specific person/entity (e.g. "agent Melissa Welch") and NO
+  column above holds that kind of name, do NOT invent a name column on a base table
+  (agents/customers/parties rarely have one — names live on the *_360 views as
+  display_name, or on domain tables as campaign_name/product_name/etc.). If no allowed
+  column can resolve the name, return {{"sql": "", "unsupported": true}} instead of
+  guessing a column that does not exist — a wrong guess silently returns 0 rows and
+  looks like a data gap instead of the real cause.
 - GRAIN: pick the allowed table/view whose grain matches the question. If the
   question asks for a breakdown BY an entity (agent / customer / product / region),
   use a granular allowed table/view that actually contains that key column
