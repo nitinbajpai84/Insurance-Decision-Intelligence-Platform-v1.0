@@ -38,6 +38,18 @@ WRITE_NODES = (exp.Insert, exp.Update, exp.Delete, exp.Drop, exp.Create, exp.Alt
 def _vector_metric_ids(question: str, con, k: int = 6) -> list[str]:
     bound = {r[0] for r in con.execute("select metric_id from metric_bindings where status='active'").fetchall()}
     hits: list[str] = []
+    # Keyword matches FIRST, not appended after: hits[:k] at the end truncates
+    # to k regardless of order, and vector search alone routinely fills all k
+    # slots with fuzzy-similar-but-wrong metrics before the keyword loop ever
+    # runs -- so a literal, high-precision match (e.g. the question contains
+    # "fraud exposure" and metric::fraud_exposure exists) was being appended
+    # as slot 7+ and silently sliced off. A question naming its metric
+    # verbatim is a stronger signal than embedding similarity; let it win.
+    ql = question.lower()
+    for mid in bound:
+        name = mid.split("::", 1)[-1].replace("_", " ")
+        if name in ql and mid not in hits:
+            hits.append(mid)
     try:
         import lancedb
         from embeddings.vector_search import LANCEDB_PATH, embed_text
@@ -52,12 +64,6 @@ def _vector_metric_ids(question: str, con, k: int = 6) -> list[str]:
                 break
     except Exception as exc:  # pragma: no cover
         print(f"[binding_resolver] vector recall unavailable: {type(exc).__name__}: {exc}", file=sys.stderr)
-    # keyword fallback / augmentation
-    ql = question.lower()
-    for mid in bound:
-        name = mid.split("::", 1)[-1].replace("_", " ")
-        if name in ql and mid not in hits:
-            hits.append(mid)
     # light graph expansion: metrics that share an edge with a matched metric
     if hits:
         ph = ",".join("?" * len(hits))

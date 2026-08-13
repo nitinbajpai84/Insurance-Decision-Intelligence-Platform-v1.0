@@ -149,7 +149,27 @@ def _primary_formula(surface: dict[str, Any]) -> str:
 def _build_prompt(question: str, role: str, surface: dict[str, Any], gctx,
                   applicable_rules: list[dict[str, Any]] | None = None,
                   repair: dict | None = None) -> str:
-    views = ", ".join(surface.get("views", [])) or "(none — use base tables)"
+    # binding_resolver orders metric_ids with keyword-exact matches first (a
+    # question naming its metric verbatim is a stronger signal than embedding
+    # similarity — see _vector_metric_ids). When several metrics match, their
+    # canonical views get flattened into one comma-separated "prefer this"
+    # line with no ranking; the LLM then has no reason to pick the one that
+    # actually answers the question over a generic base-table query. Naming
+    # the first (best) match explicitly and separately fixes that.
+    all_views = surface.get("views", [])
+    primary_view = None
+    for mid in surface.get("metric_ids", []):
+        b = next((bb for bb in surface.get("bindings", []) if bb.get("metric_id") == mid), None)
+        if b and b.get("canonical_view"):
+            primary_view = b["canonical_view"]
+            break
+    primary_line = (
+        f"\nPRIMARY VIEW FOR THIS QUESTION: {primary_view} — this is the metric binding that "
+        f"matched the question most directly. Use it unless it genuinely cannot answer the "
+        f"question; do not default to a generic base-table query when a matching view exists.\n"
+        if primary_view else ""
+    )
+    views = ", ".join(all_views) or "(none — use base tables)"
     tables = "\n".join(f"- {t}" for t in surface.get("tables", [])) or "- (none)"
     columns = "\n".join(f"- {c}" for c in surface.get("columns", [])) or "- (none)"
     joins = "\n".join(f"- {j}" for j in surface.get("joins", [])) or "- (none required)"
@@ -184,6 +204,7 @@ QUESTION: {question}
 ROLE: {role}
 
 CANONICAL VIEW (prefer querying this directly): {views}
+{primary_line}
 
 ALLOWED TABLES/VIEWS (use ONLY these):
 {tables}
@@ -225,6 +246,11 @@ RULES:
   allowed because a DIFFERENT metric's view has it, not the view you are actually
   selecting FROM. Before using table.column, confirm that exact table/view is the one
   in your FROM/JOIN clause; do not assume a view has every column in the allowed list.
+- Semantic views (v_*) are frequently already filtered by their own definition (e.g. to
+  active/in-force policies) and DROP the status column that would let you re-filter it —
+  re-adding a status/policy_status predicate against such a view is usually wrong. If
+  status filtering isn't in ALLOWED COLUMNS for the specific view you're using, the view
+  already handles it; do not add it yourself.
 - GRAIN: pick the allowed table/view whose grain matches the question. If the
   question asks for a breakdown BY an entity (agent / customer / product / region),
   use a granular allowed table/view that actually contains that key column
