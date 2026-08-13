@@ -17,7 +17,7 @@
  * client-side, so the SSR branch below is only hit during build/prerender.
  */
 
-const HOSTED_API = "https://insurance-poc-v2-backend-latest.onrender.com";
+const HOSTED_API = "https://meridian-insurance-backend-786480520780.asia-southeast1.run.app";
 const LOCAL_API = "http://127.0.0.1:3001";
 
 function resolveApiBase(): string {
