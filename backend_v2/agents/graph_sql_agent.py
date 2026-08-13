@@ -221,6 +221,10 @@ RULES:
   column can resolve the name, return {{"sql": "", "unsupported": true}} instead of
   guessing a column that does not exist — a wrong guess silently returns 0 rows and
   looks like a data gap instead of the real cause.
+- ALLOWED COLUMNS is a union across every matched metric's binding — a column may be
+  allowed because a DIFFERENT metric's view has it, not the view you are actually
+  selecting FROM. Before using table.column, confirm that exact table/view is the one
+  in your FROM/JOIN clause; do not assume a view has every column in the allowed list.
 - GRAIN: pick the allowed table/view whose grain matches the question. If the
   question asks for a breakdown BY an entity (agent / customer / product / region),
   use a granular allowed table/view that actually contains that key column
