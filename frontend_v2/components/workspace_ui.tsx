@@ -1,15 +1,14 @@
 "use client";
 
 /**
- * Shared business-workspace UI primitives for the V2 pages, including the
- * three V2 AI affordances:
+ * Shared business-workspace UI primitives, including three AI affordances:
  *   - KpiTile: white tile + delta badge + "Ask why →" + glossary-popover label
  *   - MetricLabel: clickable label → popover with glossary definition + sources
  *   - AskWhy: routes to /ai-intelligence-v2 with a pre-filled contextual question
  *   - ViewEvidence: links a recommendation to the Insight Evidence Hub
  *
- * Accent: PwC orange (centralized in the `accent` helpers below) — flip these
- * to red #dc2626 if a red theme is preferred; nothing else needs to change.
+ * Accent: centralized in the `accent` helpers below — change the palette in
+ * one place (tailwind.config.js `brand` colors) and every page updates.
  */
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
@@ -25,14 +24,14 @@ export const ROLES = [
   "Data Analyst"
 ];
 
-// Centralized accent classes (PwC orange).
+// Centralized accent classes (brand indigo).
 export const accent = {
-  text: "text-pwc-orange",
-  bg: "bg-pwc-orange",
-  bgHover: "hover:bg-pwc-orangeDark",
-  ring: "focus:ring-pwc-orange/20",
-  soft: "bg-pwc-orange/10",
-  border: "border-pwc-orange/30"
+  text: "text-brand-orange",
+  bg: "bg-brand-orange",
+  bgHover: "hover:bg-brand-orangeDark",
+  ring: "focus:ring-brand-orange/20",
+  soft: "bg-brand-orange/10",
+  border: "border-brand-orange/30"
 };
 
 // ---------------------------------------------------------------------------
@@ -167,19 +166,22 @@ export function KpiTile({
   tone?: "neutral" | "good" | "bad" | "warn";
 }) {
   const toneRing =
-    tone === "good" ? "border-green-100" : tone === "bad" ? "border-pwc-rose/20" : tone === "warn" ? "border-amber-100" : "border-gray-100";
+    tone === "good" ? "border-green-100" : tone === "bad" ? "border-brand-rose/20" : tone === "warn" ? "border-amber-100" : "border-gray-100";
+  const toneBar =
+    tone === "good" ? "bg-green-400" : tone === "bad" ? "bg-brand-rose" : tone === "warn" ? "bg-amber-400" : "bg-brand-orange/40";
   return (
-    <div className={`rounded-lg border ${toneRing} bg-white p-4 shadow-sm`}>
+    <div className={`group relative overflow-hidden rounded-xl border ${toneRing} bg-white p-4 shadow-card transition-all duration-200 hover:-translate-y-0.5 hover:shadow-glow`}>
+      <div className={`absolute inset-x-0 top-0 h-0.5 ${toneBar}`} />
       <div className="flex items-start justify-between gap-2">
         <MetricLabel term={term}>{label}</MetricLabel>
         {askWhy && <AskWhy question={askWhy} role={role} />}
       </div>
       <div className="mt-2 flex items-end justify-between gap-2">
-        <span className="text-2xl font-bold text-gray-900">{value}</span>
+        <span className="text-2xl font-bold tracking-tight text-gray-900">{value}</span>
         {delta !== undefined && delta !== null && Number.isFinite(delta) && (
           <span
             className={`inline-flex items-center gap-0.5 rounded-full px-2 py-0.5 text-xs font-bold ${
-              delta >= 0 ? "bg-green-50 text-green-600" : "bg-pwc-rose/10 text-pwc-rose"
+              delta >= 0 ? "bg-green-50 text-green-600" : "bg-brand-rose/10 text-brand-rose"
             }`}
           >
             {delta >= 0 ? <ArrowUpRight size={12} /> : <ArrowDownRight size={12} />}
@@ -206,10 +208,10 @@ export function PageHeader({ title, subtitle }: { title: string; subtitle?: stri
 
 export function Card({ title, children, right }: { title?: string; children: React.ReactNode; right?: React.ReactNode }) {
   return (
-    <section className="rounded-lg border border-gray-100 bg-white p-5 shadow-sm">
+    <section className="rounded-xl border border-gray-100 bg-white p-5 shadow-card transition-shadow duration-200 hover:shadow-executive">
       {(title || right) && (
         <div className="mb-3 flex items-center justify-between gap-2">
-          {title && <h3 className="text-base font-bold text-gray-900">{title}</h3>}
+          {title && <h3 className="text-base font-bold tracking-tight text-gray-900">{title}</h3>}
           {right}
         </div>
       )}
@@ -225,7 +227,7 @@ export function RoleSwitcher({ role, setRole }: { role: string; setRole: (r: str
       <select
         value={role}
         onChange={(e) => setRole(e.target.value)}
-        className="h-9 rounded-lg border border-gray-200 bg-white px-3 text-sm font-semibold outline-none focus:border-pwc-orange"
+        className="h-9 rounded-lg border border-gray-200 bg-white px-3 text-sm font-semibold outline-none focus:border-brand-orange"
       >
         {ROLES.map((r) => (
           <option key={r}>{r}</option>
@@ -254,7 +256,7 @@ export function SearchBar({
         onChange={(e) => onChange(e.target.value)}
         onKeyDown={(e) => e.key === "Enter" && onSubmit?.()}
         placeholder={placeholder}
-        className="h-11 w-full rounded-lg border border-gray-200 pl-9 pr-3 text-sm outline-none focus:border-pwc-orange focus:ring-2 focus:ring-pwc-orange/20"
+        className="h-11 w-full rounded-lg border border-gray-200 pl-9 pr-3 text-sm outline-none focus:border-brand-orange focus:ring-2 focus:ring-brand-orange/20"
       />
     </div>
   );
@@ -280,8 +282,8 @@ export function Chip({ active, onClick, children }: { active?: boolean; onClick?
   return (
     <button
       onClick={onClick}
-      className={`rounded-full border px-3 py-1.5 text-xs font-semibold ${
-        active ? "border-pwc-orange/40 bg-pwc-orange/10 text-pwc-orange" : "border-gray-200 bg-gray-50 text-gray-700 hover:border-pwc-orange/30 hover:text-pwc-orange"
+      className={`rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors duration-150 ${
+        active ? "border-brand-orange/40 bg-brand-orange/10 text-brand-orange shadow-sm" : "border-gray-200 bg-gray-50 text-gray-700 hover:border-brand-orange/30 hover:text-brand-orange"
       }`}
     >
       {children}
@@ -293,14 +295,14 @@ export function RiskBadge({ band }: { band: string }) {
   const b = (band || "").toLowerCase();
   const cls =
     b === "very_high" || b === "high"
-      ? "bg-pwc-rose/10 text-pwc-rose"
+      ? "bg-brand-rose/10 text-brand-rose"
       : b === "medium"
         ? "bg-amber-50 text-amber-700"
         : "bg-green-50 text-green-700";
   return <span className={`rounded-full px-2 py-0.5 text-xs font-bold ${cls}`}>{(band || "low").replace(/_/g, " ")}</span>;
 }
 
-export function BarList({ items, color = "bg-pwc-orange" }: { items: { label: string; value: number; pct?: number }[]; color?: string }) {
+export function BarList({ items, color = "bg-brand-orange" }: { items: { label: string; value: number; pct?: number }[]; color?: string }) {
   const max = Math.max(1, ...items.map((i) => i.pct ?? i.value));
   return (
     <div className="space-y-3">
@@ -313,7 +315,7 @@ export function BarList({ items, color = "bg-pwc-orange" }: { items: { label: st
               <span className="font-bold text-gray-900">{it.pct !== undefined ? `${it.pct}%` : it.value.toLocaleString()}</span>
             </div>
             <div className="h-2.5 rounded-full bg-gray-100">
-              <div className={`h-2.5 rounded-full ${color}`} style={{ width: `${w}%` }} />
+              <div className={`h-2.5 rounded-full ${color} transition-[width] duration-500 ease-out`} style={{ width: `${w}%` }} />
             </div>
           </div>
         );

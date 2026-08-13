@@ -129,7 +129,7 @@ export default function ContextGraphV2() {
       {/* top bar */}
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-gray-200 bg-white px-5 py-3">
         <div>
-          <p className="text-xs font-bold uppercase tracking-wide text-pwc-orange">Business workspace</p>
+          <p className="text-xs font-bold uppercase tracking-wide text-brand-orange">Business workspace</p>
           <h1 className="text-xl font-bold text-gray-900">Context Graph</h1>
         </div>
         <div className="flex flex-wrap items-center gap-2">
@@ -140,7 +140,7 @@ export default function ContextGraphV2() {
             <Activity size={15} /> Adaptation Log
           </button>
           {isAdmin && (
-            <button onClick={() => setShowReview(true)} className="inline-flex h-9 items-center gap-1.5 rounded-lg bg-pwc-orange px-3 text-sm font-bold text-white hover:bg-pwc-orangeDark">
+            <button onClick={() => setShowReview(true)} className="inline-flex h-9 items-center gap-1.5 rounded-lg bg-brand-orange px-3 text-sm font-bold text-white hover:bg-brand-orangeDark">
               <GitPullRequest size={15} /> Review Queue
             </button>
           )}
@@ -217,7 +217,7 @@ export default function ContextGraphV2() {
             <div className="absolute left-1/2 top-4 z-10 flex -translate-x-1/2 items-center gap-2 rounded-full border border-gray-200 bg-white px-3 py-1.5 shadow-executive">
               <span className="text-xs font-semibold text-gray-700">{edgeAction.type} (w{edgeAction.weight})</span>
               <button onClick={() => edgeFeedback(edgeAction, "confirm")} className="text-green-600 hover:text-green-800"><ThumbsUp size={15} /></button>
-              <button onClick={() => edgeFeedback(edgeAction, "reject")} className="text-pwc-rose hover:opacity-70"><ThumbsDown size={15} /></button>
+              <button onClick={() => edgeFeedback(edgeAction, "reject")} className="text-brand-rose hover:opacity-70"><ThumbsDown size={15} /></button>
               <button onClick={() => setEdgeAction(null)} className="text-gray-400 hover:text-gray-700">✕</button>
             </div>
           )}
@@ -251,7 +251,7 @@ export default function ContextGraphV2() {
         {toasts.map((t) => (
           <div key={t.id}
             className={`rounded-lg px-4 py-2.5 text-sm font-semibold shadow-executive ${
-              t.kind === "auto" ? "bg-green-600 text-white" : t.kind === "review" ? "bg-pwc-orange text-white" : "bg-pwc-rose text-white"
+              t.kind === "auto" ? "bg-green-600 text-white" : t.kind === "review" ? "bg-brand-orange text-white" : "bg-brand-rose text-white"
             }`}>
             {t.kind === "auto" ? "⚡ " : t.kind === "review" ? "📋 " : "⚠ "}
             {t.msg}
@@ -269,7 +269,7 @@ function Chip({ active, color, onClick, children }: { active: boolean; color?: s
   return (
     <button onClick={onClick}
       className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-1 font-semibold transition ${
-        active ? "border-pwc-orange bg-pwc-orange/10 text-pwc-orange" : "border-gray-200 text-gray-600 hover:bg-gray-50"
+        active ? "border-brand-orange bg-brand-orange/10 text-brand-orange" : "border-gray-200 text-gray-600 hover:bg-gray-50"
       }`}>
       {color && <span className="h-2 w-2 rounded-full" style={{ background: color }} />}
       {children}

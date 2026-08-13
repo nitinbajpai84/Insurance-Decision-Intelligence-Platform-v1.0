@@ -32,7 +32,7 @@ function StatusPill({ status }: { status: string | null }) {
   return (
     <span
       className={`rounded-full border px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide ${
-        live ? "border-pwc-orange/30 bg-pwc-orange/10 text-pwc-orange" : "border-gray-200 bg-gray-50 text-gray-500"
+        live ? "border-brand-orange/30 bg-brand-orange/10 text-brand-orange" : "border-gray-200 bg-gray-50 text-gray-500"
       }`}
     >
       {live ? "Talkable" : "Registered"}
@@ -163,7 +163,7 @@ export default function AgentGalleryPage() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search initiatives"
-              className="rounded-lg border border-gray-200 px-3 py-1.5 text-sm outline-none focus:border-pwc-orange"
+              className="rounded-lg border border-gray-200 px-3 py-1.5 text-sm outline-none focus:border-brand-orange"
             />
             <select
               value={domain}
@@ -201,8 +201,8 @@ export default function AgentGalleryPage() {
                 onClick={() => setSelectedId(a.agent_id)}
                 className={`rounded-lg border px-3 py-1.5 text-sm font-semibold transition-colors ${
                   selectedId === a.agent_id
-                    ? "border-pwc-orange bg-pwc-orange text-white"
-                    : "border-gray-200 text-gray-700 hover:border-pwc-orange hover:text-pwc-orange"
+                    ? "border-brand-orange bg-brand-orange text-white"
+                    : "border-gray-200 text-gray-700 hover:border-brand-orange hover:text-brand-orange"
                 }`}
               >
                 {a.name}
@@ -227,8 +227,8 @@ export default function AgentGalleryPage() {
                     onClick={() => i.agent_id && setSelectedId(i.agent_id)}
                     className={`rounded-lg border p-3 text-left transition-colors ${
                       selectedId === i.agent_id
-                        ? "border-pwc-orange bg-pwc-orange/5"
-                        : "border-gray-200 hover:border-pwc-orange/50"
+                        ? "border-brand-orange bg-brand-orange/5"
+                        : "border-gray-200 hover:border-brand-orange/50"
                     }`}
                   >
                     <div className="flex items-start justify-between gap-2">
@@ -281,7 +281,7 @@ export default function AgentGalleryPage() {
 
                 <div className="mt-3 flex flex-wrap gap-1">
                   {(detail.skills ?? []).map((s) => (
-                    <span key={s} className="rounded border border-pwc-orange/30 bg-pwc-orange/5 px-1.5 py-0.5 text-[10px] font-semibold text-pwc-orange">
+                    <span key={s} className="rounded border border-brand-orange/30 bg-brand-orange/5 px-1.5 py-0.5 text-[10px] font-semibold text-brand-orange">
                       {s}
                     </span>
                   ))}
@@ -336,7 +336,7 @@ export default function AgentGalleryPage() {
                         <div
                           key={i}
                           className={`rounded-lg p-2 text-xs ${
-                            t.role === "user" ? "bg-gray-50 text-gray-800" : "bg-pwc-orange/5 text-gray-900"
+                            t.role === "user" ? "bg-gray-50 text-gray-800" : "bg-brand-orange/5 text-gray-900"
                           }`}
                         >
                           <span className="mb-0.5 block text-[10px] font-bold uppercase tracking-wide text-gray-400">
@@ -363,12 +363,12 @@ export default function AgentGalleryPage() {
                         onKeyDown={(e) => e.key === "Enter" && send()}
                         placeholder="Ask this agent…"
                         disabled={streaming}
-                        className="flex-1 rounded-lg border border-gray-200 px-3 py-1.5 text-sm outline-none focus:border-pwc-orange disabled:bg-gray-50"
+                        className="flex-1 rounded-lg border border-gray-200 px-3 py-1.5 text-sm outline-none focus:border-brand-orange disabled:bg-gray-50"
                       />
                       <button
                         onClick={send}
                         disabled={streaming || !question.trim()}
-                        className="rounded-lg bg-pwc-orange px-3 py-1.5 text-sm font-semibold text-white disabled:opacity-50"
+                        className="rounded-lg bg-brand-orange px-3 py-1.5 text-sm font-semibold text-white disabled:opacity-50"
                       >
                         {streaming ? "…" : "Ask"}
                       </button>

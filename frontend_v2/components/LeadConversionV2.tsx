@@ -7,7 +7,7 @@ import { Bar, BarChart, Cell, LabelList, ResponsiveContainer, Tooltip, XAxis, YA
 import { HelpCircle, Loader2 } from "lucide-react";
 import { getLeadConversion, askWhyHref, type LeadConversion } from "@/services/processApi";
 
-const STAGE_COLORS = ["#D04A02", "#D85C1A", "#E07033", "#EB8C00", "#F0A030", "#FFB600"];
+const STAGE_COLORS = ["#3454D1", "#4A66DA", "#6178E4", "#D97706", "#F2AD5C", "#F5A623"];
 
 export default function LeadConversionV2() {
   const [data, setData] = useState<LeadConversion | null>(null);
@@ -22,7 +22,7 @@ export default function LeadConversionV2() {
 
   return (
     <div className="mx-auto w-full max-w-[1400px] px-4 py-6 sm:px-6 lg:px-8">
-      <p className="text-xs font-bold uppercase tracking-wide text-pwc-orange">Business processes</p>
+      <p className="text-xs font-bold uppercase tracking-wide text-brand-orange">Business processes</p>
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <h1 className="mt-1 text-2xl font-bold text-gray-900">Lead-to-Conversion</h1>
@@ -38,7 +38,7 @@ export default function LeadConversionV2() {
 
       {data && (
         <>
-          {data.scoped_to_agent && <p className="mt-3 inline-block rounded-full bg-pwc-orange/10 px-3 py-1 text-xs font-bold text-pwc-orange">Scoped to your own book (Insurance Agent)</p>}
+          {data.scoped_to_agent && <p className="mt-3 inline-block rounded-full bg-brand-orange/10 px-3 py-1 text-xs font-bold text-brand-orange">Scoped to your own book (Insurance Agent)</p>}
           <div className="mt-5 grid gap-4 sm:grid-cols-3">
             <Kpi label="Overall conversion" value={`${data.overall_conversion_pct ?? "—"}%`} q="What is our overall lead to conversion rate?" stage="issued_policy" role={role} />
             <Kpi label="Avg time-to-issue" value={`${data.avg_time_to_issue_days ?? "—"} days`} q="What is the average time to issue a policy from lead?" stage="issued_policy" role={role} />
@@ -70,7 +70,7 @@ export default function LeadConversionV2() {
                       <td className="px-2 py-2 text-gray-500">{s.drop_off || "—"}</td>
                       <td className="px-2 py-2 text-right">
                         <Link href={askWhyHref(`Why is the ${s.stage_name} stage converting at ${s.conversion_to_next_pct ?? "this"}%?`, { role, process_id: "lead_to_conversion", stage: s.stage_name, page: "lead-conversion" })}
-                          className="inline-flex items-center gap-1 text-xs font-bold text-pwc-orange hover:text-pwc-orangeDark">
+                          className="inline-flex items-center gap-1 text-xs font-bold text-brand-orange hover:text-brand-orangeDark">
                           <HelpCircle size={13} /> Ask why
                         </Link>
                       </td>
@@ -91,7 +91,7 @@ function Kpi({ label, value, q, stage, role }: { label: string; value: string; q
     <article className="rounded-lg border border-gray-100 bg-white p-5 shadow-sm">
       <div className="flex items-start justify-between">
         <p className="text-xs uppercase tracking-wide text-gray-500">{label}</p>
-        <Link href={askWhyHref(q, { role, process_id: "lead_to_conversion", stage, page: "lead-conversion" })} className="text-gray-300 hover:text-pwc-orange" title="Ask why"><HelpCircle size={15} /></Link>
+        <Link href={askWhyHref(q, { role, process_id: "lead_to_conversion", stage, page: "lead-conversion" })} className="text-gray-300 hover:text-brand-orange" title="Ask why"><HelpCircle size={15} /></Link>
       </div>
       <p className="mt-2 text-2xl font-bold text-gray-900">{value}</p>
     </article>

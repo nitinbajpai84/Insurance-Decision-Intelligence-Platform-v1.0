@@ -63,7 +63,7 @@ export default function AgentPerformanceV2() {
           <Filter label="Segment" value={segment} setValue={setSegment} options={SEGMENTS} />
           <Filter label="Product" value={product} setValue={setProduct} options={PRODUCTS} />
           <Filter label="Channel" value={customerType} setValue={setCustomerType} options={CHANNELS} />
-          <button onClick={load} className="inline-flex h-10 items-center gap-1.5 rounded-lg bg-pwc-orange px-4 text-sm font-bold text-white hover:bg-pwc-orangeDark">
+          <button onClick={load} className="inline-flex h-10 items-center gap-1.5 rounded-lg bg-brand-orange px-4 text-sm font-bold text-white hover:bg-brand-orangeDark">
             <RefreshCw size={15} /> Refresh
           </button>
         </div>
@@ -102,7 +102,7 @@ export default function AgentPerformanceV2() {
                       <td className="py-2 pr-3">{num(r.policies)}</td>
                       <td className="py-2 pr-3">{pct((r.conversion_rate || 0) * 100)}</td>
                       <td className="py-2 pr-3">{pct(r.persistency_rate)}</td>
-                      <td className={`py-2 pr-3 font-semibold ${r.growth_pct >= 0 ? "text-green-600" : "text-pwc-rose"}`}>{pct(r.growth_pct)}</td>
+                      <td className={`py-2 pr-3 font-semibold ${r.growth_pct >= 0 ? "text-green-600" : "text-brand-rose"}`}>{pct(r.growth_pct)}</td>
                       <td className="py-2"><ClusterBadge cluster={r.cluster} /></td>
                     </tr>
                   ))}
@@ -115,7 +115,7 @@ export default function AgentPerformanceV2() {
             <Card title="Rising Stars" right={<AskWhy question="Which agents are rising stars and why?" role="Sales Director" />}>
               <ClusterList rows={rising} accentLabel="growth" />
             </Card>
-            <Card title="MDRT agents" right={<TrendingUp size={16} className="text-pwc-orange" />}>
+            <Card title="MDRT agents" right={<TrendingUp size={16} className="text-brand-orange" />}>
               <ClusterList rows={mdrt} accentLabel="premium" />
             </Card>
           </div>
@@ -129,7 +129,7 @@ function Filter({ label, value, setValue, options }: { label: string; value: str
   return (
     <label className="block">
       <span className="text-xs font-bold uppercase tracking-wide text-gray-500">{label}</span>
-      <select value={value} onChange={(e) => setValue(e.target.value)} className="mt-1 h-10 rounded-lg border border-gray-200 bg-white px-3 text-sm font-semibold outline-none focus:border-pwc-orange">
+      <select value={value} onChange={(e) => setValue(e.target.value)} className="mt-1 h-10 rounded-lg border border-gray-200 bg-white px-3 text-sm font-semibold outline-none focus:border-brand-orange">
         {options.map((o) => <option key={o} value={o}>{o ? titleCase(o) : "All"}</option>)}
       </select>
     </label>
@@ -137,7 +137,7 @@ function Filter({ label, value, setValue, options }: { label: string; value: str
 }
 
 function ClusterBadge({ cluster }: { cluster: string }) {
-  const cls = cluster === "MDRT" ? "bg-pwc-orange/10 text-pwc-orange" : cluster === "Elite" ? "bg-pwc-tangerine/10 text-pwc-tangerine" : cluster === "Rising Stars" ? "bg-green-50 text-green-700" : "bg-gray-100 text-gray-600";
+  const cls = cluster === "MDRT" ? "bg-brand-orange/10 text-brand-orange" : cluster === "Elite" ? "bg-brand-tangerine/10 text-brand-tangerine" : cluster === "Rising Stars" ? "bg-green-50 text-green-700" : "bg-gray-100 text-gray-600";
   return <span className={`rounded-full px-2 py-0.5 text-xs font-bold ${cls}`}>{cluster}</span>;
 }
 

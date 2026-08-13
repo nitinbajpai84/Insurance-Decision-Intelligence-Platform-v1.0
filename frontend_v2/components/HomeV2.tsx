@@ -41,19 +41,20 @@ export default function HomeV2() {
   return (
     <Shell>
       {/* Hero */}
-      <section className="rounded-lg bg-pwc-charcoal p-6 text-white shadow-sm">
-        <div className="flex flex-wrap items-start justify-between gap-4">
+      <section className="relative overflow-hidden rounded-xl bg-brand-hero p-6 text-white shadow-executive sm:p-8">
+        <div className="pointer-events-none absolute inset-0 bg-brand-radial" />
+        <div className="relative flex flex-wrap items-start justify-between gap-4">
           <div>
-            <p className="text-xs font-bold uppercase tracking-[0.18em] text-pwc-yellow">Executive Command Center</p>
-            <h2 className="mt-1 text-2xl font-bold">New business momentum is {data.new_business_premium_delta_pct >= 0 ? "up" : "down"} this quarter</h2>
-            <p className="mt-1 max-w-2xl text-sm text-gray-300">
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-brand-yellow">Executive Command Center</p>
+            <h2 className="mt-1 text-2xl font-bold sm:text-3xl">New business momentum is {data.new_business_premium_delta_pct >= 0 ? "up" : "down"} this quarter</h2>
+            <p className="mt-2 max-w-2xl text-sm leading-6 text-gray-300">
               {money(data.new_business_premium_90d)} new-business premium in the last 90 days · {pct(data.persistency_13m)} 13-month persistency ·
               {" "}{num(data.high_lapse_exposure_count)} policies in high lapse exposure.
             </p>
           </div>
           <Link
             href="/ai-intelligence-v2?q=What%20is%20driving%20new%20business%20premium%20this%20quarter%3F&role=Executive%20Leadership"
-            className="inline-flex items-center gap-2 rounded-lg bg-pwc-orange px-4 py-2.5 text-sm font-bold text-white hover:bg-pwc-orangeDark"
+            className="inline-flex items-center gap-2 rounded-lg bg-brand-orange px-4 py-2.5 text-sm font-bold text-white shadow-glow transition-transform duration-150 hover:-translate-y-0.5 hover:bg-brand-orangeDark"
           >
             <Sparkles size={16} /> Ask the AI
           </Link>
@@ -67,9 +68,9 @@ export default function HomeV2() {
         ) : (
           <div className="grid gap-3 md:grid-cols-3">
             {queue.map((a: any, i: number) => (
-              <article key={a.next_best_action_id || i} className="rounded-lg border border-gray-100 bg-gray-50 p-4">
+              <article key={a.next_best_action_id || i} className="rounded-lg border border-gray-100 bg-gray-50 p-4 transition-all duration-150 hover:border-brand-orange/20 hover:bg-white hover:shadow-card">
                 <div className="flex items-center justify-between">
-                  <span className="rounded-full bg-pwc-orange/10 px-2 py-0.5 text-[11px] font-bold text-pwc-orange">{titleCase(a.action_type)}</span>
+                  <span className="rounded-full bg-brand-orange/10 px-2 py-0.5 text-[11px] font-bold text-brand-orange">{titleCase(a.action_type)}</span>
                   <span className="inline-flex items-center gap-0.5 rounded-full bg-green-50 px-2 py-0.5 text-xs font-bold text-green-700">
                     {Math.round((a.priority || 0) * 100)}%
                   </span>
@@ -102,9 +103,9 @@ export default function HomeV2() {
               <XAxis dataKey="month" tick={{ fontSize: 10 }} interval={1} />
               <YAxis tick={{ fontSize: 11 }} width={36} />
               <Tooltip formatter={(v) => `index ${Number(v)}`} />
-              <Bar dataKey="value" radius={[3, 3, 0, 0]}>
+              <Bar dataKey="value" radius={[4, 4, 0, 0]}>
                 {momentum.map((_: any, i: number) => (
-                  <Cell key={i} fill="#D04A02" />
+                  <Cell key={i} fill="#3454D1" />
                 ))}
               </Bar>
             </BarChart>
@@ -114,7 +115,7 @@ export default function HomeV2() {
           {salesMix.length ? <BarList items={salesMix} /> : <p className="text-sm text-gray-400">No data</p>}
         </Card>
         <Card title="Distribution channels">
-          {channelMix.length ? <BarList items={channelMix} color="bg-pwc-tangerine" /> : <p className="text-sm text-gray-400">No data</p>}
+          {channelMix.length ? <BarList items={channelMix} color="bg-brand-tangerine" /> : <p className="text-sm text-gray-400">No data</p>}
         </Card>
       </div>
 
@@ -125,14 +126,14 @@ export default function HomeV2() {
             <Link
               key={l.step}
               href="/glossary-v2"
-              className="group rounded-lg border border-gray-100 bg-gray-50 p-3 hover:border-pwc-orange/30 hover:bg-pwc-orange/5"
+              className="group rounded-lg border border-gray-100 bg-gray-50 p-3 transition-all duration-150 hover:-translate-y-0.5 hover:border-brand-orange/30 hover:bg-brand-orange/5 hover:shadow-card"
             >
               <div className="flex items-center gap-2">
-                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-pwc-orange text-xs font-bold text-white">{i + 1}</span>
+                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-brand-orange text-xs font-bold text-white">{i + 1}</span>
                 <span className="text-sm font-bold text-gray-900">{l.step}</span>
               </div>
               <p className="mt-1 text-xs text-gray-600">{l.detail}</p>
-              <span className="mt-1 inline-flex items-center gap-0.5 text-[11px] font-semibold text-pwc-orange opacity-0 group-hover:opacity-100">
+              <span className="mt-1 inline-flex items-center gap-0.5 text-[11px] font-semibold text-brand-orange opacity-0 group-hover:opacity-100">
                 definition <ArrowRight size={11} />
               </span>
             </Link>

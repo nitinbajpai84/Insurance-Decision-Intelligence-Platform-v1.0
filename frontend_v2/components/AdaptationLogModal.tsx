@@ -55,9 +55,9 @@ export default function AdaptationLogModal({ onClose }: { onClose: () => void })
 
 function Icon({ kind }: { kind: string }) {
   const cls = "mt-0.5 shrink-0";
-  if (kind === "edge_weight") return <TrendingUp size={16} className={`${cls} text-pwc-orange`} />;
-  if (kind === "cache") return <ThumbsDown size={16} className={`${cls} text-pwc-rose`} />;
-  return <GitBranch size={16} className={`${cls} text-pwc-tangerine`} />;
+  if (kind === "edge_weight") return <TrendingUp size={16} className={`${cls} text-brand-orange`} />;
+  if (kind === "cache") return <ThumbsDown size={16} className={`${cls} text-brand-rose`} />;
+  return <GitBranch size={16} className={`${cls} text-brand-tangerine`} />;
 }
 
 function describe(it: AdaptationItem): string {

@@ -1,11 +1,11 @@
 /**
- * apiBase — single source of truth for the V2 backend URL.
+ * apiBase — single source of truth for the backend URL.
  *
  * Resolution order:
  *   1. NEXT_PUBLIC_API_V2_URL when set. This is how local development and real
  *      deployments (Vercel etc.) configure the backend; frontend_v2/.env.local
  *      points it at http://127.0.0.1:3001.
- *   2. The hosted demo backend, when the page is served from a remote host.
+ *   2. The hosted production backend, when the page is served from a remote host.
  *      Cloud IDEs (StackBlitz/WebContainer, CodeSandbox) strip .env files when
  *      importing from GitHub, so the env var is simply absent there — and a
  *      localhost default would make the browser call the *viewer's own machine*,
@@ -13,11 +13,11 @@
  *   3. Localhost, for local development without an .env.local.
  *
  * Note this is evaluated in the browser bundle, so window.location reflects
- * where the page is actually being viewed from. All V2 data fetching is
+ * where the page is actually being viewed from. All data fetching is
  * client-side, so the SSR branch below is only hit during build/prerender.
  */
 
-const HOSTED_DEMO_API = "https://insurance-poc-v2-backend-latest.onrender.com";
+const HOSTED_API = "https://insurance-poc-v2-backend-latest.onrender.com";
 const LOCAL_API = "http://127.0.0.1:3001";
 
 function resolveApiBase(): string {
@@ -29,7 +29,7 @@ function resolveApiBase(): string {
 
   const host = window.location.hostname;
   const isLocal = host === "localhost" || host === "127.0.0.1" || host === "::1" || host === "[::1]";
-  return isLocal ? LOCAL_API : HOSTED_DEMO_API;
+  return isLocal ? LOCAL_API : HOSTED_API;
 }
 
 export const API_BASE: string = resolveApiBase();

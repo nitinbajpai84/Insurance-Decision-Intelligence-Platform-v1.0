@@ -169,7 +169,7 @@ export default function GraphFeedbackPanel({
               <ThumbsUp size={12} /> Confirm
             </button>
             <button onClick={() => nodeConfirm("reject")} disabled={busy}
-              className="inline-flex items-center gap-1 rounded-full bg-pwc-rose/10 px-3 py-1 text-xs font-bold text-pwc-rose hover:bg-pwc-rose/20">
+              className="inline-flex items-center gap-1 rounded-full bg-brand-rose/10 px-3 py-1 text-xs font-bold text-brand-rose hover:bg-brand-rose/20">
               <ThumbsDown size={12} /> Reject
             </button>
             {detail.health != null && (
@@ -187,12 +187,12 @@ export default function GraphFeedbackPanel({
                   <p className="text-green-700">{draftDef || <span className="italic text-gray-400">empty</span>}</p>
                 </div>
                 <textarea value={draftDef} onChange={(e) => setDraftDef(e.target.value)} rows={3}
-                  className="w-full rounded border border-gray-200 p-2 text-sm outline-none focus:border-pwc-orange" />
+                  className="w-full rounded border border-gray-200 p-2 text-sm outline-none focus:border-brand-orange" />
                 <input value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Why change this? (required)"
-                  className="w-full rounded border border-gray-200 p-2 text-sm outline-none focus:border-pwc-orange" />
+                  className="w-full rounded border border-gray-200 p-2 text-sm outline-none focus:border-brand-orange" />
                 <div className="flex gap-2">
                   <button onClick={submitEdit} disabled={busy}
-                    className="rounded bg-pwc-orange px-3 py-1.5 text-xs font-bold text-white hover:bg-pwc-orangeDark">
+                    className="rounded bg-brand-orange px-3 py-1.5 text-xs font-bold text-white hover:bg-brand-orangeDark">
                     Submit for review
                   </button>
                   <button onClick={() => setEditing(false)} className="rounded border border-gray-200 px-3 py-1.5 text-xs font-bold text-gray-600">
@@ -236,7 +236,7 @@ export default function GraphFeedbackPanel({
                   </span>
                   <span className="flex shrink-0 gap-1">
                     <button onClick={() => edgeFeedback(e.edge_id, "confirm")} disabled={busy} className="text-green-600 hover:text-green-800"><ThumbsUp size={13} /></button>
-                    <button onClick={() => edgeFeedback(e.edge_id, "reject")} disabled={busy} className="text-pwc-rose hover:opacity-70"><ThumbsDown size={13} /></button>
+                    <button onClick={() => edgeFeedback(e.edge_id, "reject")} disabled={busy} className="text-brand-rose hover:opacity-70"><ThumbsDown size={13} /></button>
                   </span>
                 </div>
               ))}
@@ -246,7 +246,7 @@ export default function GraphFeedbackPanel({
 
           {/* suggest missing relationship */}
           <div>
-            <button onClick={() => setSuggestOpen((v) => !v)} className="inline-flex items-center gap-1 text-xs font-bold text-pwc-orange hover:text-pwc-orangeDark">
+            <button onClick={() => setSuggestOpen((v) => !v)} className="inline-flex items-center gap-1 text-xs font-bold text-brand-orange hover:text-brand-orangeDark">
               <Plus size={13} /> Suggest a missing relationship
             </button>
             {suggestOpen && (
@@ -258,7 +258,7 @@ export default function GraphFeedbackPanel({
                   <option value="">— target node —</option>
                   {otherNodes.map((n) => <option key={n.id} value={n.id}>{n.label} ({n.type})</option>)}
                 </select>
-                <button onClick={submitProposal} disabled={busy} className="w-full rounded bg-pwc-orange px-3 py-1.5 text-xs font-bold text-white hover:bg-pwc-orangeDark">
+                <button onClick={submitProposal} disabled={busy} className="w-full rounded bg-brand-orange px-3 py-1.5 text-xs font-bold text-white hover:bg-brand-orangeDark">
                   Submit for review
                 </button>
               </div>

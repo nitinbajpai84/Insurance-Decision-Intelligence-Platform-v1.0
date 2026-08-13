@@ -24,7 +24,7 @@ function highlight(sql: string): ReactNode[] {
   sql.replace(KEYWORD_RE, (match, _g, offset: number) => {
     if (offset > last) nodes.push(<span key={`t${key++}`}>{sql.slice(last, offset)}</span>);
     nodes.push(
-      <span key={`k${key++}`} className="font-bold text-pwc-yellow">
+      <span key={`k${key++}`} className="font-bold text-brand-yellow">
         {match.toUpperCase()}
       </span>
     );
@@ -59,7 +59,7 @@ export default function SqlBlock({ sql, maxHeight = "20rem" }: { sql: string; ma
         {copied ? "Copied" : "Copy SQL"}
       </button>
       <pre
-        className="thin-scroll overflow-auto whitespace-pre-wrap break-words rounded-lg bg-pwc-charcoalDark p-4 pr-20 text-xs leading-6 text-gray-100"
+        className="thin-scroll overflow-auto whitespace-pre-wrap break-words rounded-lg bg-brand-charcoalDark p-4 pr-20 text-xs leading-6 text-gray-100"
         style={{ maxHeight }}
       >
         <code>{highlight(text)}</code>

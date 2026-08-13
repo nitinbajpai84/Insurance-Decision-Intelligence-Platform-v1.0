@@ -58,11 +58,11 @@ export default function APIStatusBanner() {
 
   if (severity === "down") {
     return (
-      <div className="flex items-start gap-3 border border-pwc-rose/30 bg-pwc-rose/10 px-4 py-3 text-sm text-pwc-rose">
+      <div className="flex items-start gap-3 border border-brand-rose/30 bg-brand-rose/10 px-4 py-3 text-sm text-brand-rose">
         <XCircle size={18} className="mt-0.5 shrink-0" />
         <div>
-          <p className="font-semibold">V2 intelligence backend is unavailable.</p>
-          <p className="mt-0.5 text-pwc-rose/90">
+          <p className="font-semibold">Intelligence backend is unavailable.</p>
+          <p className="mt-0.5 text-brand-rose/90">
             Could not reach the agentic API. {lastGood.current ? `Last healthy: ${lastGood.current}.` : "No healthy response yet this session."}
           </p>
         </div>
@@ -88,7 +88,7 @@ export default function APIStatusBanner() {
             <span
               key={s.label}
               className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold ${
-                s.up ? "bg-green-100 text-green-700" : "bg-pwc-rose/15 text-pwc-rose"
+                s.up ? "bg-green-100 text-green-700" : "bg-brand-rose/15 text-brand-rose"
               }`}
             >
               {s.up ? <CheckCircle2 size={12} /> : <XCircle size={12} />}

@@ -117,9 +117,9 @@ export default function GovernedRulesEditor() {
   return (
     <div className="space-y-3">
       {toast && (
-        <div className="flex items-start justify-between gap-3 rounded-lg border border-pwc-orange/30 bg-pwc-orange/5 p-3 text-sm text-gray-800">
+        <div className="flex items-start justify-between gap-3 rounded-lg border border-brand-orange/30 bg-brand-orange/5 p-3 text-sm text-gray-800">
           <span>{toast}</span>
-          <button onClick={() => setToast(null)} className="text-xs font-bold text-pwc-orange">
+          <button onClick={() => setToast(null)} className="text-xs font-bold text-brand-orange">
             dismiss
           </button>
         </div>
@@ -152,7 +152,7 @@ export default function GovernedRulesEditor() {
               <div className="mt-3 flex gap-2">
                 <button
                   onClick={() => startEdit(rule)}
-                  className="rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-semibold text-gray-700 hover:border-pwc-orange hover:text-pwc-orange"
+                  className="rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-semibold text-gray-700 hover:border-brand-orange hover:text-brand-orange"
                 >
                   Edit threshold
                 </button>
@@ -162,7 +162,7 @@ export default function GovernedRulesEditor() {
                   className={`rounded-lg px-3 py-1.5 text-xs font-semibold disabled:opacity-50 ${
                     rule.status === "active"
                       ? "border border-amber-200 text-amber-700 hover:bg-amber-50"
-                      : "bg-pwc-orange text-white"
+                      : "bg-brand-orange text-white"
                   }`}
                 >
                   {rule.status === "active" ? "Deactivate" : "Activate"}
@@ -172,7 +172,7 @@ export default function GovernedRulesEditor() {
           )}
 
           {editingId === rule.rule_id && (
-            <div className="mt-3 space-y-3 rounded-lg border border-pwc-orange/30 bg-pwc-orange/5 p-3">
+            <div className="mt-3 space-y-3 rounded-lg border border-brand-orange/30 bg-brand-orange/5 p-3">
               <div className="grid gap-2 sm:grid-cols-2">
                 {Object.keys(thresholds).map((metric) => (
                   <label key={metric} className="text-xs">
@@ -180,7 +180,7 @@ export default function GovernedRulesEditor() {
                     <input
                       value={thresholds[metric]}
                       onChange={(e) => setThresholds((t) => ({ ...t, [metric]: e.target.value }))}
-                      className="w-full rounded-lg border border-gray-200 px-2 py-1.5 text-sm outline-none focus:border-pwc-orange"
+                      className="w-full rounded-lg border border-gray-200 px-2 py-1.5 text-sm outline-none focus:border-brand-orange"
                     />
                   </label>
                 ))}
@@ -190,7 +190,7 @@ export default function GovernedRulesEditor() {
                 <input
                   value={actionText}
                   onChange={(e) => setActionText(e.target.value)}
-                  className="w-full rounded-lg border border-gray-200 px-2 py-1.5 text-sm outline-none focus:border-pwc-orange"
+                  className="w-full rounded-lg border border-gray-200 px-2 py-1.5 text-sm outline-none focus:border-brand-orange"
                 />
               </label>
               <div className="grid gap-2 sm:grid-cols-2">
@@ -200,7 +200,7 @@ export default function GovernedRulesEditor() {
                     value={updatedBy}
                     onChange={(e) => setUpdatedBy(e.target.value)}
                     placeholder="e.g. Head of Agency"
-                    className="w-full rounded-lg border border-gray-200 px-2 py-1.5 text-sm outline-none focus:border-pwc-orange"
+                    className="w-full rounded-lg border border-gray-200 px-2 py-1.5 text-sm outline-none focus:border-brand-orange"
                   />
                 </label>
                 <label className="text-xs">
@@ -209,7 +209,7 @@ export default function GovernedRulesEditor() {
                     value={reason}
                     onChange={(e) => setReason(e.target.value)}
                     placeholder="Why is this changing?"
-                    className="w-full rounded-lg border border-gray-200 px-2 py-1.5 text-sm outline-none focus:border-pwc-orange"
+                    className="w-full rounded-lg border border-gray-200 px-2 py-1.5 text-sm outline-none focus:border-brand-orange"
                   />
                 </label>
               </div>
@@ -220,7 +220,7 @@ export default function GovernedRulesEditor() {
                 <button
                   onClick={() => saveEdit(rule)}
                   disabled={busy}
-                  className="rounded-lg bg-pwc-orange px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-50"
+                  className="rounded-lg bg-brand-orange px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-50"
                 >
                   Save as draft
                 </button>

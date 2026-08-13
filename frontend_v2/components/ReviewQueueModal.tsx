@@ -71,7 +71,7 @@ export default function ReviewQueueModal({
             {items.map((item) => (
               <li key={item.feedback_id} className="rounded-lg border border-gray-100 p-4">
                 <div className="flex items-center gap-2">
-                  <span className="rounded-full bg-pwc-orange/10 px-2 py-0.5 text-[10px] font-bold uppercase text-pwc-orange">
+                  <span className="rounded-full bg-brand-orange/10 px-2 py-0.5 text-[10px] font-bold uppercase text-brand-orange">
                     {item.target_type} · {item.feedback_type}
                   </span>
                   <span className="text-xs text-gray-400">by {item.user_id} ({item.user_role})</span>

@@ -7,7 +7,7 @@ import { Bar, BarChart, Cell, LabelList, ResponsiveContainer, Tooltip, XAxis, YA
 import { HelpCircle, Loader2 } from "lucide-react";
 import { getRepurchase, askWhyHref, type Repurchase } from "@/services/processApi";
 
-const BUCKET_COLORS: Record<string, string> = { "0-6m": "#16a34a", "6-12m": "#EB8C00", "12-24m": "#D04A02", "24m+": "#9ca3af" };
+const BUCKET_COLORS: Record<string, string> = { "0-6m": "#16a34a", "6-12m": "#D97706", "12-24m": "#3454D1", "24m+": "#9ca3af" };
 
 export default function RepurchaseV2() {
   const [data, setData] = useState<Repurchase | null>(null);
@@ -21,7 +21,7 @@ export default function RepurchaseV2() {
 
   return (
     <div className="mx-auto w-full max-w-[1400px] px-4 py-6 sm:px-6 lg:px-8">
-      <p className="text-xs font-bold uppercase tracking-wide text-pwc-orange">Business processes</p>
+      <p className="text-xs font-bold uppercase tracking-wide text-brand-orange">Business processes</p>
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <h1 className="mt-1 text-2xl font-bold text-gray-900">Customer Repurchase</h1>
@@ -37,7 +37,7 @@ export default function RepurchaseV2() {
 
       {data && (
         <>
-          {data.scoped_to_agent && <p className="mt-3 inline-block rounded-full bg-pwc-orange/10 px-3 py-1 text-xs font-bold text-pwc-orange">Scoped to your own book (Insurance Agent)</p>}
+          {data.scoped_to_agent && <p className="mt-3 inline-block rounded-full bg-brand-orange/10 px-3 py-1 text-xs font-bold text-brand-orange">Scoped to your own book (Insurance Agent)</p>}
           <div className="mt-5 grid gap-4 sm:grid-cols-4">
             <Kpi label="Repurchase rate (6-24mo)" value={`${data.repurchase_rate_pct}%`} q="What is our repurchase rate within 6 to 24 months?" role={role} />
             <Kpi label="Repurchasers" value={data.repurchasers.toLocaleString()} q="How many customers made a second purchase?" role={role} />
@@ -53,7 +53,7 @@ export default function RepurchaseV2() {
                   <XAxis type="number" unit="%" tick={{ fontSize: 11 }} />
                   <YAxis type="category" dataKey="segment" width={130} tick={{ fontSize: 11 }} />
                   <Tooltip formatter={(v) => `${v}%`} />
-                  <Bar dataKey="repurchase_rate_pct" fill="#D04A02" radius={[0, 4, 4, 0]}>
+                  <Bar dataKey="repurchase_rate_pct" fill="#3454D1" radius={[0, 4, 4, 0]}>
                     <LabelList dataKey="repurchase_rate_pct" position="right" formatter={(v) => `${v}%`} style={{ fontSize: 11 }} />
                   </Bar>
                 </BarChart>
@@ -68,13 +68,13 @@ export default function RepurchaseV2() {
                   <YAxis tick={{ fontSize: 11 }} />
                   <Tooltip />
                   <Bar dataKey="count" radius={[4, 4, 0, 0]}>
-                    {data.time_to_repurchase_distribution.map((d, i) => <Cell key={i} fill={BUCKET_COLORS[d.bucket] || "#D04A02"} />)}
+                    {data.time_to_repurchase_distribution.map((d, i) => <Cell key={i} fill={BUCKET_COLORS[d.bucket] || "#3454D1"} />)}
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>
               <div className="mt-2 text-right">
                 <Link href={askWhyHref("Which customer segments repurchase fastest and which products lead to a second purchase?", { role, process_id: "customer_repurchase", page: "repurchase" })}
-                  className="inline-flex items-center gap-1 text-xs font-bold text-pwc-orange hover:text-pwc-orangeDark"><HelpCircle size={13} /> Ask why</Link>
+                  className="inline-flex items-center gap-1 text-xs font-bold text-brand-orange hover:text-brand-orangeDark"><HelpCircle size={13} /> Ask why</Link>
               </div>
             </section>
           </div>
@@ -89,7 +89,7 @@ function Kpi({ label, value, q, role }: { label: string; value: string; q: strin
     <article className="rounded-lg border border-gray-100 bg-white p-5 shadow-sm">
       <div className="flex items-start justify-between">
         <p className="text-xs uppercase tracking-wide text-gray-500">{label}</p>
-        <Link href={askWhyHref(q, { role, process_id: "customer_repurchase", page: "repurchase" })} className="text-gray-300 hover:text-pwc-orange"><HelpCircle size={15} /></Link>
+        <Link href={askWhyHref(q, { role, process_id: "customer_repurchase", page: "repurchase" })} className="text-gray-300 hover:text-brand-orange"><HelpCircle size={15} /></Link>
       </div>
       <p className="mt-2 text-2xl font-bold text-gray-900">{value}</p>
     </article>

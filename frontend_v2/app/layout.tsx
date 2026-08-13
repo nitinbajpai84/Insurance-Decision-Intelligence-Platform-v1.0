@@ -5,9 +5,9 @@ import MobileNav from "@/components/MobileNav";
 import APIStatusBanner from "@/components/APIStatusBanner";
 
 export const metadata: Metadata = {
-  title: "Insurance Intelligence — V2",
+  title: "Meridian — Insurance Decision Intelligence",
   description:
-    "Insurance PoC V2 — agentic decision intelligence: parallel context retrieval, validated DuckDB SQL, streaming insights, and full evidence tracing. PwC-themed."
+    "Meridian is an agentic decision intelligence platform for insurance: parallel context retrieval, validated DuckDB SQL, streaming insights, and full evidence tracing."
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -22,12 +22,18 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <MobileNav />
                 <div className="min-w-0">
                   <p className="text-[11px] font-bold uppercase tracking-wide text-gray-400">Business workspace</p>
-                  <p className="truncate text-sm font-bold text-gray-900">Insurance Intelligence Product · V2</p>
+                  <p className="truncate text-sm font-bold text-gray-900">Meridian Decision Intelligence</p>
                 </div>
               </div>
-              <span className="hidden shrink-0 rounded-full bg-pwc-orange/10 px-3 py-1 text-xs font-bold text-pwc-orange sm:inline">
-                PwC theme
-              </span>
+              <div className="flex shrink-0 items-center gap-2.5 rounded-full border border-gray-200 bg-white py-1 pl-1 pr-3 shadow-sm">
+                <span className="flex h-7 w-7 items-center justify-center rounded-full bg-brand-orange text-[11px] font-bold text-white">
+                  NB
+                </span>
+                <span className="hidden text-left sm:block">
+                  <span className="block text-xs font-bold leading-tight text-gray-900">Nitin Bajpai</span>
+                  <span className="block text-[10px] font-semibold uppercase tracking-wide text-gray-400">Admin</span>
+                </span>
+              </div>
             </header>
             <APIStatusBanner />
             <main className="flex-1">{children}</main>

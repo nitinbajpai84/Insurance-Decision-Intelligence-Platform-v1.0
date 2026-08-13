@@ -126,13 +126,13 @@ export default function BusinessGlossaryEditor() {
             <input
               value={updatedBy}
               onChange={(e) => setUpdatedBy(e.target.value)}
-              className="h-8 w-32 rounded border border-gray-200 px-2 text-sm outline-none focus:border-pwc-orange"
+              className="h-8 w-32 rounded border border-gray-200 px-2 text-sm outline-none focus:border-brand-orange"
             />
           </label>
           <button
             onClick={() => setAdmin((v) => !v)}
             className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-1.5 text-xs font-bold ${
-              admin ? "border-pwc-orange/30 bg-pwc-orange/10 text-pwc-orange" : "border-gray-200 text-gray-500 hover:bg-gray-50"
+              admin ? "border-brand-orange/30 bg-brand-orange/10 text-brand-orange" : "border-gray-200 text-gray-500 hover:bg-gray-50"
             }`}
             title="Admin mode can edit locked terms"
           >
@@ -150,7 +150,7 @@ export default function BusinessGlossaryEditor() {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Filter by term, subject area, or definition"
-            className="h-10 w-full rounded-lg border border-gray-200 pl-9 pr-3 text-sm outline-none focus:border-pwc-orange focus:ring-2 focus:ring-pwc-orange/20"
+            className="h-10 w-full rounded-lg border border-gray-200 pl-9 pr-3 text-sm outline-none focus:border-brand-orange focus:ring-2 focus:ring-brand-orange/20"
           />
         </div>
       </div>
@@ -204,15 +204,15 @@ export default function BusinessGlossaryEditor() {
                             value={draft}
                             onChange={(e) => setDraft(e.target.value)}
                             rows={3}
-                            className="w-full rounded border border-gray-200 p-2 text-sm outline-none focus:border-pwc-orange"
+                            className="w-full rounded border border-gray-200 p-2 text-sm outline-none focus:border-brand-orange"
                           />
                           <input
                             value={reason}
                             onChange={(e) => setReason(e.target.value)}
                             placeholder="Why are you changing this? (required)"
-                            className="w-full rounded border border-gray-200 p-2 text-sm outline-none focus:border-pwc-orange"
+                            className="w-full rounded border border-gray-200 p-2 text-sm outline-none focus:border-brand-orange"
                           />
-                          {rowError && <p className="text-xs font-semibold text-pwc-rose">{rowError}</p>}
+                          {rowError && <p className="text-xs font-semibold text-brand-rose">{rowError}</p>}
                         </div>
                       ) : (
                         <div>
@@ -232,7 +232,7 @@ export default function BusinessGlossaryEditor() {
                           <button
                             onClick={() => save(term)}
                             disabled={saving}
-                            className="inline-flex items-center gap-1 rounded bg-pwc-orange px-2.5 py-1.5 text-xs font-bold text-white hover:bg-pwc-orangeDark disabled:opacity-50"
+                            className="inline-flex items-center gap-1 rounded bg-brand-orange px-2.5 py-1.5 text-xs font-bold text-white hover:bg-brand-orangeDark disabled:opacity-50"
                           >
                             <Save size={13} />
                             {saving ? "Saving…" : "Save"}

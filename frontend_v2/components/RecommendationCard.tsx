@@ -24,9 +24,9 @@ export interface RecommendationCardProps {
 }
 
 const PRIORITY_STYLE: Record<Priority, string> = {
-  // mirror V1's red/orange/grey, re-toned to PwC
-  Critical: "bg-pwc-rose/15 text-pwc-rose border border-pwc-rose/30",
-  High: "bg-pwc-orange/10 text-pwc-orange border border-pwc-orange/30",
+  // priority-tinted badge styles, driven by the shared brand accent palette
+  Critical: "bg-brand-rose/15 text-brand-rose border border-brand-rose/30",
+  High: "bg-brand-orange/10 text-brand-orange border border-brand-orange/30",
   Medium: "bg-gray-100 text-gray-600 border border-gray-200"
 };
 
@@ -61,10 +61,10 @@ export default function RecommendationCard({
 
   return (
     <section className="rounded-lg border border-gray-100 bg-white shadow-sm">
-      <div className="border-l-4 border-pwc-orange p-5">
+      <div className="border-l-4 border-brand-orange p-5">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div className="flex items-center gap-2">
-            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-pwc-orange/10 text-pwc-orange">
+            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-orange/10 text-brand-orange">
               <Sparkles size={17} />
             </span>
             <h3 className="text-base font-bold text-gray-900">{title}</h3>
@@ -118,7 +118,7 @@ export default function RecommendationCard({
 
         <button
           onClick={onAction}
-          className="mt-4 inline-flex items-center gap-2 rounded bg-pwc-orange px-4 py-2.5 text-sm font-bold text-white hover:bg-pwc-orangeDark"
+          className="mt-4 inline-flex items-center gap-2 rounded bg-brand-orange px-4 py-2.5 text-sm font-bold text-white hover:bg-brand-orangeDark"
         >
           {action || "Take action"}
           <ArrowUpRight size={16} />

@@ -73,7 +73,7 @@ function Section({
 
 export default function ContextViewer({ schema, glossary, docs, totalTokens, questionType }: ContextViewerProps) {
   const [pinned, setPinned] = useState(false);
-  const pinKey = `pwc_v2_pin_ctx::${questionType || "default"}`;
+  const pinKey = `meridian_pin_ctx::${questionType || "default"}`;
 
   useEffect(() => {
     try {
@@ -112,7 +112,7 @@ export default function ContextViewer({ schema, glossary, docs, totalTokens, que
         <button
           onClick={togglePin}
           className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-xs font-semibold ${
-            pinned ? "border-pwc-orange/30 bg-pwc-orange/10 text-pwc-orange" : "border-gray-200 text-gray-500 hover:bg-gray-50"
+            pinned ? "border-brand-orange/30 bg-brand-orange/10 text-brand-orange" : "border-gray-200 text-gray-500 hover:bg-gray-50"
           }`}
           title="Persist context preference for this question type"
         >
@@ -130,14 +130,14 @@ export default function ContextViewer({ schema, glossary, docs, totalTokens, que
           </span>
         </div>
         <div className="space-y-2">
-          <Bar label="Schema" tokens={schemaTokens} total={TOKEN_BUDGET} color="bg-pwc-orange" />
-          <Bar label="Glossary" tokens={glossaryTokens} total={TOKEN_BUDGET} color="bg-pwc-tangerine" />
-          <Bar label="Docs" tokens={docTokens} total={TOKEN_BUDGET} color="bg-pwc-yellow" />
+          <Bar label="Schema" tokens={schemaTokens} total={TOKEN_BUDGET} color="bg-brand-orange" />
+          <Bar label="Glossary" tokens={glossaryTokens} total={TOKEN_BUDGET} color="bg-brand-tangerine" />
+          <Bar label="Docs" tokens={docTokens} total={TOKEN_BUDGET} color="bg-brand-yellow" />
         </div>
       </div>
 
       <div className="mt-4 space-y-2">
-        <Section icon={<Database size={15} className="text-pwc-orange" />} title="Schema context" count={schema.length}>
+        <Section icon={<Database size={15} className="text-brand-orange" />} title="Schema context" count={schema.length}>
           {schema.length === 0 ? (
             <p className="text-sm text-gray-400">No schema retrieved.</p>
           ) : (
@@ -157,7 +157,7 @@ export default function ContextViewer({ schema, glossary, docs, totalTokens, que
           )}
         </Section>
 
-        <Section icon={<BookOpen size={15} className="text-pwc-tangerine" />} title="Glossary terms" count={glossary.length}>
+        <Section icon={<BookOpen size={15} className="text-brand-tangerine" />} title="Glossary terms" count={glossary.length}>
           {glossary.length === 0 ? (
             <p className="text-sm text-gray-400">No glossary terms looked up.</p>
           ) : (
@@ -172,7 +172,7 @@ export default function ContextViewer({ schema, glossary, docs, totalTokens, que
           )}
         </Section>
 
-        <Section icon={<FileText size={15} className="text-pwc-yellow" />} title="Semantic documents" count={docs.length}>
+        <Section icon={<FileText size={15} className="text-brand-yellow" />} title="Semantic documents" count={docs.length}>
           {docs.length === 0 ? (
             <p className="text-sm text-gray-400">No documents retrieved.</p>
           ) : (

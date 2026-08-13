@@ -102,7 +102,7 @@ function StepCircle({ step }: { step: StepState }) {
   if (step.status === "active")
     return <div className={`${base} border-blue-500 bg-blue-50 text-blue-600`}><Loader2 size={15} className="animate-spin" /></div>;
   if (step.status === "skipped")
-    return <div className={`${base} border-dashed border-pwc-yellow text-pwc-orangeDark`}><Zap size={14} /></div>;
+    return <div className={`${base} border-dashed border-brand-yellow text-brand-orangeDark`}><Zap size={14} /></div>;
   return <div className={`${base} border-gray-300 bg-white text-gray-400`}>{idx}</div>;
 }
 
@@ -148,7 +148,7 @@ export default function StreamingInsightPanel({
       ? "bg-green-50 text-green-700"
       : tone === "amber"
         ? "bg-amber-50 text-amber-700"
-        : "bg-pwc-rose/10 text-pwc-rose";
+        : "bg-brand-rose/10 text-brand-rose";
 
   return (
     <section className="rounded-lg border border-gray-100 bg-white p-5 shadow-sm">
@@ -157,7 +157,7 @@ export default function StreamingInsightPanel({
         <div className="flex items-center gap-2">
           <h3 className="text-base font-bold text-gray-900">Answer</h3>
           {cacheHit && (
-            <span className="inline-flex items-center gap-1 rounded-full bg-pwc-yellow/20 px-2.5 py-1 text-xs font-bold text-pwc-orangeDark">
+            <span className="inline-flex items-center gap-1 rounded-full bg-brand-yellow/20 px-2.5 py-1 text-xs font-bold text-brand-orangeDark">
               <Zap size={12} /> Answered from semantic cache
               {typeof cacheSimilarity === "number" ? ` · ${(cacheSimilarity * 100).toFixed(0)}%` : ""}
             </span>
@@ -193,7 +193,7 @@ export default function StreamingInsightPanel({
                 </span>
               </div>
               {i < steps.length - 1 && (
-                <div className={`mt-4 h-0.5 flex-1 ${step.status === "done" ? "bg-green-400" : step.status === "skipped" ? "bg-pwc-yellow/50" : "bg-gray-200"}`} />
+                <div className={`mt-4 h-0.5 flex-1 ${step.status === "done" ? "bg-green-400" : step.status === "skipped" ? "bg-brand-yellow/50" : "bg-gray-200"}`} />
               )}
             </div>
           ))}
@@ -222,11 +222,11 @@ export default function StreamingInsightPanel({
       )}
 
       {/* streamed answer */}
-      <div className="mt-4 rounded-lg border border-pwc-orange/15 bg-pwc-orange/5 p-4">
+      <div className="mt-4 rounded-lg border border-brand-orange/15 bg-brand-orange/5 p-4">
         {answer ? (
           <p className="whitespace-pre-wrap text-sm leading-7 text-gray-800">
             {answer}
-            {status === "running" && <span className="ml-0.5 inline-block h-4 w-1.5 -translate-y-px animate-pulse-dot bg-pwc-orange align-middle" />}
+            {status === "running" && <span className="ml-0.5 inline-block h-4 w-1.5 -translate-y-px animate-pulse-dot bg-brand-orange align-middle" />}
           </p>
         ) : (
           <p className="text-sm text-gray-400">
@@ -240,7 +240,7 @@ export default function StreamingInsightPanel({
         <div className="mt-3">
           <button
             onClick={() => onViewEvidence?.(queryId)}
-            className="inline-flex items-center gap-1.5 text-sm font-semibold text-pwc-orange hover:text-pwc-orangeDark"
+            className="inline-flex items-center gap-1.5 text-sm font-semibold text-brand-orange hover:text-brand-orangeDark"
           >
             <FileSearch size={15} />
             View full evidence

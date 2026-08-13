@@ -53,7 +53,7 @@ export default function PolicyLapseRiskV2() {
           <Filter label="Region" value={region} setValue={setRegion} options={REGIONS} />
           <Filter label="Product" value={product} setValue={setProduct} options={PRODUCTS} />
           <Filter label="Segment" value={segment} setValue={setSegment} options={SEGMENTS} />
-          <button onClick={load} className="h-10 rounded-lg bg-pwc-orange px-4 text-sm font-bold text-white hover:bg-pwc-orangeDark">Apply</button>
+          <button onClick={load} className="h-10 rounded-lg bg-brand-orange px-4 text-sm font-bold text-white hover:bg-brand-orangeDark">Apply</button>
           <div className="ml-auto"><AskWhy question="Which policies are most at risk of lapsing and what should we do?" role="Agency Manager" /></div>
         </div>
       </Card>
@@ -73,7 +73,7 @@ export default function PolicyLapseRiskV2() {
             <KpiTile label="Top risk segment" value={titleCase(s.top_risk_segment)} />
           </div>
 
-          <Card title="Lapse hotspots" right={<ShieldAlert size={16} className="text-pwc-rose" />}>
+          <Card title="Lapse hotspots" right={<ShieldAlert size={16} className="text-brand-rose" />}>
             {hotspots.length === 0 ? (
               <p className="text-sm text-gray-400">No hotspots for these filters.</p>
             ) : (
@@ -110,7 +110,7 @@ function Filter({ label, value, setValue, options }: { label: string; value: str
   return (
     <label className="block">
       <span className="text-xs font-bold uppercase tracking-wide text-gray-500">{label}</span>
-      <select value={value} onChange={(e) => setValue(e.target.value)} className="mt-1 h-10 rounded-lg border border-gray-200 bg-white px-3 text-sm font-semibold outline-none focus:border-pwc-orange">
+      <select value={value} onChange={(e) => setValue(e.target.value)} className="mt-1 h-10 rounded-lg border border-gray-200 bg-white px-3 text-sm font-semibold outline-none focus:border-brand-orange">
         {options.map((o) => <option key={o} value={o}>{o ? titleCase(o) : "All"}</option>)}
       </select>
     </label>

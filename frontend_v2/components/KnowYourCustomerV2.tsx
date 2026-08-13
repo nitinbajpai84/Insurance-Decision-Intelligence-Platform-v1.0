@@ -68,7 +68,7 @@ export default function KnowYourCustomerV2() {
       <Card>
         <div className="flex flex-col gap-2 sm:flex-row">
           <SearchBar value={query} onChange={setQuery} onSubmit={() => search()} placeholder="Name, customer ID, or policy number" />
-          <button onClick={() => search()} className="h-11 rounded-lg bg-pwc-orange px-5 text-sm font-bold text-white hover:bg-pwc-orangeDark">Search</button>
+          <button onClick={() => search()} className="h-11 rounded-lg bg-brand-orange px-5 text-sm font-bold text-white hover:bg-brand-orangeDark">Search</button>
         </div>
         <div className="mt-3 flex flex-wrap gap-2">
           {CHIPS.map((c) => <Chip key={c} onClick={() => { setQuery(c); search(c); }}>{c}</Chip>)}
@@ -77,7 +77,7 @@ export default function KnowYourCustomerV2() {
           <div className="mt-3 flex flex-wrap gap-2">
             {results.slice(0, 8).map((r) => (
               <button key={r.customer_id} onClick={() => selectCustomer(r.customer_id)}
-                className={`rounded-full border px-3 py-1 text-xs font-semibold ${selected === r.customer_id ? "border-pwc-orange bg-pwc-orange/10 text-pwc-orange" : "border-gray-200 text-gray-600 hover:bg-gray-50"}`}>
+                className={`rounded-full border px-3 py-1 text-xs font-semibold ${selected === r.customer_id ? "border-brand-orange bg-brand-orange/10 text-brand-orange" : "border-gray-200 text-gray-600 hover:bg-gray-50"}`}>
                 {r.display_name}
               </button>
             ))}
@@ -94,14 +94,14 @@ export default function KnowYourCustomerV2() {
           <section className="rounded-lg border border-gray-100 bg-white p-5 shadow-sm">
             <div className="flex flex-wrap items-center justify-between gap-4">
               <div className="flex items-center gap-4">
-                <div className="flex h-14 w-14 items-center justify-center rounded-full bg-pwc-orange/10 text-pwc-orange">
+                <div className="flex h-14 w-14 items-center justify-center rounded-full bg-brand-orange/10 text-brand-orange">
                   <UserRound size={28} />
                 </div>
                 <div>
                   <h2 className="text-xl font-bold text-gray-900">{p.display_name}</h2>
                   <p className="text-sm text-gray-500">{p.customer_number} · {titleCase(p.region)}</p>
                 </div>
-                <span className="rounded-full bg-pwc-orange/10 px-3 py-1 text-xs font-bold text-pwc-orange">{titleCase(p.customer_segment)}</span>
+                <span className="rounded-full bg-brand-orange/10 px-3 py-1 text-xs font-bold text-brand-orange">{titleCase(p.customer_segment)}</span>
               </div>
               <AskWhy question={`Give me a 360 summary of customer ${p.display_name} and what I should do next.`} role={role} />
             </div>
@@ -158,7 +158,7 @@ export default function KnowYourCustomerV2() {
                 <ScoreRow label="Lapse risk" band={p.lapse_risk_band} />
                 <ScoreRow label="CLV band" band={p.clv_band} />
               </div>
-              <div className="mt-4 rounded-lg border border-pwc-orange/15 bg-pwc-orange/5 p-3">
+              <div className="mt-4 rounded-lg border border-brand-orange/15 bg-brand-orange/5 p-3">
                 <MetricLabel term="next best product">Next best product</MetricLabel>
                 <p className="mt-1 text-base font-bold text-gray-900">{p.next_best_product || "—"}</p>
               </div>
@@ -170,7 +170,7 @@ export default function KnowYourCustomerV2() {
             <Card title="Recommended action" right={<ViewEvidence />}>
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
-                  <span className="rounded-full bg-pwc-orange/10 px-2 py-0.5 text-[11px] font-bold text-pwc-orange">{titleCase(action.action_type)}</span>
+                  <span className="rounded-full bg-brand-orange/10 px-2 py-0.5 text-[11px] font-bold text-brand-orange">{titleCase(action.action_type)}</span>
                   <p className="mt-2 text-sm text-gray-700">{action.reason}</p>
                   {action.recommended_product && <p className="mt-1 text-sm font-semibold text-gray-900">Product: {action.recommended_product}</p>}
                 </div>

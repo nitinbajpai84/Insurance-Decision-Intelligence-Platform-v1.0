@@ -59,7 +59,7 @@ export default function ReasoningPanel({
         className="flex w-full items-center justify-between px-5 py-3.5 text-left"
       >
         <span className="flex items-center gap-2 text-sm font-bold text-gray-800">
-          <Cpu size={16} className="text-pwc-orange" />
+          <Cpu size={16} className="text-brand-orange" />
           Agent reasoning
           <span className="rounded-full bg-gray-100 px-2 py-0.5 text-xs font-semibold text-gray-500">
             {agentTimings.length} agents · {formatMs(totalMs)}
@@ -74,7 +74,7 @@ export default function ReasoningPanel({
           <div className="flex flex-wrap gap-2">
             <span
               className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-bold ${
-                cacheHit ? "bg-pwc-yellow/20 text-pwc-orangeDark" : "bg-green-50 text-green-700"
+                cacheHit ? "bg-brand-yellow/20 text-brand-orangeDark" : "bg-green-50 text-green-700"
               }`}
             >
               <Zap size={12} />
@@ -82,7 +82,7 @@ export default function ReasoningPanel({
             </span>
             <span
               className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-bold ${
-                parallel ? "bg-pwc-orange/10 text-pwc-orange" : "bg-gray-100 text-gray-600"
+                parallel ? "bg-brand-orange/10 text-brand-orange" : "bg-gray-100 text-gray-600"
               }`}
             >
               <GitBranch size={12} />
@@ -100,7 +100,7 @@ export default function ReasoningPanel({
                   <div key={a.name} className="flex items-center gap-3">
                     <span className="w-32 shrink-0 text-sm font-medium text-gray-700">{a.name}</span>
                     <div className="h-2.5 flex-1 overflow-hidden rounded-full bg-gray-100">
-                      <div className="h-full rounded-full bg-pwc-orange" style={{ width: `${pct}%` }} />
+                      <div className="h-full rounded-full bg-brand-orange" style={{ width: `${pct}%` }} />
                     </div>
                     <span className="w-14 shrink-0 text-right font-mono text-xs text-gray-500">{formatMs(a.ms)}</span>
                   </div>

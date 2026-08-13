@@ -61,13 +61,13 @@ export default function CampaignEffectivenessV2() {
           <SearchBar value={search} onChange={setSearch} onSubmit={load} placeholder="Campaign name or code" />
           <label className="block">
             <span className="text-xs font-bold uppercase tracking-wide text-gray-500">Medium</span>
-            <select value={medium} onChange={(e) => setMedium(e.target.value)} className="mt-1 h-10 rounded-lg border border-gray-200 bg-white px-3 text-sm font-semibold outline-none focus:border-pwc-orange">
+            <select value={medium} onChange={(e) => setMedium(e.target.value)} className="mt-1 h-10 rounded-lg border border-gray-200 bg-white px-3 text-sm font-semibold outline-none focus:border-brand-orange">
               {MEDIUMS.map((m) => <option key={m} value={m}>{m ? titleCase(m) : "All"}</option>)}
             </select>
           </label>
           <DateField label="From" value={from} setValue={setFrom} />
           <DateField label="To" value={to} setValue={setTo} />
-          <button onClick={load} className="h-10 rounded-lg bg-pwc-orange px-4 text-sm font-bold text-white hover:bg-pwc-orangeDark">Apply</button>
+          <button onClick={load} className="h-10 rounded-lg bg-brand-orange px-4 text-sm font-bold text-white hover:bg-brand-orangeDark">Apply</button>
         </div>
       </Card>
 
@@ -79,7 +79,7 @@ export default function CampaignEffectivenessV2() {
           <div className="flex flex-wrap gap-2">
             {list.slice(0, 12).map((c) => (
               <button key={c.campaign_id} onClick={() => selectCampaign(c.campaign_id)}
-                className={`rounded-full border px-3 py-1.5 text-xs font-semibold ${selected?.overview?.campaign_id === c.campaign_id ? "border-pwc-orange bg-pwc-orange/10 text-pwc-orange" : "border-gray-200 bg-gray-50 text-gray-700 hover:text-pwc-orange"}`}>
+                className={`rounded-full border px-3 py-1.5 text-xs font-semibold ${selected?.overview?.campaign_id === c.campaign_id ? "border-brand-orange bg-brand-orange/10 text-brand-orange" : "border-gray-200 bg-gray-50 text-gray-700 hover:text-brand-orange"}`}>
                 {c.campaign_name}
               </button>
             ))}
@@ -118,7 +118,7 @@ export default function CampaignEffectivenessV2() {
                           <span className="font-bold text-gray-900">{num(f.count)}</span>
                         </div>
                         <div className="h-3 rounded-full bg-gray-100">
-                          <div className="h-3 rounded-full" style={{ width: `${Math.max(2, Math.round((f.count / maxF) * 100))}%`, background: ["#2D2D2D", "#B23A00", "#D04A02", "#EB8C00", "#FFB600", "#16a34a"][i % 6] }} />
+                          <div className="h-3 rounded-full" style={{ width: `${Math.max(2, Math.round((f.count / maxF) * 100))}%`, background: ["#0F172A", "#25399A", "#3454D1", "#D97706", "#F5A623", "#16a34a"][i % 6] }} />
                         </div>
                       </div>
                     ))}
@@ -147,7 +147,7 @@ function DateField({ label, value, setValue }: { label: string; value: string; s
   return (
     <label className="block">
       <span className="text-xs font-bold uppercase tracking-wide text-gray-500">{label}</span>
-      <input type="date" value={value} onChange={(e) => setValue(e.target.value)} className="mt-1 h-10 rounded-lg border border-gray-200 bg-white px-3 text-sm outline-none focus:border-pwc-orange" />
+      <input type="date" value={value} onChange={(e) => setValue(e.target.value)} className="mt-1 h-10 rounded-lg border border-gray-200 bg-white px-3 text-sm outline-none focus:border-brand-orange" />
     </label>
   );
 }

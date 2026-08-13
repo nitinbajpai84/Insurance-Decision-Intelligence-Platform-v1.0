@@ -52,7 +52,7 @@ export default function MobileNav() {
         onClick={() => setOpen(false)}
         aria-current={active ? "page" : undefined}
         className={`flex items-center gap-3 rounded-lg px-3 py-3 text-sm font-semibold transition-colors ${
-          active ? "bg-pwc-orange text-white" : "text-gray-300 hover:bg-white/10 hover:text-white"
+          active ? "bg-brand-orange text-white" : "text-gray-300 hover:bg-white/10 hover:text-white"
         }`}
       >
         <Icon size={18} />
@@ -85,18 +85,18 @@ export default function MobileNav() {
             role="dialog"
             aria-modal="true"
             aria-label="Navigation"
-            className="absolute inset-y-0 left-0 flex w-[17rem] max-w-[85%] flex-col bg-pwc-charcoal text-white shadow-xl"
+            className="absolute inset-y-0 left-0 flex w-[17rem] max-w-[85%] flex-col bg-brand-sidebar text-white shadow-xl"
           >
             <div className="flex items-center justify-between border-b border-white/10 px-5 py-4">
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-pwc-orange">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-brand-orange shadow-glow">
                   <ShieldCheck size={22} />
                 </div>
                 <div>
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-pwc-yellow">
-                    Insurance PoC
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-brand-yellow">
+                    Meridian
                   </p>
-                  <h2 className="text-base font-bold leading-tight">Intelligence · V2</h2>
+                  <h2 className="text-base font-bold leading-tight">Decision Intelligence</h2>
                 </div>
               </div>
               <button

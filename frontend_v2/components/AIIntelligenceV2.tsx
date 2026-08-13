@@ -171,7 +171,7 @@ export default function AIIntelligenceV2() {
   return (
     <div className="mx-auto w-full max-w-[1500px] px-4 py-6 sm:px-6 lg:px-8">
       {/* page header */}
-      <p className="text-xs font-bold uppercase tracking-wide text-pwc-orange">Business workspace</p>
+      <p className="text-xs font-bold uppercase tracking-wide text-brand-orange">Business workspace</p>
       <h1 className="mt-1 text-2xl font-bold text-gray-900">AI Intelligence</h1>
       <p className="mt-1 max-w-3xl text-sm text-gray-500">
         Ask a business question. The agentic pipeline retrieves context in parallel, generates validated DuckDB SQL,
@@ -189,12 +189,12 @@ export default function AIIntelligenceV2() {
                 onChange={(e) => setQuestion(e.target.value)}
                 onKeyDown={onKeyDown}
                 placeholder="Type any insurance business question"
-                className="h-12 flex-1 rounded-lg border border-gray-200 px-4 text-sm outline-none focus:border-pwc-orange focus:ring-2 focus:ring-pwc-orange/20"
+                className="h-12 flex-1 rounded-lg border border-gray-200 px-4 text-sm outline-none focus:border-brand-orange focus:ring-2 focus:ring-brand-orange/20"
               />
               <button
                 onClick={generate}
                 disabled={status === "running"}
-                className="inline-flex h-12 items-center justify-center gap-2 rounded-lg bg-pwc-orange px-6 text-sm font-bold text-white hover:bg-pwc-orangeDark disabled:opacity-60"
+                className="inline-flex h-12 items-center justify-center gap-2 rounded-lg bg-brand-orange px-6 text-sm font-bold text-white hover:bg-brand-orangeDark disabled:opacity-60"
               >
                 {status === "running" ? <Loader2 size={18} className="animate-spin" /> : <Sparkles size={18} />}
                 Generate Insight
@@ -206,7 +206,7 @@ export default function AIIntelligenceV2() {
             <select
               value={role}
               onChange={(e) => onRoleChange(e.target.value)}
-              className="mt-2 h-12 w-full rounded-lg border border-gray-200 bg-gray-50 px-3 text-sm font-semibold outline-none focus:border-pwc-orange"
+              className="mt-2 h-12 w-full rounded-lg border border-gray-200 bg-gray-50 px-3 text-sm font-semibold outline-none focus:border-brand-orange"
             >
               {roles.map((r) => (
                 <option key={r}>{r}</option>
@@ -222,7 +222,7 @@ export default function AIIntelligenceV2() {
               <button
                 key={s}
                 onClick={() => setQuestion(s)}
-                className="rounded-full border border-gray-200 bg-gray-50 px-3 py-1.5 text-xs font-semibold text-gray-700 hover:border-pwc-orange/40 hover:bg-pwc-orange/5 hover:text-pwc-orange"
+                className="rounded-full border border-gray-200 bg-gray-50 px-3 py-1.5 text-xs font-semibold text-gray-700 hover:border-brand-orange/40 hover:bg-brand-orange/5 hover:text-brand-orange"
               >
                 {s}
               </button>

@@ -57,7 +57,7 @@ function parseTables(out: string | undefined): string[] {
     .filter(Boolean);
 }
 
-const PWC_COLORS = ["#D04A02", "#EB8C00", "#FFB600", "#B23A00", "#E0301E"];
+const BRAND_COLORS = ["#3454D1", "#5B7CE0", "#D97706", "#F5A623", "#0F172A"];
 
 export default function InsightEvidenceHubV2() {
   const searchParams = useSearchParams();
@@ -114,7 +114,7 @@ export default function InsightEvidenceHubV2() {
 
   return (
     <div className="mx-auto w-full max-w-[1500px] px-4 py-6 sm:px-6 lg:px-8">
-      <p className="text-xs font-bold uppercase tracking-wide text-pwc-orange">Business workspace</p>
+      <p className="text-xs font-bold uppercase tracking-wide text-brand-orange">Business workspace</p>
       <h1 className="mt-1 text-2xl font-bold text-gray-900">Insight Evidence Hub</h1>
       <p className="mt-1 max-w-3xl text-sm text-gray-500">
         Browse recent queries or load any query_id to trace its full agent reasoning, context, SQL, and latency.
@@ -131,12 +131,12 @@ export default function InsightEvidenceHubV2() {
                 onChange={(e) => setInsightId(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && loadTrace(insightId)}
                 placeholder="query_id from AI Intelligence"
-                className="h-11 flex-1 rounded-lg border border-gray-200 px-3 text-sm outline-none focus:border-pwc-orange focus:ring-2 focus:ring-pwc-orange/20"
+                className="h-11 flex-1 rounded-lg border border-gray-200 px-3 text-sm outline-none focus:border-brand-orange focus:ring-2 focus:ring-brand-orange/20"
               />
               <button
                 onClick={() => loadTrace(insightId)}
                 disabled={loadingTrace}
-                className="inline-flex h-11 items-center gap-2 rounded-lg bg-pwc-orange px-4 text-sm font-bold text-white hover:bg-pwc-orangeDark disabled:opacity-60"
+                className="inline-flex h-11 items-center gap-2 rounded-lg bg-brand-orange px-4 text-sm font-bold text-white hover:bg-brand-orangeDark disabled:opacity-60"
               >
                 {loadingTrace ? <Loader2 size={16} className="animate-spin" /> : <FileSearch size={16} />}
                 Load Evidence
@@ -176,7 +176,7 @@ export default function InsightEvidenceHubV2() {
                     <tr
                       key={r.query_id}
                       onClick={() => loadTrace(r.query_id)}
-                      className="cursor-pointer border-t border-gray-100 hover:bg-pwc-orange/5"
+                      className="cursor-pointer border-t border-gray-100 hover:bg-brand-orange/5"
                     >
                       <td className="max-w-md truncate px-5 py-3 font-semibold text-gray-900">{r.question || r.query_id}</td>
                       <td className="px-3 py-3 text-gray-600">{r.steps}</td>
@@ -184,7 +184,7 @@ export default function InsightEvidenceHubV2() {
                       <td className="px-3 py-3 font-mono text-gray-600">{r.total_tokens}</td>
                       <td className="px-3 py-3">
                         {r.any_cache_hit ? (
-                          <span className="inline-flex items-center gap-1 rounded-full bg-pwc-yellow/20 px-2 py-0.5 text-xs font-bold text-pwc-orangeDark">
+                          <span className="inline-flex items-center gap-1 rounded-full bg-brand-yellow/20 px-2 py-0.5 text-xs font-bold text-brand-orangeDark">
                             <Zap size={11} /> hit
                           </span>
                         ) : (
@@ -236,7 +236,7 @@ export default function InsightEvidenceHubV2() {
 
           {/* 4-column architecture view */}
           <div className="grid gap-4 lg:grid-cols-4">
-            <ArchCol icon={<Database size={15} />} title="DuckDB Tables" tint="bg-pwc-orange/10 text-pwc-orange">
+            <ArchCol icon={<Database size={15} />} title="DuckDB Tables" tint="bg-brand-orange/10 text-brand-orange">
               {tables.length ? (
                 <ul className="space-y-1">
                   {tables.map((t) => (
@@ -247,14 +247,14 @@ export default function InsightEvidenceHubV2() {
                 <p className="text-xs text-gray-400">No tables parsed from SQL agent trace.</p>
               )}
             </ArchCol>
-            <ArchCol icon={<Sparkles size={15} />} title="Model Layer" tint="bg-pwc-tangerine/10 text-pwc-tangerine">
+            <ArchCol icon={<Sparkles size={15} />} title="Model Layer" tint="bg-brand-tangerine/10 text-brand-tangerine">
               <ul className="space-y-1 text-xs text-gray-700">
                 <li>Gemini (generation)</li>
                 <li>gemini-embedding-001</li>
                 <li className="text-gray-400">Vector recall over LanceDB</li>
               </ul>
             </ArchCol>
-            <ArchCol icon={<Layers size={15} />} title="Context Layer" tint="bg-pwc-yellow/15 text-pwc-orangeDark">
+            <ArchCol icon={<Layers size={15} />} title="Context Layer" tint="bg-brand-yellow/15 text-brand-orangeDark">
               <ul className="space-y-1 text-xs text-gray-700">
                 <li>Schema items: {ctx.schema}</li>
                 <li>Glossary terms: {ctx.glossary}</li>
@@ -277,7 +277,7 @@ export default function InsightEvidenceHubV2() {
                   <Tooltip formatter={(v) => `${Number(v)} ms`} />
                   <Bar dataKey="ms" radius={[4, 4, 0, 0]}>
                     {latencyData.map((_, i) => (
-                      <Cell key={i} fill={PWC_COLORS[i % PWC_COLORS.length]} />
+                      <Cell key={i} fill={BRAND_COLORS[i % BRAND_COLORS.length]} />
                     ))}
                   </Bar>
                 </BarChart>
@@ -292,7 +292,7 @@ export default function InsightEvidenceHubV2() {
                     <Tooltip formatter={(v) => `${Number(v)} tokens`} />
                     <Bar dataKey="tokens" radius={[4, 4, 0, 0]}>
                       {tokenData.map((_, i) => (
-                        <Cell key={i} fill={PWC_COLORS[(i + 1) % PWC_COLORS.length]} />
+                        <Cell key={i} fill={BRAND_COLORS[(i + 1) % BRAND_COLORS.length]} />
                       ))}
                     </Bar>
                   </BarChart>
@@ -312,7 +312,7 @@ export default function InsightEvidenceHubV2() {
             <ol className="divide-y divide-gray-100">
               {steps.map((s, i) => (
                 <li key={s.id ?? i} className="flex gap-4 px-5 py-3.5">
-                  <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-pwc-orange text-xs font-bold text-white">
+                  <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-brand-orange text-xs font-bold text-white">
                     {i + 1}
                   </div>
                   <div className="min-w-0 flex-1">
@@ -321,7 +321,7 @@ export default function InsightEvidenceHubV2() {
                       <span className="flex items-center gap-3 font-mono text-xs text-gray-500">
                         <span>{formatMs(s.duration_ms)}</span>
                         <span>{s.tokens_used} tok</span>
-                        {s.cache_hit && <span className="text-pwc-orangeDark">⚡ cache</span>}
+                        {s.cache_hit && <span className="text-brand-orangeDark">⚡ cache</span>}
                       </span>
                     </div>
                     <p className="mt-0.5 break-words text-sm text-gray-600">{s.output_summary}</p>
@@ -398,7 +398,7 @@ function GroundingPanel({ steps }: { steps: TraceStep[] }) {
           <p className="text-[11px] font-bold uppercase tracking-wide text-gray-500">Bindings</p>
           <p className="mt-1 text-sm text-gray-700">{bindings.length} metric binding(s) applied</p>
           <p className="mt-2 text-[11px] font-bold uppercase tracking-wide text-gray-500">Validation</p>
-          <p className={`mt-1 text-sm font-semibold ${validated ? "text-green-700" : "text-pwc-rose"}`}>
+          <p className={`mt-1 text-sm font-semibold ${validated ? "text-green-700" : "text-brand-rose"}`}>
             {validated ? "Validated against contract" : "Refused (off-contract)"}{repaired ? " · auto-repaired" : ""}
           </p>
         </div>

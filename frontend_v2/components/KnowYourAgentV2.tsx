@@ -64,13 +64,13 @@ export default function KnowYourAgentV2() {
       <Card>
         <div className="flex flex-col gap-2 sm:flex-row">
           <SearchBar value={query} onChange={setQuery} onSubmit={() => search()} placeholder="Agent name or number" />
-          <button onClick={() => search()} className="h-11 rounded-lg bg-pwc-orange px-5 text-sm font-bold text-white hover:bg-pwc-orangeDark">Search</button>
+          <button onClick={() => search()} className="h-11 rounded-lg bg-brand-orange px-5 text-sm font-bold text-white hover:bg-brand-orangeDark">Search</button>
         </div>
         {results.length > 1 && (
           <div className="mt-3 flex flex-wrap gap-2">
             {results.slice(0, 8).map((r) => (
               <button key={r.agent_id} onClick={() => selectAgent(r.agent_id)}
-                className={`rounded-full border px-3 py-1 text-xs font-semibold ${selected === r.agent_id ? "border-pwc-orange bg-pwc-orange/10 text-pwc-orange" : "border-gray-200 text-gray-600 hover:bg-gray-50"}`}>
+                className={`rounded-full border px-3 py-1 text-xs font-semibold ${selected === r.agent_id ? "border-brand-orange bg-brand-orange/10 text-brand-orange" : "border-gray-200 text-gray-600 hover:bg-gray-50"}`}>
                 {r.display_name}
               </button>
             ))}
@@ -86,7 +86,7 @@ export default function KnowYourAgentV2() {
           <section className="rounded-lg border border-gray-100 bg-white p-5 shadow-sm">
             <div className="flex flex-wrap items-center justify-between gap-4">
               <div className="flex items-center gap-4">
-                <div className="flex h-14 w-14 items-center justify-center rounded-full bg-pwc-orange/10 text-pwc-orange"><UsersRound size={28} /></div>
+                <div className="flex h-14 w-14 items-center justify-center rounded-full bg-brand-orange/10 text-brand-orange"><UsersRound size={28} /></div>
                 <div>
                   <h2 className="text-xl font-bold text-gray-900">{a.display_name}</h2>
                   <p className="text-sm text-gray-500">{a.agent_number} · {titleCase(a.channel)} · {a.region} · branch {a.branch}</p>
@@ -116,10 +116,10 @@ export default function KnowYourAgentV2() {
                     <YAxis tick={{ fontSize: 11 }} width={36} />
                     <Tooltip />
                     <Legend wrapperStyle={{ fontSize: 12 }} />
-                    <Bar dataKey="meetings" stackId="a" fill="#D04A02" />
-                    <Bar dataKey="activities" stackId="a" fill="#EB8C00" />
-                    <Bar dataKey="proposals" stackId="a" fill="#FFB600" />
-                    <Bar dataKey="applications" stackId="a" fill="#2D2D2D" />
+                    <Bar dataKey="meetings" stackId="a" fill="#3454D1" />
+                    <Bar dataKey="activities" stackId="a" fill="#D97706" />
+                    <Bar dataKey="proposals" stackId="a" fill="#F5A623" />
+                    <Bar dataKey="applications" stackId="a" fill="#0F172A" />
                   </BarChart>
                 </ResponsiveContainer>
               ) : <p className="text-sm text-gray-400">No MAPA data.</p>}
@@ -134,7 +134,7 @@ export default function KnowYourAgentV2() {
               {mix.length > 0 && (
                 <div className="mt-4">
                   <p className="mb-2 text-xs font-bold uppercase tracking-wide text-gray-500">Premium by product line</p>
-                  <BarList items={mix} color="bg-pwc-tangerine" />
+                  <BarList items={mix} color="bg-brand-tangerine" />
                 </div>
               )}
             </Card>

@@ -8,7 +8,7 @@ import { ArrowDownRight, ArrowUpRight, HelpCircle, Loader2, Minus } from "lucide
 import { getDemand, askWhyHref, type Demand } from "@/services/processApi";
 
 const LINES = ["Health", "Savings", "Protection", "Investment"];
-const LINE_COLORS: Record<string, string> = { Health: "#D04A02", Savings: "#EB8C00", Protection: "#7c3aed", Investment: "#16a34a" };
+const LINE_COLORS: Record<string, string> = { Health: "#3454D1", Savings: "#D97706", Protection: "#7c3aed", Investment: "#16a34a" };
 
 export default function DemandV2() {
   const [data, setData] = useState<Demand | null>(null);
@@ -33,7 +33,7 @@ export default function DemandV2() {
 
   return (
     <div className="mx-auto w-full max-w-[1400px] px-4 py-6 sm:px-6 lg:px-8">
-      <p className="text-xs font-bold uppercase tracking-wide text-pwc-orange">Business processes</p>
+      <p className="text-xs font-bold uppercase tracking-wide text-brand-orange">Business processes</p>
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <h1 className="mt-1 text-2xl font-bold text-gray-900">Market Demand</h1>
@@ -54,7 +54,7 @@ export default function DemandV2() {
               <article key={c.product_line} className="rounded-lg border border-gray-100 bg-white p-4 shadow-sm">
                 <div className="flex items-center justify-between">
                   <p className="text-xs uppercase tracking-wide text-gray-500">{c.product_line}</p>
-                  <Link href={askWhyHref(`Why is demand for ${c.product_line} ${c.direction} in ${region}?`, { process_id: "market_demand", page: "demand" })} className="text-gray-300 hover:text-pwc-orange"><HelpCircle size={14} /></Link>
+                  <Link href={askWhyHref(`Why is demand for ${c.product_line} ${c.direction} in ${region}?`, { process_id: "market_demand", page: "demand" })} className="text-gray-300 hover:text-brand-orange"><HelpCircle size={14} /></Link>
                 </div>
                 <p className={`mt-1 flex items-center gap-1 text-lg font-bold ${c.direction === "rising" ? "text-green-600" : c.direction === "falling" ? "text-red-600" : "text-gray-600"}`}>
                   {c.direction === "rising" ? <ArrowUpRight size={18} /> : c.direction === "falling" ? <ArrowDownRight size={18} /> : <Minus size={18} />}
